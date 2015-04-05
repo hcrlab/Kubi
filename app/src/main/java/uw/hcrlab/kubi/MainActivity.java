@@ -5,8 +5,38 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.revolverobotics.kubiapi.KubiManager;
 
-public class MainActivity extends ActionBarActivity {
+import java.util.ArrayList;
+import java.util.Map;
+
+import sandra.libs.asr.asrlib.ASR;
+import sandra.libs.tts.TTS;
+import sandra.libs.vpa.vpalib.Bot;
+import uw.hcrlab.kubi.view.OldRobotFace;
+
+
+public class MainActivity extends ASR {
+    private String TAG = OldKubiDemoActivity.class.getSimpleName();
+
+    /* Activity's Properties */
+
+    private MainThread mainThread;
+    private OldRobotFace robotFace;
+    private KubiManager kubiManager;
+
+    /* ASR's Properties */
+
+    // The ID of the bot to use for the chatbot, can be changed
+    // you can also make a new bot by creating an account in pandorabots.com and making a new chatbot robot
+    private String PANDORA_BOT_ID = "b9581e5f6e343f72";
+    private TTS tts;
+    private Bot bot;
+    // Map containing key = simple questions and value = how the robot responds
+    private Map<String, String> simpleResponses;
+
+
+    /* Activity's methods */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,5 +65,22 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /* ASR's methods */
+
+    @Override
+    public void processAsrResults(ArrayList<String> nBestList, float[] nBestConfidences) {
+
+    }
+
+    @Override
+    public void processAsrReadyForSpeech() {
+
+    }
+
+    @Override
+    public void processAsrError(int errorCode) {
+
     }
 }
