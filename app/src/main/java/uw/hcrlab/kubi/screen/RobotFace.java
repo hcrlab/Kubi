@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi.view;
+package uw.hcrlab.kubi.screen;
 
 import android.content.Context;
 import android.graphics.PointF;

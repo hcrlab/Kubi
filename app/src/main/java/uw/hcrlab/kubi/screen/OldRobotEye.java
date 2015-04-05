@@ -1,8 +1,8 @@
-package uw.hcrlab.kubi.view;
+package uw.hcrlab.kubi.screen;
 
-import uw.hcrlab.kubi.view.OldRobotFace.Emotion;
-import uw.hcrlab.kubi.view.OldRobotFace.EyeShape;
-import uw.hcrlab.kubi.view.OldRobotFace.Eye_ID;
+import uw.hcrlab.kubi.screen.OldRobotFace.Emotion;
+import uw.hcrlab.kubi.screen.OldRobotFace.EyeShape;
+import uw.hcrlab.kubi.screen.OldRobotFace.Eye_ID;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;

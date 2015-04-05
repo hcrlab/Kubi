@@ -1,7 +1,6 @@
-package uw.hcrlab.kubi.view;
+package uw.hcrlab.kubi.screen;
 
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Paint.Style;
 
 public class Constants {

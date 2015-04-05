@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi.view;
+package uw.hcrlab.kubi.screen;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

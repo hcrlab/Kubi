@@ -19,7 +19,7 @@
         android:background="@color/white"
         android:orientation="horizontal" >
 
-        <uw.hcrlab.kubi.view.OldRobotFace
+        <uw.hcrlab.kubi.screen.OldRobotFace
             android:id="@+id/face"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
