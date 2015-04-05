@@ -2,9 +2,9 @@ package uw.hcrlab.kubi;
 
 import java.util.Random;
 
-import uw.hcrlab.kubi.view.OldRobotFace;
-import uw.hcrlab.kubi.view.OldRobotFace.Action;
-import uw.hcrlab.kubi.view.OldRobotFace.Emotion;
+import uw.hcrlab.kubi.screen.OldRobotFace;
+import uw.hcrlab.kubi.screen.OldRobotFace.Action;
+import uw.hcrlab.kubi.screen.OldRobotFace.Emotion;
 import android.util.Log;
 
 import com.revolverobotics.kubiapi.Kubi;
@@ -12,7 +12,7 @@ import com.revolverobotics.kubiapi.KubiManager;
 
 /**
  * The Main thread which contains the main loop */
-public class MainThread extends Thread {
+public class OldMainThread extends Thread {
 	// the different between real time and calculated time to perform an action
 	private final long EPSILON = 100;
 
@@ -28,7 +28,7 @@ public class MainThread extends Thread {
 	private long nextBoringTime;
 	private Random random;
 
-	private static final String TAG = MainThread.class.getSimpleName();
+	private static final String TAG = OldMainThread.class.getSimpleName();
 	private OldRobotFace robotFace;
 	private KubiManager kubiManager;
 	private OldKubiDemoActivity activity;
@@ -37,7 +37,7 @@ public class MainThread extends Thread {
 	private boolean running;
 
 
-	public MainThread(OldRobotFace robotFace, KubiManager kubiManager, OldKubiDemoActivity activity) {
+	public OldMainThread(OldRobotFace robotFace, KubiManager kubiManager, OldKubiDemoActivity activity) {
 		super();
 		this.robotFace = robotFace;
 		this.kubiManager = kubiManager;

@@ -9,8 +9,8 @@ import java.util.Observer;
 import sandra.libs.asr.asrlib.ASR;
 import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
-import uw.hcrlab.kubi.view.OldRobotFace;
-import uw.hcrlab.kubi.view.OldRobotFace.Action;
+import uw.hcrlab.kubi.screen.OldRobotFace;
+import uw.hcrlab.kubi.screen.OldRobotFace.Action;
 import uw.hcrlab.kubidemo.dialogs.KubiGestureDialog;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -35,7 +35,7 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 	
 	private String TAG = OldKubiDemoActivity.class.getSimpleName();
 	
-	private MainThread mainThread;
+	private OldMainThread oldMainThread;
 	private boolean isSleep = false;
 	
 	/* Menu options */
@@ -75,11 +75,11 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 	}
     
 	private void restartMainThread() {
-		if (mainThread.isAlive()) {
-			mainThread.interrupt();
+		if (oldMainThread.isAlive()) {
+			oldMainThread.interrupt();
 		}
-		mainThread = new MainThread(robotFace, kubiManager, this);
-		mainThread.start();
+		oldMainThread = new OldMainThread(robotFace, kubiManager, this);
+		oldMainThread.start();
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 		// A chat bot web service that the user can optionally use to answer responses
 		bot = new Bot(this, PANDORA_BOT_ID, this.tts);
 		
-		mainThread = new MainThread(robotFace, kubiManager, this);
+		oldMainThread = new OldMainThread(robotFace, kubiManager, this);
 		
 	}
 	
@@ -338,7 +338,7 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 		}
 		
 		if (isSleep) {
-			mainThread.setRunning(false);
+			oldMainThread.setRunning(false);
 		}		
 	}
 
@@ -428,7 +428,7 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 		boolean retry = true;
 		while (retry) {
 			try {
-				mainThread.join();
+				oldMainThread.join();
 				retry = false;
 			} catch (InterruptedException e) {
 				// try again shutting down the thread
