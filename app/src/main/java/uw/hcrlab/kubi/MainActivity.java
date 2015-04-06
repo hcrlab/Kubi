@@ -223,41 +223,7 @@ public class MainActivity extends ASR {
 
     @Override
     public void processAsrError(int errorCode) {
-        String errorMessage;
-        switch (errorCode)
-        {
-            case SpeechRecognizer.ERROR_AUDIO:
-                errorMessage = "Audio recording error";
-                break;
-            case SpeechRecognizer.ERROR_CLIENT:
-                errorMessage = "Client side error";
-                break;
-            case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
-                errorMessage = "Insufficient permissions" ;
-                break;
-            case SpeechRecognizer.ERROR_NETWORK:
-                errorMessage = "Network related error" ;
-                break;
-            case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
-                errorMessage = "Network operation timeout";
-                break;
-            case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
-                errorMessage = "RecognitionServiceBusy" ;
-                break;
-            case SpeechRecognizer.ERROR_SERVER:
-                errorMessage = "Server sends error status";
-                break;
-            case SpeechRecognizer.ERROR_NO_MATCH:
-                errorMessage = "No matching message" ;
-                break;
-            case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                errorMessage = "Input not audible";
-                break;
-            default:
-                errorMessage = "ASR error";
-                break;
-        }
-
+        String errorMessage = SpeechUtils.getErrorMessage(errorCode);
         try {
             if (errorMessage != null) {
                 tts.speak(errorMessage,"EN");

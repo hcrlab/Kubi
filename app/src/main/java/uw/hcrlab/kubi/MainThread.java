@@ -39,12 +39,12 @@ public class MainThread extends Thread {
     private long nextBlinkTime;
     private long nextBoringTime;
 
-    public MainThread(OldRobotFace robotFace, KubiManager kubiManager, MainActivity mainActivity) {
+    public MainThread(OldRobotFace robotFace, KubiManager kubiManager, MainActivity activity) {
         super();
         Log.i(TAG, "Initializing MainThread ...");
         this.robotFace = robotFace;
         this.kubiManager = kubiManager;
-        this.activity = mainActivity;
+        this.activity = activity;
         this.isRunning = true;
         nextSleepTime = getNextSleepTime();
         nextBlinkTime = getNextBlinkTime();
