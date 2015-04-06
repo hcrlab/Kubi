@@ -35,17 +35,20 @@ public class MainThread extends Thread {
 
     private Random random = new Random();
 
-    private long nextSleepTime = System.currentTimeMillis() + SLEEP_TIME + random.nextInt(10) * 60 * 1000;
-    private long nextBlinkTime = System.currentTimeMillis() + BLINK_TIME + random.nextInt(10) * 1000;
-    private long nextBoringTime = System.currentTimeMillis() + BORING_TIME + random.nextInt(60) * 1000;
-
+    private long nextSleepTime;
+    private long nextBlinkTime;
+    private long nextBoringTime;
 
     public MainThread(OldRobotFace robotFace, KubiManager kubiManager, MainActivity mainActivity) {
         super();
+        Log.i(TAG, "Initializing MainThread ...");
         this.robotFace = robotFace;
         this.kubiManager = kubiManager;
         this.activity = mainActivity;
         this.isRunning = true;
+        nextSleepTime = getNextSleepTime();
+        nextBlinkTime = getNextBlinkTime();
+        nextBoringTime = getNextBoringTime();
     }
 
     @Override
@@ -69,12 +72,12 @@ public class MainThread extends Thread {
                     if (Math.abs(System.currentTimeMillis() - nextBlinkTime) < EPSILON)  {
                         Log.i(TAG, "Blink at " + System.currentTimeMillis());
                         robotFace.showAction(OldRobotFace.Action.BLINK);
-                        nextBlinkTime = System.currentTimeMillis() + BLINK_TIME + random.nextInt(10) * 1000;
+                        nextBlinkTime = getNextBlinkTime();
                     }
                     if (Math.abs(System.currentTimeMillis() - nextBoringTime) < EPSILON) {
                         Log.i(TAG, "Look around at " + System.currentTimeMillis());
                         kubiLookAround();
-                        nextBoringTime = System.currentTimeMillis() + BORING_TIME + random.nextInt(60) * 1000;
+                        nextBoringTime = getNextBoringTime();
                     }
                 }
 
@@ -103,5 +106,17 @@ public class MainThread extends Thread {
         } catch (Throwable e) {
             Log.e(TAG, "Cannot show gesture : GESTURE_FACE_DOWN");
         }
+    }
+
+    private long getNextSleepTime() {
+        return System.currentTimeMillis() + SLEEP_TIME + random.nextInt(10) * 60 * 1000;
+    }
+
+    private long getNextBlinkTime() {
+        return System.currentTimeMillis() + BLINK_TIME + random.nextInt(10) * 1000;
+    }
+
+    private long getNextBoringTime() {
+        return System.currentTimeMillis() + BORING_TIME + random.nextInt(60) * 1000;
     }
 }

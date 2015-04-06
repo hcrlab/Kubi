@@ -23,7 +23,7 @@ import uw.hcrlab.kubi.speech.SpeechUtils;
 
 
 public class MainActivity extends ASR {
-    private String TAG = OldKubiDemoActivity.class.getSimpleName();
+    private String TAG = MainActivity.class.getSimpleName();
 
     /* Activity's Properties */
 
@@ -94,9 +94,7 @@ public class MainActivity extends ASR {
         super.onResume();
         //TODO: implement this
         /* get the information that has been saved from onPause() */
-
-        Log.i(TAG, "Initializing MainThread ...");
-        mainThread = new MainThread(robotFace, kubiManager, this);
+        restartMainThread();
     }
 
     /*
@@ -302,6 +300,9 @@ public class MainActivity extends ASR {
 
         /* Manager that manages the Kubi's actions */
         kubiManager = new KubiManager(new KubiCallback(), true);
+
+        /* Start the Main Thread */
+        mainThread = new MainThread(robotFace, kubiManager, this);
     }
 
     private void destroyMainThread() {
@@ -315,5 +316,13 @@ public class MainActivity extends ASR {
                 // try again shutting down the thread
             }
         }
+    }
+
+    private void restartMainThread() {
+        if (mainThread.isAlive()) {
+            mainThread.interrupt();
+        }
+        mainThread = new MainThread(robotFace, kubiManager, this);
+        mainThread.start();
     }
 }
