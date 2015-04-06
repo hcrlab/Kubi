@@ -3,7 +3,7 @@ package uw.hcrlab.kubi.screen;
 import android.graphics.Color;
 import android.graphics.Paint.Style;
 
-public class Constants {
+public class ScreenConstants {
 
 	/* RobotEye constants */
 	public static final float ANGRY_VERTICAL_RADIUS_FACTOR = 1f/4;

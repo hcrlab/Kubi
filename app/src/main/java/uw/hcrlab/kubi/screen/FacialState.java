@@ -1,6 +1,6 @@
 package uw.hcrlab.kubi.screen;
 
-public enum State {
+public enum FacialState {
 	SAD, 
 	HAPPY,
 	NORMAL, 

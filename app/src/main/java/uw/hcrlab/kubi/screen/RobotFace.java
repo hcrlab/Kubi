@@ -23,20 +23,20 @@ public class RobotFace extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		PointF leftEyeCoordinate = new PointF(screenWidth * Constants.LEFT_EYE_HORIZONTAL_FACTOR,
-				screenHeight * Constants.EYE_VETICAL_FACTOR);
-		PointF rightEyeCoordinate = new PointF(screenWidth * Constants.RIGHT_EYE_HORIZONTAL_FACTOR,
-				screenHeight * Constants.EYE_VETICAL_FACTOR);
+		PointF leftEyeCoordinate = new PointF(screenWidth * ScreenConstants.LEFT_EYE_HORIZONTAL_FACTOR,
+				screenHeight * ScreenConstants.EYE_VETICAL_FACTOR);
+		PointF rightEyeCoordinate = new PointF(screenWidth * ScreenConstants.RIGHT_EYE_HORIZONTAL_FACTOR,
+				screenHeight * ScreenConstants.EYE_VETICAL_FACTOR);
 		// Initialize the eyes (this assumes the screen has been measured)
-		leftEye = new RobotEye(leftEyeCoordinate, Constants.DEFAULT_EYE_RADIUS, EyeSide.LEFT);
-		rightEye = new RobotEye(rightEyeCoordinate, Constants.DEFAULT_EYE_RADIUS, EyeSide.RIGHT);
+		leftEye = new RobotEye(leftEyeCoordinate, ScreenConstants.DEFAULT_EYE_RADIUS, EyeSide.LEFT);
+		rightEye = new RobotEye(rightEyeCoordinate, ScreenConstants.DEFAULT_EYE_RADIUS, EyeSide.RIGHT);
 
 		RobotFaceUtils.drawFace(this);
 	}
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int arg1, int arg2, int arg3) {
-		RobotFaceUtils.showAction(this, Action.BLINK);
+		RobotFaceUtils.showAction(this, FacialAction.BLINK);
 	}
 
 	@Override

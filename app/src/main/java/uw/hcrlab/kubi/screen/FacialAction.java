@@ -1,6 +1,6 @@
 package uw.hcrlab.kubi.screen;
 
-public enum Action {
+public enum FacialAction {
 	SMILE,
 	WINK,
 	BLINK,
