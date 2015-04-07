@@ -42,7 +42,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".OldKubiDemoActivity"
+            android:name="trash.OldKubiDemoActivity"
             android:label="@string/app_name" >
 
         </activity>

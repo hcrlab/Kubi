@@ -18,11 +18,11 @@ public class RobotEyeUtils {
 	 * @param paint
 	 * @param robotEye - the robot eye to draw
 	 */
-	public static void drawEye(Canvas canvas, Paint paint, RobotEye robotEye, FacialState facialState) {
+	public static void drawEye(Canvas canvas, Paint paint, RobotEye robotEye, State state) {
 		paint.setStyle(ScreenConstants.FILL_STYLE);
 		paint.setColor(ScreenConstants.EYE_COLOR);
 		// Draw the outer shape of the eye
-		drawEyeShape(canvas, paint, facialState, robotEye);
+		drawEyeShape(canvas, paint, state, robotEye);
 		
 		// Draw the iris
 		paint.setColor(ScreenConstants.IRIS_COLOR);
@@ -36,7 +36,7 @@ public class RobotEyeUtils {
 	 */
 	public static void lookAt(Canvas canvas, Paint paint, RobotEye robotEye, PointF p){
 		
-		drawEyeShape(canvas, paint, FacialState.NORMAL, robotEye);
+		drawEyeShape(canvas, paint, State.NORMAL, robotEye);
 					
 		// Handle case where point is inside the eye
 		// Calculate where the inner circle center should be 
@@ -53,9 +53,9 @@ public class RobotEyeUtils {
 				robotEye.getIrisRadius(), paint);
 	}
 
-	// the functions below are only used while normal (Emotion is NORMAL)
+	/* the functions below are only used while normal (Emotion is NORMAL) */
 	
-	public static void moveLowerLids(Canvas canvas, Paint paint, RobotEye robotEye, int i) {
+	public static void moveLowerLid(Canvas canvas, Paint paint, RobotEye robotEye, int i) {
 		paint.setColor(ScreenConstants.EYE_COLOR);
 		// draw the top bound
 		RectF rect = generateRectangle(robotEye);
@@ -73,7 +73,7 @@ public class RobotEyeUtils {
 		drawIris(canvas, paint, robotEye);
 	}
 
-	public static void moveUpperLids(Canvas canvas, Paint paint, RobotEye robotEye, int i) {
+	public static void moveUpperLid(Canvas canvas, Paint paint, RobotEye robotEye, int i) {
 		paint.setColor(ScreenConstants.EYE_COLOR);
 		// draw the bottom bound
 		RectF rect = generateRectangle(robotEye);
@@ -103,11 +103,6 @@ public class RobotEyeUtils {
 		//canvas.restore();
 	}
 
-	public static void drawIris(Canvas canvas, Paint paint, RobotEye robotEye) {
-		paint.setColor(ScreenConstants.IRIS_COLOR);
-		canvas.drawCircle(robotEye.getCoordinate().x, robotEye.getCoordinate().y, robotEye.getIrisRadius(), paint);
-	}
-
 	public static void drawEnlargePupil(Canvas canvas, Paint paint, RobotEye robotEye, float a, float b) {
 		paint.setColor(ScreenConstants.IRIS_COLOR);
 		canvas.drawCircle(robotEye.getCoordinate().x + a, robotEye.getCoordinate().y + b, robotEye.getIrisRadius(), paint);
@@ -117,19 +112,19 @@ public class RobotEyeUtils {
 		RobotEye newEye = robotEye;
 		newEye.setIrisRadius(robotEye.getIrisRadius() + i);
 		newEye.setRadius(robotEye.getRadius() + i/2);
-		drawEye(canvas, paint, newEye, FacialState.NORMAL);
+		drawEye(canvas, paint, newEye, State.NORMAL);
 	}
 
 	public static void MoveEyeVertical(Canvas canvas, Paint paint, RobotEye robotEye, float i) {
 		RobotEye newEye = robotEye;
 		newEye.getCoordinate().set(robotEye.getCoordinate().x, robotEye.getCoordinate().y + i);
-		drawEye(canvas, paint, newEye, FacialState.NORMAL);
+		drawEye(canvas, paint, newEye, State.NORMAL);
 	}
 
 	public static void changeAngle(Canvas canvas, Paint paint, RobotEye robotEye, float alpha) {
 		canvas.save();
 		canvas.rotate(alpha, robotEye.getCoordinate().x, robotEye.getCoordinate().y);
-		drawEye(canvas, paint, robotEye, FacialState.NORMAL);
+		drawEye(canvas, paint, robotEye, State.NORMAL);
 		canvas.restore();
 	}
 
@@ -137,11 +132,11 @@ public class RobotEyeUtils {
 	public static void moveIris(Canvas canvas, Paint paint, RobotEye robotEye, float i, float j) {
 		RobotEye newEye = robotEye;
 		newEye.getIrisCoordinate().set(robotEye.getIrisCoordinate().x + i, robotEye.getIrisCoordinate().y + j);
-		drawEye(canvas, paint, newEye, FacialState.NORMAL);
+		drawEye(canvas, paint, newEye, State.NORMAL);
 	}
 
 	/* move the iris x to the right and y down */
-	public static void moveUpperLidsAndIris(Canvas canvas, Paint paint, RobotEye robotEye, float i, float x, float y) {
+	public static void moveUpperLidsAndIri(Canvas canvas, Paint paint, RobotEye robotEye, float i, float x, float y) {
 		paint.setColor(ScreenConstants.EYE_COLOR);
 		// draw the bottom bound
 		RectF rect = generateRectangle(robotEye);
@@ -158,6 +153,13 @@ public class RobotEyeUtils {
 		// draw iris
 		drawEnlargePupil(canvas, paint, robotEye, x, y);
 	}
+
+    /* private methods */
+
+    private static void drawIris(Canvas canvas, Paint paint, RobotEye robotEye) {
+        paint.setColor(ScreenConstants.IRIS_COLOR);
+        canvas.drawCircle(robotEye.getCoordinate().x, robotEye.getCoordinate().y, robotEye.getIrisRadius(), paint);
+    }
 
 	/*
 	 * calculates the location the iris would be to perform looking at p
@@ -208,8 +210,8 @@ public class RobotEyeUtils {
 	}
 
 	/* helper function that draw the shape of the eye with respect to the emotion of the robot eye */
-	private static void drawEyeShape(Canvas canvas, Paint paint, FacialState facialState, RobotEye robotEye) {
-		switch (facialState) {
+	private static void drawEyeShape(Canvas canvas, Paint paint, State state, RobotEye robotEye) {
+		switch (state) {
 			case NORMAL: 	drawNormalShape(canvas, paint, robotEye);		break;
 			case HAPPY:		drawHappyShape(canvas, paint, robotEye);		break;
 			case SAD:		drawSadShape(canvas, paint, robotEye);			break;

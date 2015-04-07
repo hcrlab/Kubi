@@ -7,7 +7,7 @@ import com.revolverobotics.kubiapi.KubiManager;
 
 import java.util.Random;
 
-import uw.hcrlab.kubi.screen.OldRobotFace;
+import trash.OldRobotFace;
 
 /**
  * Created by kimyen on 4/5/15.

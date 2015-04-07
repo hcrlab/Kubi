@@ -3,17 +3,23 @@ package uw.hcrlab.kubi.screen;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
+/**
+ * This class contains methods that animate the robot face action.
+ * The animation happens in a constant speed, which is bad.
+ * To improve, re-implement this class to show animation in a ease-in ease-out animation pattern.
+ */
 public class RobotFaceUtils {
-
+    private static final String TAG = RobotFaceUtils.class.getSimpleName();
 	private static Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
 	/*
 	 *  Redraws the whole face on the canvas.
 	 *  Required when new settings for the eye size and locations are called.
 	 */
-	public static void drawFace(RobotFace robotFace) {
+	public static void drawFace(RobotFace robotFace, State state) {
 		Canvas canvas = null;
 		SurfaceHolder holder = robotFace.getHolder();
 		
@@ -23,8 +29,7 @@ public class RobotFaceUtils {
 				// clear the screen
 				canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
 				setPaint(ScreenConstants.EYE_COLOR, ScreenConstants.FILL_STYLE);
-				RobotEyeUtils.drawEye(canvas, paint, robotFace.getLeftEye(), FacialState.NORMAL);
-				RobotEyeUtils.drawEye(canvas, paint, robotFace.getRightEye(), FacialState.NORMAL);
+                drawEyes(robotFace, canvas, state);
 			}
 		} finally {
 			if (canvas != null) {
@@ -33,8 +38,8 @@ public class RobotFaceUtils {
 		}
 	}
 
-	public static void showAction(RobotFace face, FacialAction facialAction) {
-		switch (facialAction) {
+    public static void showAction(RobotFace face, Action action) {
+		switch (action) {
 			case SMILE: 		showSmile(face);		break;
 			case WINK:			showWink(face);			break;
 			case BLINK: 		showBlink(face);		break;
@@ -47,10 +52,32 @@ public class RobotFaceUtils {
 			case GUILTY:		showGuilty(face);		break;
 			case LOOK_LEFT:		showLookLeft(face);		break;
 			case LOOK_RIGHT:	showLookRight(face);	break;
-			case NBLINK:		showNormalBlink(face);	break;
+			case NBLINK:		showNBlink(face);	break;
 			default:			break;
 		}
 	}
+
+    /* private methods */
+
+    private static void drawEyes(RobotFace robotFace, Canvas canvas, State state) {
+        RobotEyeUtils.drawEye(canvas, paint, robotFace.getLeftEye(), state);
+        RobotEyeUtils.drawEye(canvas, paint, robotFace.getRightEye(), state);
+    }
+
+    private static void moveBothIris(RobotFace face, Canvas canvas, int i, int j) {
+        RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), i, j);
+        RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), i, j);
+    }
+
+    private static void expandBothEyes(RobotFace face, Canvas canvas, float i) {
+        RobotEyeUtils.expandEye(canvas, paint, face.getLeftEye(), i);
+        RobotEyeUtils.expandEye(canvas, paint, face.getRightEye(), i);
+    }
+
+    private static void moveBothUpperLids(RobotFace face, Canvas canvas, int i) {
+        RobotEyeUtils.moveUpperLid(canvas, paint, face.getLeftEye(), i);
+        RobotEyeUtils.moveUpperLid(canvas, paint, face.getRightEye(), i);
+    }
 
 	private static void setPaint(int color, Style style) {
 		paint.setColor(color);
@@ -70,8 +97,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), i, 0);
-					RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), i, 0);
+                    moveBothIris(face, canvas, i, 0);
 				}
 			} finally {
 				if (canvas != null) {
@@ -94,8 +120,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), i, 0);
-					RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), i, 0);
+                    moveBothIris(face, canvas, i, 0);
 				}
 			} finally {
 				if (canvas != null) {
@@ -103,6 +128,8 @@ public class RobotFaceUtils {
 				}
 			}
 		}
+
+        drawFace(face, State.NORMAL);
 	}
 
 	private static void showLookLeft(RobotFace face) {
@@ -118,8 +145,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), -i, 0);
-					RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), -i, 0);
+                    moveBothIris(face, canvas, -i, 0);
 				}
 			} finally {
 				if (canvas != null) {
@@ -142,8 +168,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), -i, 0);
-					RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), -i, 0);
+                    moveBothIris(face, canvas, -i, 0);
 				}
 			} finally {
 				if (canvas != null) {
@@ -151,6 +176,8 @@ public class RobotFaceUtils {
 				}
 			}
 		}
+
+        drawFace(face, State.NORMAL);
 	}
 
 	private static void showGuilty(RobotFace face) {
@@ -166,8 +193,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), 0, -j);
-					RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), 0, -j);
+                    moveBothIris(face, canvas, 0, -j);
 				}
 			} finally {
 				if (canvas != null) {
@@ -184,8 +210,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), i, j);
-					RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), i, j);
+                    moveBothIris(face, canvas, i, j);
 				}
 			} finally {
 				if (canvas != null) {
@@ -209,8 +234,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), i, j);
-					RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), i, j);
+                    moveBothIris(face, canvas, i, j);
 				}
 			} finally {
 				if (canvas != null) {
@@ -226,8 +250,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), 0, -j);
-					RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), 0, -j);
+                    moveBothIris(face, canvas, 0, -j);
 				}
 			} finally {
 				if (canvas != null) {
@@ -236,18 +259,19 @@ public class RobotFaceUtils {
 			}
 		}
 
-		RobotEyeUtils.drawEye(canvas, paint, face.getLeftEye(), FacialState.NORMAL);
-		RobotEyeUtils.drawEye(canvas, paint, face.getRightEye(), FacialState.NORMAL);
+        drawFace(face, State.NORMAL);
+
 		// delay
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		showNormalBlink(face);
+
+		showNBlink(face);
 	}
 
-	private static void showThink(RobotFace face) {
+    private static void showThink(RobotFace face) {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
 
@@ -260,8 +284,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), 0, -j);
-					RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), 0, -j);
+                    moveBothIris(face, canvas, 0, -j);
 				}
 			} finally {
 				if (canvas != null) {
@@ -278,8 +301,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), i, -j);
-					RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), i, -j);
+                    moveBothIris(face, canvas, i, -j);
 				}
 			} finally {
 				if (canvas != null) {
@@ -303,8 +325,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), i, -j);
-					RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), i, -j);
+                    moveBothIris(face, canvas, i, -j);
 				}
 			} finally {
 				if (canvas != null) {
@@ -320,8 +341,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveIris(canvas, paint, face.getLeftEye(), 0, -j);
-					RobotEyeUtils.moveIris(canvas, paint, face.getRightEye(), 0, -j);
+                    moveBothIris(face, canvas, 0, -j);
 				}
 			} finally {
 				if (canvas != null) {
@@ -330,8 +350,7 @@ public class RobotFaceUtils {
 			}
 		}
 
-		RobotEyeUtils.drawEye(canvas, paint, face.getLeftEye(), FacialState.NORMAL);
-		RobotEyeUtils.drawEye(canvas, paint, face.getRightEye(), FacialState.NORMAL);
+        drawFace(face, State.NORMAL);
 		
 		// delay
 		try {
@@ -339,6 +358,7 @@ public class RobotFaceUtils {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+
 		showBlink(face);
 	}
 
@@ -353,8 +373,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.expandEye(canvas, paint, face.getLeftEye(), i);
-					RobotEyeUtils.expandEye(canvas, paint, face.getRightEye(), i);
+                    expandBothEyes(face, canvas, i);
 				}
 			} finally {
 				if (canvas != null) {
@@ -368,8 +387,7 @@ public class RobotFaceUtils {
 			synchronized (holder) {
 				// clear the screen
 				canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-				RobotEyeUtils.expandEye(canvas, paint, face.getLeftEye(), ScreenConstants.DEFAULT_EYE_RADIUS / 8);
-				RobotEyeUtils.expandEye(canvas, paint, face.getRightEye(), ScreenConstants.DEFAULT_EYE_RADIUS / 8);
+				expandBothEyes(face, canvas, ScreenConstants.DEFAULT_EYE_RADIUS / 8);
 			}
 		} finally {
 			if (canvas != null) {
@@ -391,8 +409,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.expandEye(canvas, paint, face.getLeftEye(), i);
-					RobotEyeUtils.expandEye(canvas, paint, face.getRightEye(), i);
+                    expandBothEyes(face, canvas, i);
 				}
 			} finally {
 				if (canvas != null) {
@@ -400,9 +417,11 @@ public class RobotFaceUtils {
 				}
 			}
 		}
+
+        drawFace(face, State.NORMAL);
 	}
 
-	// only used while sleeping (Emotion is SLEEP)
+    // only used while sleeping
 	private static void showWake(RobotFace face) {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
@@ -414,29 +433,27 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.moveUpperLids(canvas, paint, face.getLeftEye(), i);
-					RobotEyeUtils.moveUpperLids(canvas, paint, face.getRightEye(), i); 
+                    moveBothUpperLids(face, canvas, i);
 				}
 			} catch (NullPointerException e) {
-				// TODO:
-				//Log.i(TAG, "Canvas is unavailable.");
+				Log.i(TAG, "Canvas is unavailable.");
 			} finally {
 				if (canvas != null) {
 					holder.unlockCanvasAndPost(canvas);
 				}
 			}
 		}
-		// TODO: draw normal
-		// TODO
-		//showNormalBlink();
+
+        drawFace(face, State.NORMAL);
+        showNBlink(face);
 	}
 
-	// the functions below are only used while normal (Emotion is NORMAL)
+    // the functions below are only used while normal
 	
 	private static void showSleep(RobotFace face) {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
-		
+
 		// closing eyes
 		for (int i = 0; i < ScreenConstants.DEFAULT_EYE_RADIUS * 2; i += 5 ){
 			try {
@@ -444,49 +461,22 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					//TODO
-					//left_eye.moveUpperLidsAndPupil(canvas, i, 0, i/3);
-					//right_eye.moveUpperLidsAndPupil(canvas, i, 0, i/3);
+                    RobotEyeUtils.moveUpperLidsAndIri(canvas, paint, face.getLeftEye(), i, 0, i/3);
+                    RobotEyeUtils.moveUpperLidsAndIri(canvas, paint, face.getRightEye(), i, 0, i/3);
 				}
 			} finally {
 				if (canvas != null) {
 					holder.unlockCanvasAndPost(canvas);
 				}
-			}				   	
+			}
 		}
-		//TODO
-		//this.setEmotion(Emotion.SLEEP);
+
+        drawFace(face, State.SLEEP);
 	}
 
 	private static void showGaze(RobotFace face) {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
-		
-		// for the oval, need to move the eye up by alpha first
-		//TODO
-/*		if (this.eye_shape == EyeShape.OVAL) {
-			for (int i = 0; i <= 20 ; i++) {
-				try {
-					canvas = holder.lockCanvas();
-					synchronized (holder) {
-						canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-						left_eye.changeAngle(canvas, i);
-						right_eye.changeAngle(canvas, -i);
-					}
-				} finally {
-					if (canvas != null) {
-						holder.unlockCanvasAndPost(canvas);
-					}
-				}
-			}
-			
-			// delay
-			try {
-				Thread.sleep(300);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}*/
 			
 		// gazing
 		for (int i = 0; i < ScreenConstants.DEFAULT_EYE_RADIUS * 3/4; i += 4 ){
@@ -495,9 +485,8 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					//TODO
-					//left_eye.moveBothLids(canvas, i);
-					//right_eye.moveBothLids(canvas, i); 
+					RobotEyeUtils.moveBothLids(canvas, paint, face.getLeftEye(), i);
+                    RobotEyeUtils.moveBothLids(canvas, paint, face.getRightEye(), i);
 				}
 			} finally {
 				if (canvas != null) {
@@ -518,9 +507,8 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					//TODO
-					//left_eye.moveBothLids(canvas, i);
-					//right_eye.moveBothLids(canvas, i); 
+                    RobotEyeUtils.moveBothLids(canvas, paint, face.getLeftEye(), i);
+                    RobotEyeUtils.moveBothLids(canvas, paint, face.getRightEye(), i);
 				}
 			} finally {
 				if (canvas != null) {
@@ -528,28 +516,8 @@ public class RobotFaceUtils {
 				}
 			}
 		}
-		
-		// for the oval eye, need to go back to normal from alpha
-		//TODO
-		/*if (this.eye_shape == EyeShape.OVAL) {
-			for (int i = 20; i > 0 ; i--) {
-				try {
-					canvas = holder.lockCanvas();
-					synchronized (holder) {
-						canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-						left_eye.changeAngle(canvas, i);
-						right_eye.changeAngle(canvas, -i);
-					}
-				} finally {
-					if (canvas != null) {
-						holder.unlockCanvasAndPost(canvas);
-					}
-				}
-			}
-		}*/
 
-		RobotEyeUtils.drawEye(canvas, paint, face.getLeftEye(), FacialState.NORMAL);
-		RobotEyeUtils.drawEye(canvas, paint, face.getRightEye(), FacialState.NORMAL);
+        drawFace(face, State.NORMAL);
 	}
 
 	private static void showGiggle(RobotFace face) {
@@ -558,8 +526,9 @@ public class RobotFaceUtils {
 		
 		// giggling
 		for (int i = 0; i < 3; i++){
-			//TODO
-			//this.setEmotion(Emotion.HAPPY);
+
+            drawFace(face, State.HAPPY);
+
 			// delay
 			try {
 				Thread.sleep(200);
@@ -568,10 +537,9 @@ public class RobotFaceUtils {
 			}
 			try {
 				canvas = holder.lockCanvas();
-				synchronized (holder) {	
-					//TODO
-					//left_eye.MoveEyeVertical(canvas, -50);
-					//right_eye.MoveEyeVertical(canvas, -50);
+				synchronized (holder) {
+                    RobotEyeUtils.MoveEyeVertical(canvas, paint, face.getLeftEye(), -50);
+                    RobotEyeUtils.MoveEyeVertical(canvas, paint, face.getRightEye(), -50);
 				}
 			} finally {
 				if (canvas != null) {
@@ -586,23 +554,22 @@ public class RobotFaceUtils {
 				e.printStackTrace();
 			}
 		}
-		
-				RobotEyeUtils.drawEye(canvas, paint, face.getLeftEye(), FacialState.NORMAL);
-		RobotEyeUtils.drawEye(canvas, paint, face.getRightEye(), FacialState.NORMAL);
+
+        drawFace(face, State.NORMAL);
 	}
 
-	private static void showNormalBlink(RobotFace face) {
-		// TODO: uncomment the next 2 lines
-		//showBlink();
-		//showBlink();
+	private static void showNBlink(RobotFace face) {
+		showBlink(face);
+		showBlink(face);
+
 		// delay
 		try {
 			Thread.sleep(600);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		// TODO: uncomment this
-		//showBlink();
+
+		showBlink(face);
 	}
 
 	private static void showBlink(RobotFace face) {
@@ -616,9 +583,7 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					//TODO
-					//left_eye.moveUpperLids(canvas, i);
-					//right_eye.moveUpperLids(canvas, i); 
+                    moveBothUpperLids(face, canvas, i);
 				}
 			} finally {
 				if (canvas != null) {
@@ -626,8 +591,9 @@ public class RobotFaceUtils {
 				}
 			}				   	
 		}
-		//TODO
-		//this.setEmotion(Emotion.SLEEP);
+
+        drawFace(face, State.SLEEP);
+
 		// delay
 		try {
 			Thread.sleep(100);
@@ -641,18 +607,16 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					//TODO
-					//left_eye.moveUpperLids(canvas, i);
-					//right_eye.moveUpperLids(canvas, i); 
+                    moveBothUpperLids(face, canvas, i);
 				}
 			} finally {
 				if (canvas != null) {
 					holder.unlockCanvasAndPost(canvas);
 				}
 			}
-		}			
-				RobotEyeUtils.drawEye(canvas, paint, face.getLeftEye(), FacialState.NORMAL);
-		RobotEyeUtils.drawEye(canvas, paint, face.getRightEye(), FacialState.NORMAL);
+		}
+
+        drawFace(face, State.NORMAL);
 	}
 
 	private static void showWink(RobotFace face) {
@@ -666,8 +630,8 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.drawEye(canvas, paint, face.getLeftEye(), FacialState.NORMAL);
-					RobotEyeUtils.moveUpperLids(canvas, paint, face.getRightEye(), i); 
+					RobotEyeUtils.drawEye(canvas, paint, face.getLeftEye(), State.NORMAL);
+					RobotEyeUtils.moveUpperLid(canvas, paint, face.getRightEye(), i);
 				}
 			} finally {
 				if (canvas != null) {
@@ -675,8 +639,10 @@ public class RobotFaceUtils {
 				}
 			}
 		}
-		//TODO
-		//this.setEmotion(Emotion.WINK);
+
+        RobotEyeUtils.drawEye(canvas, paint, face.getLeftEye(), State.NORMAL);
+        RobotEyeUtils.drawEye(canvas, paint, face.getRightEye(), State.SLEEP);
+
 		// delay
 		try {
 			Thread.sleep(400);
@@ -690,8 +656,8 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-					RobotEyeUtils.drawEye(canvas, paint, face.getLeftEye(), FacialState.NORMAL);
-					RobotEyeUtils.moveUpperLids(canvas, paint, face.getRightEye(), i); 
+					RobotEyeUtils.drawEye(canvas, paint, face.getLeftEye(), State.NORMAL);
+					RobotEyeUtils.moveUpperLid(canvas, paint, face.getRightEye(), i);
 				}
 			} finally {
 				if (canvas != null) {
@@ -699,13 +665,12 @@ public class RobotFaceUtils {
 				}
 			}
 		}
-		RobotEyeUtils.drawEye(canvas, paint, face.getLeftEye(), FacialState.NORMAL);
-		RobotEyeUtils.drawEye(canvas, paint, face.getRightEye(), FacialState.NORMAL);
+
+        drawFace(face, State.NORMAL);
 	}
 
 	private static void showSmile(RobotFace face) {
-		//TODO
-		//this.setEmotion(Emotion.HAPPY);
+        drawFace(face, State.HAPPY);
 	
 		// delay
 		try {
@@ -714,9 +679,7 @@ public class RobotFaceUtils {
 			e.printStackTrace();
 		}
 
-		//TODO
-		//RobotEyeUtils.drawEye(canvas, paint, face.getLeftEye(), FacialState.NORMAL);
-		//RobotEyeUtils.drawEye(canvas, paint, face.getRightEye(), FacialState.NORMAL);
+        drawFace(face, State.NORMAL);
 	}
 
 }

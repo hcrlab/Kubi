@@ -1,10 +1,9 @@
-package uw.hcrlab.kubi;
+package trash;
 
 import java.util.Random;
 
-import uw.hcrlab.kubi.screen.OldRobotFace;
-import uw.hcrlab.kubi.screen.OldRobotFace.Action;
-import uw.hcrlab.kubi.screen.OldRobotFace.Emotion;
+import trash.OldRobotFace.Action;
+import trash.OldRobotFace.Emotion;
 import android.util.Log;
 
 import com.revolverobotics.kubiapi.Kubi;

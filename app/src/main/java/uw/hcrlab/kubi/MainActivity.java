@@ -1,7 +1,6 @@
 package uw.hcrlab.kubi;
 
 import android.os.Bundle;
-import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +17,8 @@ import java.util.Map;
 import sandra.libs.asr.asrlib.ASR;
 import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
-import uw.hcrlab.kubi.screen.OldRobotFace;
+import trash.KubiCallback;
+import trash.OldRobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
 
 
@@ -55,8 +55,6 @@ public class MainActivity extends ASR {
         Log.i(TAG, "Creating Main Activity ...");
         super.onCreate(savedInstanceState);
         setup();
-
-
     }
 
     /*

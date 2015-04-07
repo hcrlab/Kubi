@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi;
+package trash;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,8 +9,8 @@ import java.util.Observer;
 import sandra.libs.asr.asrlib.ASR;
 import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
-import uw.hcrlab.kubi.screen.OldRobotFace;
-import uw.hcrlab.kubi.screen.OldRobotFace.Action;
+import trash.OldRobotFace.Action;
+import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubidemo.dialogs.KubiGestureDialog;
 import android.app.DialogFragment;
 import android.content.Context;
