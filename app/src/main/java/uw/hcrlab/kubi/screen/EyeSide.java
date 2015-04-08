@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi.view;
+package uw.hcrlab.kubi.screen;
 
 public enum EyeSide {
 	LEFT,

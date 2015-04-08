@@ -1,108 +1,122 @@
 package uw.hcrlab.kubi;
 
-import java.util.Random;
-
-import uw.hcrlab.kubi.view.OldRobotFace;
-import uw.hcrlab.kubi.view.OldRobotFace.Action;
-import uw.hcrlab.kubi.view.OldRobotFace.Emotion;
 import android.util.Log;
 
 import com.revolverobotics.kubiapi.Kubi;
 import com.revolverobotics.kubiapi.KubiManager;
 
+import java.util.Random;
+
+import trash.OldRobotFace;
+
 /**
- * The Main thread which contains the main loop */
+ * Created by kimyen on 4/5/15.
+ */
 public class MainThread extends Thread {
-	// the different between real time and calculated time to perform an action
-	private final long EPSILON = 100;
+    /* injected from MainActivity */
+    private final OldRobotFace robotFace;
+    private final KubiManager kubiManager;
+    private final MainActivity activity;
 
-	// sleep after 11 mins
-	private final long SLEEP_TIME = 11 * 60 * 1000;
-	// blink after 5 seconds
-	private final long BLINK_TIME = 5 * 1000;
-	// look around every 3 mins
-	private long BORING_TIME = 3 * 60 * 1000;
+    /* Class variables */
+    private static final String TAG = MainThread.class.getSimpleName();
+    private boolean isRunning;
 
-	private long nextSleepTime;
-	private long nextBlinkTime;
-	private long nextBoringTime;
-	private Random random;
+    /* Idle behavior periods */
 
-	private static final String TAG = MainThread.class.getSimpleName();
-	private OldRobotFace robotFace;
-	private KubiManager kubiManager;
-	private OldKubiDemoActivity activity;
-	
-	// flag to hold state 
-	private boolean running;
+    // the different between real time and calculated time to perform an action
+    private final long EPSILON = 100;
+    // sleep after 11 minutes
+    private final long SLEEP_TIME = 11 * 60 * 1000;
+    // blink after 5 seconds
+    private final long BLINK_TIME = 5 * 1000;
+    // look around every 3 minutes
+    private long BORING_TIME = 3 * 60 * 1000;
 
+    private Random random = new Random();
 
-	public MainThread(OldRobotFace robotFace, KubiManager kubiManager, OldKubiDemoActivity activity) {
-		super();
-		this.robotFace = robotFace;
-		this.kubiManager = kubiManager;
-		this.activity = activity;
-		this.running = true;
-		random = new Random();
-		nextSleepTime = System.currentTimeMillis() + SLEEP_TIME + random.nextInt(10) * 60 * 1000;
-		nextBlinkTime = System.currentTimeMillis() + BLINK_TIME + random.nextInt(10) * 1000;
-		nextBoringTime = System.currentTimeMillis() + BORING_TIME + random.nextInt(60) * 1000;
-	}
-	
-	@Override
-	public void run() {
-		Log.d(TAG, "Starting the main loop");
+    private long nextSleepTime;
+    private long nextBlinkTime;
+    private long nextBoringTime;
 
-		robotFace.showAction(Action.WAKE);
-		robotFace.setEmotion(Emotion.NORMAL);
-		
-		while (running) {
-			try {
-				synchronized (robotFace) {
-					if (Math.abs(System.currentTimeMillis() - nextSleepTime) < EPSILON && !activity.isSleep()) {
-						Log.i(TAG, "Sleep at " + System.currentTimeMillis());
-						robotFace.showAction(Action.SLEEP);
-						activity.setSleep(true);
-						kubiFaceDown();
-						nextSleepTime = 0;
-						running = false;
-					}
-					
-					if (Math.abs(System.currentTimeMillis() - nextBlinkTime) < EPSILON && !activity.isSleep())  {
-						Log.i(TAG, "Blink at " + System.currentTimeMillis());
-						robotFace.showAction(Action.BLINK);
-						nextBlinkTime = System.currentTimeMillis() + BLINK_TIME + random.nextInt(10) * 1000;
-					}
-					if (Math.abs(System.currentTimeMillis() - nextBoringTime) < EPSILON && !activity.isSleep()) {
-						Log.i(TAG, "Look around at " + System.currentTimeMillis());
-						kubiLookAround();
-						nextBoringTime = System.currentTimeMillis() + BORING_TIME + random.nextInt(60) * 1000;
-					}
-				}
+    public MainThread(OldRobotFace robotFace, KubiManager kubiManager, MainActivity activity) {
+        super();
+        Log.i(TAG, "Initializing MainThread ...");
+        this.robotFace = robotFace;
+        this.kubiManager = kubiManager;
+        this.activity = activity;
+        this.isRunning = true;
+        nextSleepTime = getNextSleepTime();
+        nextBlinkTime = getNextBlinkTime();
+        nextBoringTime = getNextBoringTime();
+    }
 
-			} catch (Exception e) {}
-		}
-	}
-	
-	private void kubiLookAround() {
-		try {
-			kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM);
-		} catch (Throwable e) {}
-	}
+    @Override
+    public void run() {
+        Log.d(TAG, "Starting the main loop");
 
-	public void setRunning(boolean running) {
-		this.running = running;
-		if (!running) {
-			activity.setSleep(true);
-			robotFace.showAction(Action.SLEEP);
-			robotFace.setEmotion(Emotion.SLEEP);
-			kubiFaceDown();
-		}
-	}
+        robotFace.showAction(OldRobotFace.Action.WAKE);
+        robotFace.setEmotion(OldRobotFace.Emotion.NORMAL);
 
-	private void kubiFaceDown() {
-		try {
-			kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN);
-		} catch (Throwable e) {}
-	}
+        while (isRunning) {
+            try {
+                synchronized (robotFace) {
+                    if (Math.abs(System.currentTimeMillis() - nextSleepTime) < EPSILON) {
+                        Log.i(TAG, "Sleep at " + System.currentTimeMillis());
+                        robotFace.showAction(OldRobotFace.Action.SLEEP);
+                        kubiFaceDown();
+                        nextSleepTime = 0;
+                        isRunning = false;
+                    }
+
+                    if (Math.abs(System.currentTimeMillis() - nextBlinkTime) < EPSILON)  {
+                        Log.i(TAG, "Blink at " + System.currentTimeMillis());
+                        robotFace.showAction(OldRobotFace.Action.BLINK);
+                        nextBlinkTime = getNextBlinkTime();
+                    }
+                    if (Math.abs(System.currentTimeMillis() - nextBoringTime) < EPSILON) {
+                        Log.i(TAG, "Look around at " + System.currentTimeMillis());
+                        kubiLookAround();
+                        nextBoringTime = getNextBoringTime();
+                    }
+                }
+
+            } catch (Exception e) {}
+        }
+    }
+
+    private void kubiLookAround() {
+        try {
+            kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM);
+        } catch (Throwable e) {}
+    }
+
+    public void setRunning(boolean running) {
+        this.isRunning = running;
+        if (!running) {
+            robotFace.showAction(OldRobotFace.Action.SLEEP);
+            robotFace.setEmotion(OldRobotFace.Emotion.SLEEP);
+            kubiFaceDown();
+        }
+    }
+
+    private void kubiFaceDown() {
+        try {
+            kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN);
+        } catch (Throwable e) {
+            Log.e(TAG, "Cannot show gesture : GESTURE_FACE_DOWN");
+        }
+    }
+
+    private long getNextSleepTime() {
+        return System.currentTimeMillis() + SLEEP_TIME + random.nextInt(10) * 60 * 1000;
+    }
+
+    private long getNextBlinkTime() {
+        return System.currentTimeMillis() + BLINK_TIME + random.nextInt(10) * 1000;
+    }
+
+    private long getNextBoringTime() {
+        return System.currentTimeMillis() + BORING_TIME + random.nextInt(60) * 1000;
+    }
 }

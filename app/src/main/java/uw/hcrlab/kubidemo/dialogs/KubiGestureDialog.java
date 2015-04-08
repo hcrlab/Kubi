@@ -1,7 +1,7 @@
 package uw.hcrlab.kubidemo.dialogs;
 
 import uw.hcrlab.kubi.R;
-import uw.hcrlab.kubi.OldKubiDemoActivity;
+import trash.OldKubiDemoActivity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;

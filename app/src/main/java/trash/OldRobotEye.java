@@ -1,8 +1,5 @@
-package uw.hcrlab.kubi.view;
+package trash;
 
-import uw.hcrlab.kubi.view.OldRobotFace.Emotion;
-import uw.hcrlab.kubi.view.OldRobotFace.EyeShape;
-import uw.hcrlab.kubi.view.OldRobotFace.Eye_ID;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -35,28 +32,28 @@ public class OldRobotEye {
 	private float inner_radius;
 	
 	// keeping track of the eye_shape and emotion
-	private EyeShape eye_shape;
-	private Emotion emotion;
+	private OldRobotFace.EyeShape eye_shape;
+	private OldRobotFace.Emotion emotion;
 	
 	// either left or right eye (for now)
-	private Eye_ID side;
+	private OldRobotFace.Eye_ID side;
 	// the degrees in which the eye will rotate for some emotions
 	private float alpha;
 	
-	public OldRobotEye(float r, Eye_ID side) {
+	public OldRobotEye(float r, OldRobotFace.Eye_ID side) {
 		this(0, 0, r, side);
 	}
 	
-	public OldRobotEye(float center_x, float center_y, float radius, Eye_ID side){
+	public OldRobotEye(float center_x, float center_y, float radius, OldRobotFace.Eye_ID side){
 		this.x = center_x;
 		this.y = center_y;
 		this.outer_radius = radius;
 		this.inner_radius = radius * 2.5f /6 ;
 		this.side = side;
-		this.eye_shape = EyeShape.CIRCLE;
-		this.emotion = Emotion.NORMAL;
+		this.eye_shape = OldRobotFace.EyeShape.CIRCLE;
+		this.emotion = OldRobotFace.Emotion.NORMAL;
 		this.alpha = 20;
-		if (this.side == Eye_ID.RIGHT) { alpha = - alpha; }
+		if (this.side == OldRobotFace.Eye_ID.RIGHT) { alpha = - alpha; }
 		this.paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	}
 	
@@ -70,16 +67,16 @@ public class OldRobotEye {
 	
 	// these setter automatically redraw the eye
 	// but the call to redraw happens in RobotFace
-	public void setEyeShape (EyeShape eye_shape) 	{this.eye_shape = eye_shape;}
-	public void setEmotion(Emotion state) 			{this.emotion = state;}
+	public void setEyeShape (OldRobotFace.EyeShape eye_shape) 	{this.eye_shape = eye_shape;}
+	public void setEmotion(OldRobotFace.Emotion state) 			{this.emotion = state;}
 		
 	/* Getters */
 	public float getX() 			{ return this.x; }
 	public float getY() 			{ return this.y; }
 	public float getOuterRadius() 	{return this.outer_radius; }
 	public float getInnerRadius() 	{return this.inner_radius; }
-	public EyeShape getEyeShape() 	{return this.eye_shape; }
-	public Emotion getEmotion() 	{return this.emotion; }
+	public OldRobotFace.EyeShape getEyeShape() 	{return this.eye_shape; }
+	public OldRobotFace.Emotion getEmotion() 	{return this.emotion; }
 	
 	/* Draw an outer shape with emotion state */
 	private void drawOuter(Canvas canvas) {
@@ -101,20 +98,20 @@ public class OldRobotEye {
 	
 	private void drawRollingOuter(Canvas canvas) {
 		RectF rect;
-		if (this.eye_shape == EyeShape.CIRCLE) {
+		if (this.eye_shape == OldRobotFace.EyeShape.CIRCLE) {
 			drawFlexShape(canvas, new PointF(this.x, this.y - 1f/16 * this.outer_radius),
 					this.outer_radius, 1f/8 * this.outer_radius,  
-					Paint.Style.FILL, Color.WHITE, EyeShape.RECTANGLE);
+					Paint.Style.FILL, Color.WHITE, OldRobotFace.EyeShape.RECTANGLE);
 			rect = createRect(this.x + 1f/2 * this.outer_radius, this.y,
 								1f/2 * this.outer_radius, 1f/2 * this.outer_radius);
 		} else {
 			drawFlexShape(canvas, new PointF(this.x, this.y - 1f/16 * this.outer_radius),
 					3f/2 * this.outer_radius, 1f/8 * this.outer_radius,  
-					Paint.Style.FILL, Color.WHITE, EyeShape.RECTANGLE);
+					Paint.Style.FILL, Color.WHITE, OldRobotFace.EyeShape.RECTANGLE);
 			rect = createRect(this.x + 3f/4 * this.outer_radius, this.y,
 					3f/4 * this.outer_radius, 1f/2 * this.outer_radius);
 		}
-		if (this.eye_shape == EyeShape.RECTANGLE) {
+		if (this.eye_shape == OldRobotFace.EyeShape.RECTANGLE) {
 			rect = createRect(this.x + 3f/4 * this.outer_radius, this.y + 1f/4 * this.outer_radius,
 					3f/4 * this.outer_radius, 1f/4 * this.outer_radius);
 			canvas.drawRect(rect, paint);
@@ -124,7 +121,7 @@ public class OldRobotEye {
 	}
 
 	private void drawWinkOuter(Canvas canvas) {
-		if (this.side == Eye_ID.LEFT) {
+		if (this.side == OldRobotFace.Eye_ID.LEFT) {
 			drawNormalOuter(canvas);
 		} else {
 			drawSleepOuter(canvas);
@@ -148,10 +145,10 @@ public class OldRobotEye {
 	private void drawAngryOuter(Canvas canvas) {
 		canvas.save();
 		canvas.rotate(this.alpha, this.x, this.y);
-		if (this.eye_shape == EyeShape.CIRCLE) {
+		if (this.eye_shape == OldRobotFace.EyeShape.CIRCLE) {
 			drawFlexShape(canvas, new PointF(this.x, this.y),
 					this.outer_radius, 1f/4 * this.outer_radius,  
-					Paint.Style.FILL, Color.WHITE, EyeShape.OVAL);
+					Paint.Style.FILL, Color.WHITE, OldRobotFace.EyeShape.OVAL);
 		} else {
 			drawFlexShape(canvas, new PointF(this.x, this.y),
 					3f/2 * this.outer_radius, 1f/4 * this.outer_radius,  
@@ -168,13 +165,13 @@ public class OldRobotEye {
 	}
 
 	private void drawHappyOuter(Canvas canvas) {
-		if (this.eye_shape == EyeShape.RECTANGLE) {
+		if (this.eye_shape == OldRobotFace.EyeShape.RECTANGLE) {
 			drawFlexShape(canvas, new PointF(this.x, this.y - 2f/3 * this.outer_radius),
 					3f/2 * this.outer_radius, 1f/3 * this.outer_radius,  
-					Paint.Style.FILL, Color.WHITE, EyeShape.RECTANGLE);
+					Paint.Style.FILL, Color.WHITE, OldRobotFace.EyeShape.RECTANGLE);
 			drawShape(canvas, new PointF(this.x, this.y + 1f/4 * this.outer_radius), 
 					this.outer_radius, Paint.Style.FILL, OldRobotFace.BACKGROUND_COLOR,
-					EyeShape.OVAL);
+					OldRobotFace.EyeShape.OVAL);
 			
 		} else {
 			drawNormalOuter(canvas);
@@ -190,13 +187,13 @@ public class OldRobotEye {
 	}
 
 	private void drawIdleOuter(Canvas canvas) {
-		if (this.eye_shape == EyeShape.RECTANGLE) {
+		if (this.eye_shape == OldRobotFace.EyeShape.RECTANGLE) {
 			drawFlexShape(canvas, new PointF(this.x, this.y + 2f/3 * this.outer_radius),
 					3f/2 * this.outer_radius, 1f/3 * this.outer_radius, 
-					Paint.Style.FILL, Color.WHITE, EyeShape.RECTANGLE);
+					Paint.Style.FILL, Color.WHITE, OldRobotFace.EyeShape.RECTANGLE);
 			drawShape(canvas, new PointF(this.x, this.y - 1f/4 * this.outer_radius), 
 					this.outer_radius, Paint.Style.FILL, OldRobotFace.BACKGROUND_COLOR,
-					EyeShape.OVAL);
+					OldRobotFace.EyeShape.OVAL);
 			
 		} else {
 			drawNormalOuter(canvas);
@@ -212,12 +209,12 @@ public class OldRobotEye {
 				Paint.Style.STROKE, Color.WHITE, this.eye_shape);
 		drawFlexShape(canvas, new PointF(this.x, this.y - 1f/3 * this.outer_radius), 
 				(3f/2 * this.outer_radius) + 2, (2f/3 * this.outer_radius) + 2,  
-				Paint.Style.FILL, OldRobotFace.BACKGROUND_COLOR, EyeShape.RECTANGLE);
+				Paint.Style.FILL, OldRobotFace.BACKGROUND_COLOR, OldRobotFace.EyeShape.RECTANGLE);
 		
 	}
 
 	private void drawSadOuter (Canvas canvas) {
-		if (this.side == Eye_ID.LEFT) {
+		if (this.side == OldRobotFace.Eye_ID.LEFT) {
 			drawOneSideSadOuter(canvas, -1);
 		} else
 			drawOneSideSadOuter(canvas, 1);
@@ -227,22 +224,22 @@ public class OldRobotEye {
 		drawNormalOuter(canvas);
 		drawFlexShape(canvas, new PointF(this.x, this.y - 1f/2 * this.outer_radius), 
 				 (3f/2 * this.outer_radius) + 2, (1f/2 * this.outer_radius) + 2,
-				Paint.Style.FILL, OldRobotFace.BACKGROUND_COLOR, EyeShape.RECTANGLE);
+				Paint.Style.FILL, OldRobotFace.BACKGROUND_COLOR, OldRobotFace.EyeShape.RECTANGLE);
 	}
 
 	private void drawOneSideSadOuter(Canvas canvas, float side) {
 		drawBottomHalf(canvas);
 		float a = 3f/2 * this.outer_radius;
 		float b = 1f/4 * this.outer_radius;
-		if (this.eye_shape == EyeShape.CIRCLE) {
+		if (this.eye_shape == OldRobotFace.EyeShape.CIRCLE) {
 			a = this.outer_radius;
 		} 
 		// draw top middle
 		drawFlexShape(canvas, new PointF(this.x, this.y), a, b,
-				Paint.Style.FILL, OldRobotFace.BACKGROUND_COLOR, EyeShape.OVAL);
+				Paint.Style.FILL, OldRobotFace.BACKGROUND_COLOR, OldRobotFace.EyeShape.OVAL);
 		// erase top side
 		drawFlexShape(canvas, new PointF(this.x + 1f/2 * a * side, this.y + b), 1f/2 * a, b, 
-				Paint.Style.FILL, OldRobotFace.BACKGROUND_COLOR, EyeShape.RECTANGLE);
+				Paint.Style.FILL, OldRobotFace.BACKGROUND_COLOR, OldRobotFace.EyeShape.RECTANGLE);
 		// draw top side
 		RectF rect = createRect(this.x, this.y + 2 * b, a, b);
 		paint.setStyle(Paint.Style.FILL);
@@ -264,19 +261,19 @@ public class OldRobotEye {
 	 * @param shape - the eye_shape
 	 */
 	private void drawShape(Canvas canvas, PointF p, float radius, 
-			Style style, int color, EyeShape shape) {
+			Style style, int color, OldRobotFace.EyeShape shape) {
 		drawFlexShape(canvas, p, 3f/2 * radius, radius, style, color, shape);
 	}
 
 	private void drawFlexShape(Canvas canvas, PointF p, float a, float b,
-			Style style, int color, EyeShape shape) {
+			Style style, int color, OldRobotFace.EyeShape shape) {
 		paint.setStyle(style);
 		paint.setColor(color);
-		if (shape == EyeShape.CIRCLE) 
+		if (shape == OldRobotFace.EyeShape.CIRCLE)
 			canvas.drawCircle(p.x, p.y, b, paint);
 		else {
 			RectF rect = createRect(p.x, p.y, a, b);
-			if (shape == EyeShape.OVAL)
+			if (shape == OldRobotFace.EyeShape.OVAL)
 				canvas.drawOval(rect, paint);
 			else
 				canvas.drawRect(rect, paint);
@@ -383,7 +380,7 @@ public class OldRobotEye {
 		float a = this.outer_radius;
 		// the vertical radius
 		float b = a;
-		if (this.eye_shape == EyeShape.OVAL) {
+		if (this.eye_shape == OldRobotFace.EyeShape.OVAL) {
 			a = 3f/2 * a;
 		}
 		
@@ -408,7 +405,7 @@ public class OldRobotEye {
 		float a = this.outer_radius;
 		// the vertical radius
 		float b = a;
-		if (this.eye_shape == EyeShape.OVAL) {
+		if (this.eye_shape == OldRobotFace.EyeShape.OVAL) {
 			a = 3f/2 * a;
 		}
 
@@ -433,7 +430,7 @@ public class OldRobotEye {
 		float a = this.outer_radius;
 		// the vertical radius
 		float b = a;
-		if (this.eye_shape == EyeShape.OVAL) {
+		if (this.eye_shape == OldRobotFace.EyeShape.OVAL) {
 			a = 3f/2 * a;
 		}
 
@@ -490,7 +487,7 @@ public class OldRobotEye {
 		float a = this.outer_radius;
 		// the vertical radius
 		float b = a;
-		if (this.eye_shape == EyeShape.OVAL) {
+		if (this.eye_shape == OldRobotFace.EyeShape.OVAL) {
 			a = 3f/2 * a;
 		}
 

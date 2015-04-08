@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi.view;
+package trash;
 
 import java.util.ArrayList;
 import java.util.Observer;
