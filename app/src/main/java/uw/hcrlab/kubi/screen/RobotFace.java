@@ -63,7 +63,7 @@ public class RobotFace extends SurfaceView implements SurfaceHolder.Callback {
 		leftEye = new RobotEye(leftEyeCoordinate, ScreenConstants.DEFAULT_EYE_RADIUS, EyeSide.LEFT);
 		rightEye = new RobotEye(rightEyeCoordinate, ScreenConstants.DEFAULT_EYE_RADIUS, EyeSide.RIGHT);
 
-		RobotFaceUtils.drawFace(this);
+		RobotFaceUtils.drawFace(this, State.NORMAL);
 	}
 
 	@Override
