@@ -39,13 +39,14 @@ public class Robot implements IKubiManagerDelegate, Observer {
         if (robotInstance == null) {
             robotInstance = new Robot(context, attrs);
         } else {
-            robotInstance.setContext(context);
+            robotInstance.setContext(context, attrs);
         }
         return robotInstance;
     }
 
-    public void setContext(Context context) {
+    public void setContext(Context context, AttributeSet attrs) {
         tts = TTS.getInstance(context);
+        robotInstance = new Robot(context, attrs);
     }
 
     /* IKubiManagerDelegate methods */
