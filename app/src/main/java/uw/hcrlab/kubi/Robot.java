@@ -1,7 +1,6 @@
 package uw.hcrlab.kubi;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,11 +11,8 @@ import com.revolverobotics.kubiapi.KubiManager;
 import com.revolverobotics.kubiapi.KubiSearchResult;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
 import sandra.libs.tts.TTS;
-import trash.KubiCallback;
 import uw.hcrlab.kubi.screen.RobotFace;
 
 /**
@@ -26,17 +22,17 @@ public class Robot implements IKubiManagerDelegate {
     public static String TAG = Robot.class.getSimpleName();
 
     private static Robot robotInstance = null;
+
+    private RobotThread thread;
     private RobotFace robotFace;
     private KubiManager kubiManager;
-    private TTS tts;
 
-    private MainThread thread;
+    private TTS tts;
 
     /**
      *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
      *  are updated when getInstance() is called.
      */
-
     private Robot(RobotFace face, Context context){
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
@@ -71,7 +67,8 @@ public class Robot implements IKubiManagerDelegate {
     }
 
     /**
-     * Handles the setup actions which must occur every time a new face is passed in
+     * Handles the setup actions which must occur every time a new face is passed in.
+     *
      * @param face The RobotFace view for the current Activity
      * @param context The current activity
      */
@@ -80,9 +77,12 @@ public class Robot implements IKubiManagerDelegate {
         robotFace.setOnTouchListener(faceListener);
 
         tts = TTS.getInstance(context);
-        thread = new MainThread(robotFace, kubiManager);
+        thread = new RobotThread(robotFace, kubiManager);
     }
 
+    /**
+     * Starts the robot by starting the RobotThread if it has not already been started.
+     */
     public void start() {
         if (thread.isAlive()) {
             Log.i(TAG, "Robot already started ...");
@@ -92,6 +92,9 @@ public class Robot implements IKubiManagerDelegate {
         thread.start();
     }
 
+    /**
+     * Stops the RobotThread
+     */
     public void shutdown() {
         Log.i(TAG, "Shutting down Main Thread ...");
 
@@ -105,6 +108,11 @@ public class Robot implements IKubiManagerDelegate {
         }
     }
 
+    /**
+     * Generates text-to-speech for the provided message.
+     *
+     * @param msg Message to speak
+     */
     public void say(String msg) {
         try {
             tts.speak(msg, "EN");
@@ -150,6 +158,9 @@ public class Robot implements IKubiManagerDelegate {
         }
     }
 
+    /**
+     * Touch listener for the RobotFace
+     */
     private View.OnTouchListener faceListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {

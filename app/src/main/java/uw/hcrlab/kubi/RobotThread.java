@@ -7,7 +7,6 @@ import com.revolverobotics.kubiapi.KubiManager;
 
 import java.util.Random;
 
-import trash.OldRobotFace;
 import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.screen.RobotFaceUtils;
 import uw.hcrlab.kubi.screen.Action;
@@ -15,13 +14,13 @@ import uw.hcrlab.kubi.screen.Action;
 /**
  * Created by kimyen on 4/5/15.
  */
-public class MainThread extends Thread {
+public class RobotThread extends Thread {
     /* injected from MainActivity */
     private final RobotFace robotFace;
     private final KubiManager kubiManager;
 
     /* Class variables */
-    private static final String TAG = MainThread.class.getSimpleName();
+    private static final String TAG = RobotThread.class.getSimpleName();
     private boolean isRunning;
 
     /* Idle behavior periods */
@@ -41,12 +40,14 @@ public class MainThread extends Thread {
     private long nextBlinkTime;
     private long nextBoringTime;
 
-    public MainThread(RobotFace robotFace, KubiManager kubiManager) {
+    public RobotThread(RobotFace robotFace, KubiManager kubiManager) {
         super();
-        Log.i(TAG, "Initializing MainThread ...");
+        Log.i(TAG, "Initializing RobotThread ...");
+
         this.robotFace = robotFace;
         this.kubiManager = kubiManager;
         this.isRunning = true;
+
         nextSleepTime = getNextSleepTime();
         nextBlinkTime = getNextBlinkTime();
         nextBoringTime = getNextBoringTime();
