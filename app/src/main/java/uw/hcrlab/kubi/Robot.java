@@ -13,6 +13,7 @@ import com.revolverobotics.kubiapi.KubiSearchResult;
 import java.util.ArrayList;
 
 import sandra.libs.tts.TTS;
+import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.screen.RobotFace;
 
 /**
@@ -27,7 +28,8 @@ public class Robot implements IKubiManagerDelegate {
     private RobotFace robotFace;
     private KubiManager kubiManager;
 
-    private TTS tts;
+    //TODO: only public temporarily
+    public TTS tts;
 
     /**
      *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
@@ -77,6 +79,10 @@ public class Robot implements IKubiManagerDelegate {
         robotFace.setOnTouchListener(faceListener);
 
         tts = TTS.getInstance(context);
+
+        //TODO: Move the pandora bot over here
+        //bot = new Bot(this, PANDORA_BOT_ID, this.tts);
+
         thread = new RobotThread(robotFace, kubiManager);
     }
 

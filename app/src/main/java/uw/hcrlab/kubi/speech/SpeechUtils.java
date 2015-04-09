@@ -1,13 +1,38 @@
 package uw.hcrlab.kubi.speech;
 
+import android.content.res.Resources;
 import android.speech.SpeechRecognizer;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import uw.hcrlab.kubi.App;
+import uw.hcrlab.kubi.R;
 
 /**
  * Created by kimyen on 4/5/15.
  */
 public class SpeechUtils {
+
+    // Map containing key = simple questions and value = how the robot responds
+    private static Map<String, String> simpleResponses = new HashMap<String, String>();
+
+    static {
+        /*
+         Parse the simple questions and responses that the robot is able to perform.
+         These responses are defined under res/values/arrays.xml
+          */
+        Resources res = App.getContext().getResources();
+        String[] stringArray = res.getStringArray(R.array.promptsAndResponses);
+
+        for (String entry : stringArray) {
+            String[] splitResult = entry.split("\\|", 2);
+            simpleResponses.put(splitResult[0], splitResult[1]);
+        }
+    }
+
     public static String getResponse(String speechInput) {
-        return null;
+        return simpleResponses.get(speechInput);
     }
 
     public static String getErrorMessage(int errorCode) {

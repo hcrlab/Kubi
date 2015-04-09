@@ -35,10 +35,6 @@ public class MainActivity extends ASR {
     private String PANDORA_BOT_ID = "b9581e5f6e343f72";
     private Bot bot;
 
-    // Map containing key = simple questions and value = how the robot responds
-    private Map<String, String> simpleResponses;
-
-
     /* Activity's methods */
 
     /*
@@ -184,10 +180,9 @@ public class MainActivity extends ASR {
     public void processAsrResults(ArrayList<String> nBestList, float[] nBestConfidences) {
         String speechInput = nBestList.get(0);
         Log.i(TAG, "Speech input: " + speechInput);
+
         String response = SpeechUtils.getResponse(speechInput);
-        if (response == null) {
-            response = simpleResponses.get(speechInput);
-        }
+
         try {
             if(response != null){
                 Log.i(TAG, "Saying : " + response);
@@ -197,7 +192,7 @@ public class MainActivity extends ASR {
                 bot.initiateQuery(response);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Could not response to sppech input: " + speechInput);
+            Log.e(TAG, "Could not response to speech input: " + speechInput);
             e.printStackTrace();
         }
     }
@@ -229,24 +224,13 @@ public class MainActivity extends ASR {
         setContentView(R.layout.activity_main);
         robot = Robot.getInstance((RobotFace)findViewById(R.id.face), this);
 
-        // TODO: old stuff below here needs to be updated
+        // TODO: Move the ASR stuff to a service
 
         /* initialize speech recognizer */
         createRecognizer(getApplicationContext());
 
-        /*
-         Parse the simple questions and responses that the robot is able to perform.
-         These responses are defined under res/values/arrays.xml
-          */
-        this.simpleResponses = new HashMap<String, String>();
-        String[] stringArray = getResources().getStringArray(R.array.promptsAndResponses);
-        for (String entry : stringArray) {
-            String[] splitResult = entry.split("\\|", 2);
-            simpleResponses.put(splitResult[0], splitResult[1]);
-        }
-
         /* A chat bot web service that the user can optionally use to answer responses */
-        //TODO: When is the chatbot ever used?
-        //bot = new Bot(this, PANDORA_BOT_ID, this.tts);
+        //TODO: Move the chat bot over to Robot
+        bot = new Bot(this, PANDORA_BOT_ID, robot.tts);
     }
 }
