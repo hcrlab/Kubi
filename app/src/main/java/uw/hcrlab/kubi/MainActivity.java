@@ -18,7 +18,7 @@ import sandra.libs.asr.asrlib.ASR;
 import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
 import trash.KubiCallback;
-import trash.OldRobotFace;
+import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
 
 
@@ -26,18 +26,15 @@ public class MainActivity extends ASR {
     private String TAG = MainActivity.class.getSimpleName();
 
     /* Activity's Properties */
-
-    private MainThread mainThread;
-    private OldRobotFace robotFace;
-    private KubiManager kubiManager;
+    private Robot robot;
 
     /* ASR's Properties */
 
     // The ID of the bot to use for the chatbot, can be changed
     // you can also make a new bot by creating an account in pandorabots.com and making a new chatbot robot
     private String PANDORA_BOT_ID = "b9581e5f6e343f72";
-    private TTS tts;
     private Bot bot;
+
     // Map containing key = simple questions and value = how the robot responds
     private Map<String, String> simpleResponses;
 
@@ -92,7 +89,7 @@ public class MainActivity extends ASR {
         super.onResume();
         //TODO: implement this
         /* get the information that has been saved from onPause() */
-        restartMainThread();
+        robot.start();
     }
 
     /*
@@ -109,8 +106,7 @@ public class MainActivity extends ASR {
         //TODO: implement this
         /* saving ... */
 
-        /* destroying MainThread */
-        destroyMainThread();
+        robot.shutdown();
     }
 
     /*
@@ -126,9 +122,6 @@ public class MainActivity extends ASR {
         super.onStop();
         //TODO: implement this
         /* saving ... */
-
-        /* destroying MainThread */
-        destroyMainThread();
     }
 
     /*
@@ -143,10 +136,6 @@ public class MainActivity extends ASR {
         super.onDestroy();
         //TODO: implement this
         /* saving ... */
-
-        /* destroying MainThread */
-        destroyMainThread();
-        tts.shutdown();
     }
 
     /* Setting up the Menu */
@@ -202,7 +191,7 @@ public class MainActivity extends ASR {
         try {
             if(response != null){
                 Log.i(TAG, "Saying : " + response);
-                tts.speak(response, "EN");
+                robot.say(response);
             }  else {
                 Log.i(TAG, "Default response");
                 bot.initiateQuery(response);
@@ -222,12 +211,9 @@ public class MainActivity extends ASR {
     @Override
     public void processAsrError(int errorCode) {
         String errorMessage = SpeechUtils.getErrorMessage(errorCode);
-        try {
-            if (errorMessage != null) {
-                tts.speak(errorMessage,"EN");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "English not available for TTS, default language used instead");
+
+        if (errorMessage != null) {
+            robot.say(errorMessage);
         }
 
         // If there is an error, shows feedback to the user and writes it in the log
@@ -237,16 +223,16 @@ public class MainActivity extends ASR {
 
     private void setup() {
         Log.i(TAG, "Initializing local variables ...");
-        /* initialize screen */
+
+        //Notice: this is how each activity will get the robot and connect it to the robot face
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
-        robotFace = (OldRobotFace) findViewById(R.id.face);
+        robot = Robot.getInstance((RobotFace)findViewById(R.id.face), this);
+
+        // TODO: old stuff below here needs to be updated
 
         /* initialize speech recognizer */
         createRecognizer(getApplicationContext());
-
-        /* Set up text to speech capability, using the library in TTSLib */
-        tts = TTS.getInstance(this);
 
         /*
          Parse the simple questions and responses that the robot is able to perform.
@@ -260,33 +246,7 @@ public class MainActivity extends ASR {
         }
 
         /* A chat bot web service that the user can optionally use to answer responses */
-        bot = new Bot(this, PANDORA_BOT_ID, this.tts);
-
-        /* Manager that manages the Kubi's actions */
-        kubiManager = new KubiManager(new KubiCallback(), true);
-
-        /* Start the Main Thread */
-        mainThread = new MainThread(robotFace, kubiManager, this);
-    }
-
-    private void destroyMainThread() {
-        Log.i(TAG, "Shutting down Main Thread ...");
-        boolean retry = true;
-        while (retry) {
-            try {
-                mainThread.join();
-                retry = false;
-            } catch (InterruptedException e) {
-                // try again shutting down the thread
-            }
-        }
-    }
-
-    private void restartMainThread() {
-        if (mainThread.isAlive()) {
-            mainThread.interrupt();
-        }
-        mainThread = new MainThread(robotFace, kubiManager, this);
-        mainThread.start();
+        //TODO: When is the chatbot ever used?
+        //bot = new Bot(this, PANDORA_BOT_ID, this.tts);
     }
 }

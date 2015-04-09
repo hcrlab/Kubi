@@ -25,6 +25,7 @@ local.properties
 .idea
 build/
 project.properties
+*.iml
 
 # Eclipse project files
 .classpath

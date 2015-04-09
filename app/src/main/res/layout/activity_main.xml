@@ -19,22 +19,22 @@
         android:background="@color/white"
         android:orientation="horizontal" >
 
-        <trash.OldRobotFace
+        <uw.hcrlab.kubi.screen.RobotFace
             android:id="@+id/face"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_gravity="top"
-
             />
 
-        <org.opencv.android.JavaCameraView
-            android:id="@+id/camera_preview"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:visibility="gone"
-            opencv:show_fps="false"
-            android:layout_gravity="bottom"
-            opencv:camera_id="front" />
+        <!--<org.opencv.android.JavaCameraView-->
+            <!--android:id="@+id/camera_preview"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:visibility="gone"-->
+            <!--opencv:show_fps="false"-->
+            <!--android:layout_gravity="bottom"-->
+            <!--opencv:camera_id="front" />-->
+
     </FrameLayout>
 
 </LinearLayout>
