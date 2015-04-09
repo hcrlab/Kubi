@@ -85,21 +85,22 @@ public class Robot implements IKubiManagerDelegate {
 
     public void start() {
         if (thread.isAlive()) {
-            thread.interrupt();
+            Log.i(TAG, "Robot already started ...");
+            return;
         }
-        thread = new MainThread(robotFace, kubiManager);
+
         thread.start();
     }
 
     public void shutdown() {
         Log.i(TAG, "Shutting down Main Thread ...");
-        boolean retry = true;
-        while (retry) {
+
+        while (true) {
             try {
                 thread.join();
-                retry = false;
+                return;
             } catch (InterruptedException e) {
-                // try again shutting down the thread
+                Log.e(TAG, "Robot thread didn't join. Trying again.");
             }
         }
     }
