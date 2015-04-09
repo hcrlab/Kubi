@@ -27,6 +27,8 @@ import android.widget.Toast;
 import com.revolverobotics.kubiapi.Kubi;
 import com.revolverobotics.kubiapi.KubiManager;
 
+import uw.hcrlab.kubi.*;
+
 public class OldKubiDemoActivity extends ASR implements Observer {
 
 	// The ID of the bot to use for the chatbot, can be changed
@@ -93,7 +95,7 @@ public class OldKubiDemoActivity extends ASR implements Observer {
         }*/
         
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_kubi_demo);
+        setContentView(R.layout.activity_main);
 		
         robotFace = (OldRobotFace) findViewById(R.id.face);
         robotFace.addObserver(this);
@@ -145,7 +147,7 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.kubi_demo, menu);
+		getMenuInflater().inflate(R.menu.menu_main, menu);
 		return true;
 	}
 	
@@ -153,17 +155,17 @@ public class OldKubiDemoActivity extends ASR implements Observer {
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.i(TAG, "called onOptionsItemSelected; selected item: " + item);
         int itemId = item.getItemId();
-		if (itemId == R.id.action_gestures) {
-			DialogFragment dialog = new KubiGestureDialog();
-			dialog.show(getFragmentManager(), "KubiGestureDialogFragment");
-		} else if (itemId == R.id.connect_kubi) {
-			// Callback function is in charge of connecting to kubi
-        	kubiManager.findAllKubis();
-		} else if (itemId == R.id.action_face_track) {
-			this.trackFaceEnabled = true;
-		} else if (itemId == R.id.action_listen) {
-			this.listen();
-		}
+//		if (itemId == R.id.action_gestures) {
+//			DialogFragment dialog = new KubiGestureDialog();
+//			dialog.show(getFragmentManager(), "KubiGestureDialogFragment");
+//		} else if (itemId == R.id.connect_kubi) {
+//			// Callback function is in charge of connecting to kubi
+//        	kubiManager.findAllKubis();
+//		} else if (itemId == R.id.action_face_track) {
+//			this.trackFaceEnabled = true;
+//		} else if (itemId == R.id.action_listen) {
+//			this.listen();
+//		}
         return true;
     }
     

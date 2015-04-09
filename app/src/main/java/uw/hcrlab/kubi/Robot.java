@@ -14,6 +14,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import sandra.libs.tts.TTS;
+import trash.KubiCallback;
 import uw.hcrlab.kubi.screen.RobotFace;
 
 /**
@@ -27,26 +28,67 @@ public class Robot implements IKubiManagerDelegate, Observer {
     private KubiManager kubiManager;
     private TTS tts;
 
-    /* constructor */
+    private MainThread thread;
 
-    private Robot(Context context, AttributeSet attrs){
-        this.robotFace = new RobotFace(context, attrs);
-        this.kubiManager = new KubiManager(this, true);
+    /**
+     *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
+     *  are updated when getInstance() is called.
+     */
+
+    private Robot(RobotFace face, Context context){
+        //Only one copy of this ever
+        kubiManager = new KubiManager(this, true);
+
+        //These will update every time getInstance is called
+        robotFace = face;
         tts = TTS.getInstance(context);
+        thread = new MainThread(robotFace, kubiManager);
     }
 
-    public static Robot getInstance(Context context, AttributeSet attrs) {
+    public static Robot getInstance(RobotFace face, Context context) {
         if (robotInstance == null) {
-            robotInstance = new Robot(context, attrs);
+            //Create the singleton instance
+            robotInstance = new Robot(face, context);
+
         } else {
-            robotInstance.setContext(context, attrs);
+            //Update the tts engine with the new context, and update the reference to the current face view
+            robotInstance.tts.shutdown(); //Required to update the context
+            robotInstance.tts = TTS.getInstance(context);
+            robotInstance.robotFace = face;
+
+            //Note that we want to keep the same KubiManager, so we don't update it
         }
+
         return robotInstance;
     }
 
-    public void setContext(Context context, AttributeSet attrs) {
-        tts = TTS.getInstance(context);
-        robotInstance = new Robot(context, attrs);
+    public void start() {
+        if (thread.isAlive()) {
+            thread.interrupt();
+        }
+        thread = new MainThread(robotFace, kubiManager);
+        thread.start();
+    }
+
+    public void shutdown() {
+        Log.i(TAG, "Shutting down Main Thread ...");
+        boolean retry = true;
+        while (retry) {
+            try {
+                thread.join();
+                retry = false;
+            } catch (InterruptedException e) {
+                // try again shutting down the thread
+            }
+        }
+    }
+
+    public void say(String msg) {
+        try {
+            tts.speak(msg, "EN");
+        } catch (Exception e) {
+            Log.e(TAG, "English not available for TTS, default language used instead");
+        }
     }
 
     /* IKubiManagerDelegate methods */
