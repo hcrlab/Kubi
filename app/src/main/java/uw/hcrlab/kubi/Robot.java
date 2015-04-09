@@ -1,8 +1,9 @@
 package uw.hcrlab.kubi;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 
 import com.revolverobotics.kubiapi.IKubiManagerDelegate;
 import com.revolverobotics.kubiapi.Kubi;
@@ -10,79 +11,108 @@ import com.revolverobotics.kubiapi.KubiManager;
 import com.revolverobotics.kubiapi.KubiSearchResult;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
 import sandra.libs.tts.TTS;
-import trash.KubiCallback;
 import uw.hcrlab.kubi.screen.RobotFace;
 
 /**
  * Created by kimyen on 4/7/15.
  */
-public class Robot implements IKubiManagerDelegate, Observer {
+public class Robot implements IKubiManagerDelegate {
     public static String TAG = Robot.class.getSimpleName();
 
     private static Robot robotInstance = null;
+
+    private RobotThread thread;
     private RobotFace robotFace;
     private KubiManager kubiManager;
-    private TTS tts;
 
-    private MainThread thread;
+    private TTS tts;
 
     /**
      *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
      *  are updated when getInstance() is called.
      */
-
     private Robot(RobotFace face, Context context){
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
 
-        //These will update every time getInstance is called
-        robotFace = face;
-        tts = TTS.getInstance(context);
-        thread = new MainThread(robotFace, kubiManager);
+        //Setup the Robot instance with the new face
+        setup(face, context);
     }
 
+    /**
+     * Gets the singleton instance of the Robot object. Note that after calling this method, the
+     * robot.start() method must be called, or the RobotFace will never be drawn.
+     *
+     * @param face A RobotFace view that can be drawn to
+     * @param context The current activity
+     * @return The Robot singleton
+     */
     public static Robot getInstance(RobotFace face, Context context) {
         if (robotInstance == null) {
             //Create the singleton instance
             robotInstance = new Robot(face, context);
 
         } else {
-            //Update the tts engine with the new context, and update the reference to the current face view
-            robotInstance.tts.shutdown(); //Required to update the context
-            robotInstance.tts = TTS.getInstance(context);
-            robotInstance.robotFace = face;
+            //Shutdown resources tied to the previous robot face to allow them to be recreated
+            robotInstance.shutdown();
+            robotInstance.tts.shutdown();
 
-            //Note that we want to keep the same KubiManager, so we don't update it
+            //Setup the Robot instance with the new face
+            robotInstance.setup(face, context);
         }
 
         return robotInstance;
     }
 
+    /**
+     * Handles the setup actions which must occur every time a new face is passed in.
+     *
+     * @param face The RobotFace view for the current Activity
+     * @param context The current activity
+     */
+    private void setup(RobotFace face, Context context) {
+        robotFace = face;
+        robotFace.setOnTouchListener(faceListener);
+
+        tts = TTS.getInstance(context);
+        thread = new RobotThread(robotFace, kubiManager);
+    }
+
+    /**
+     * Starts the robot by starting the RobotThread if it has not already been started.
+     */
     public void start() {
         if (thread.isAlive()) {
-            thread.interrupt();
+            Log.i(TAG, "Robot already started ...");
+            return;
         }
-        thread = new MainThread(robotFace, kubiManager);
+
         thread.start();
     }
 
+    /**
+     * Stops the RobotThread
+     */
     public void shutdown() {
         Log.i(TAG, "Shutting down Main Thread ...");
-        boolean retry = true;
-        while (retry) {
+
+        while (true) {
             try {
                 thread.join();
-                retry = false;
+                return;
             } catch (InterruptedException e) {
-                // try again shutting down the thread
+                Log.e(TAG, "Robot thread didn't join. Trying again.");
             }
         }
     }
 
+    /**
+     * Generates text-to-speech for the provided message.
+     *
+     * @param msg Message to speak
+     */
     public void say(String msg) {
         try {
             tts.speak(msg, "EN");
@@ -128,10 +158,13 @@ public class Robot implements IKubiManagerDelegate, Observer {
         }
     }
 
-    /* update on onTouchEvent from RobotFace */
-
-    @Override
-    public void update(Observable observable, Object o) {
-
-    }
+    /**
+     * Touch listener for the RobotFace
+     */
+    private View.OnTouchListener faceListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            return false;
+        }
+    };
 }
