@@ -12,6 +12,8 @@ import sandra.libs.vpa.vpalib.Bot;
 import trash.OldRobotFace.Action;
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubidemo.dialogs.KubiGestureDialog;
+
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -34,28 +36,28 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 	// The ID of the bot to use for the chatbot, can be changed
 	// you can also make a new bot by creating an account in pandorabots.com and making a new chatbot robot
 	private String PANDORA_BOT_ID = "b9581e5f6e343f72";
-	
+
 	private String TAG = OldKubiDemoActivity.class.getSimpleName();
-	
+
 	private OldMainThread oldMainThread;
 	private boolean isSleep = false;
-	
+
 	/* Menu options */
 	@SuppressWarnings("unused")
 	private MenuItem mItemListenInput;
-	
+
     private OldRobotFace robotFace;    // The face of the robot as shown on screen
-    private TTS tts;       			 // Convert text to speech component of android 
+    private TTS tts;       			 // Convert text to speech component of android
 	private KubiManager kubiManager; // Manager that manages the connected Kubi
-    
+
     private Bot bot;
-    
+
     // Map containing key = simple questions and value = how the robot responds
     private Map<String, String> simpleResponses;
 
 	@SuppressWarnings("unused")
 	private boolean trackFaceEnabled;
-	
+
 	/* When touched activate the listening */
 	public boolean onTouchEvent(MotionEvent e) {
 		Log.i(TAG, "Screen touched ");
@@ -70,12 +72,12 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 	    	}
 	    	this.listen();
 	    	break;
-		default: 
+		default:
 			break;
 		}
 		return true;
 	}
-    
+
 	private void restartMainThread() {
 		if (oldMainThread.isAlive()) {
 			oldMainThread.interrupt();
@@ -84,124 +86,124 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 		oldMainThread.start();
 	}
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-        Log.i(TAG, "Trying to load OpenCV library");
-        
-        /*if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_8, this, mLoaderCallback)) {
-          Log.e(TAG, "Cannot connect to OpenCV Manager");
-        }*/
-        
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_main);
-		
-        robotFace = (OldRobotFace) findViewById(R.id.face);
-        robotFace.addObserver(this);
-        
-        /*
-		mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_preview);
-	    mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-	    mOpenCvCameraView.setCvCameraViewListener(this);
-	    */
-
-        // Set up text to speech capability, using the library in TTSLib
-        tts = TTS.getInstance(this);
-        
-		//Initialize the speech recognizer
-		createRecognizer(getApplicationContext());	
-		
-		this.simpleResponses = new HashMap<String, String>();
-    	// Parse the simple questions and responses that the robot is able to perform
-    	// These responses are defined under res/values/arrays.xml
-    	String[] stringArray = getResources().getStringArray(R.array.promptsAndResponses);
-		for (String entry : stringArray) {
-			String[] splitResult = entry.split("\\|", 2);
-			simpleResponses.put(splitResult[0], splitResult[1]);
-		}
-		
-		// Manager that manages the Kubi's actions
-		kubiManager = new KubiManager(new KubiCallback(), true);
-		
-		// A chat bot web service that the user can optionally use to answer responses
-		bot = new Bot(this, PANDORA_BOT_ID, this.tts);
-		
-		oldMainThread = new OldMainThread(robotFace, kubiManager, this);
-		
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		// The activity has become visible (it is now "resumed").
-		restartMainThread();
-	}
-	
-	@Override
-	protected void onStop() {
-		destroyMainThread();
-		super.onStop();
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.menu_main, menu);
-		return true;
-	}
-	
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.i(TAG, "called onOptionsItemSelected; selected item: " + item);
-        int itemId = item.getItemId();
-//		if (itemId == R.id.action_gestures) {
-//			DialogFragment dialog = new KubiGestureDialog();
-//			dialog.show(getFragmentManager(), "KubiGestureDialogFragment");
-//		} else if (itemId == R.id.connect_kubi) {
-//			// Callback function is in charge of connecting to kubi
-//        	kubiManager.findAllKubis();
-//		} else if (itemId == R.id.action_face_track) {
-//			this.trackFaceEnabled = true;
-//		} else if (itemId == R.id.action_listen) {
-//			this.listen();
+//	@Override
+//	protected void onCreate(Bundle savedInstanceState) {
+//		super.onCreate(savedInstanceState);
+//
+//        Log.i(TAG, "Trying to load OpenCV library");
+//
+//        /*if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_8, this, mLoaderCallback)) {
+//          Log.e(TAG, "Cannot connect to OpenCV Manager");
+//        }*/
+//
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//        setContentView(R.layout.activity_main);
+//
+//        robotFace = (OldRobotFace) findViewById(R.id.face);
+//        robotFace.addObserver(this);
+//
+//        /*
+//		mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_preview);
+//	    mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+//	    mOpenCvCameraView.setCvCameraViewListener(this);
+//	    */
+//
+//        // Set up text to speech capability, using the library in TTSLib
+//        tts = TTS.getInstance(this);
+//
+//		//Initialize the speech recognizer
+//		createRecognizer(getApplicationContext());
+//
+//		this.simpleResponses = new HashMap<String, String>();
+//    	// Parse the simple questions and responses that the robot is able to perform
+//    	// These responses are defined under res/values/arrays.xml
+//    	String[] stringArray = getResources().getStringArray(R.array.promptsAndResponses);
+//		for (String entry : stringArray) {
+//			String[] splitResult = entry.split("\\|", 2);
+//			simpleResponses.put(splitResult[0], splitResult[1]);
 //		}
-        return true;
-    }
-    
+//
+//		// Manager that manages the Kubi's actions
+//		kubiManager = new KubiManager(new KubiCallback(), true);
+//
+//		// A chat bot web service that the user can optionally use to answer responses
+//		bot = new Bot(this, PANDORA_BOT_ID, this.tts);
+//
+//		oldMainThread = new OldMainThread(robotFace, kubiManager, this);
+//
+//	}
+
+//	@Override
+//	protected void onResume() {
+//		super.onResume();
+//		// The activity has become visible (it is now "resumed").
+//		restartMainThread();
+//	}
+//
+//	@Override
+//	protected void onStop() {
+//		destroyMainThread();
+//		super.onStop();
+//	}
+
+//	@Override
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		// Inflate the menu; this adds items to the action bar if it is present.
+//		getMenuInflater().inflate(R.menu.menu_main, menu);
+//		return true;
+//	}
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        Log.i(TAG, "called onOptionsItemSelected; selected item: " + item);
+//        int itemId = item.getItemId();
+////		if (itemId == R.id.action_gestures) {
+////			DialogFragment dialog = new KubiGestureDialog();
+////			dialog.show(getFragmentManager(), "KubiGestureDialogFragment");
+////		} else if (itemId == R.id.connect_kubi) {
+////			// Callback function is in charge of connecting to kubi
+////        	kubiManager.findAllKubis();
+////		} else if (itemId == R.id.action_face_track) {
+////			this.trackFaceEnabled = true;
+////		} else if (itemId == R.id.action_listen) {
+////			this.listen();
+////		}
+//        return true;
+//    }
+
     // Returns the kubi manage of this activity
     public KubiManager getKubiManager(){
 		return this.kubiManager;
 	}
-    
+
     // Shows a simple notification that the kubi is not connected
     private void showNotConnectedMsg() {
-		Context context = getApplicationContext();
-		CharSequence text = "No Kubi connected";
-		int duration = Toast.LENGTH_SHORT;
-
-		Toast toast = Toast.makeText(context, text, duration);
-		toast.show();
+//        Context context = getApplicationContext();
+//        CharSequence text = "No Kubi connected";
+//        int duration = Toast.LENGTH_SHORT;
+//
+//        Toast toast = Toast.makeText(context, text, duration);
+//        toast.show();
     }
-    
+
 	/* Handler for situations where you listen to user input */
 	private void listen() {
-		Log.i(TAG, "listening");
-		try {
-			super.listen(RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH, 1);
-		} catch (Exception e) {
-			Toast.makeText(getApplicationContext(),"ASR could not be started: invalid params", Toast.LENGTH_SHORT).show();
-			Log.e(TAG, e.getMessage());
-		} 
+//		Log.i(TAG, "listening");
+//		try {
+//			super.listen(RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH, 1);
+//		} catch (Exception e) {
+//			Toast.makeText(getApplicationContext(),"ASR could not be started: invalid params", Toast.LENGTH_SHORT).show();
+//			Log.e(TAG, e.getMessage());
+//		}
 	}
 
 	@Override
 	public void processAsrResults(ArrayList<String> nBestList, float[] nBestConfidences) {
 		boolean demo = false;
 		String bestResult = nBestList.get(0);
-		
+
 		Log.d(TAG, "Speech input: " + bestResult);
-		
+
 		String toSpeak = simpleResponses.get(bestResult);
 		// Depending on the known inputs, maybe do some actions as well
 
@@ -299,14 +301,14 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 				Thread t1 = new Thread(new Runnable() {
 				     public void run()
 				     {robotFace.showAction(Action.GIGGLE);}
-				});  
+				});
 				t1.start();
 				toSpeak = "haha";
 			} else if(emotion.equalsIgnoreCase("smile")) {
 				Thread t1 = new Thread(new Runnable() {
 				     public void run()
 				     {robotFace.showAction(Action.SMILE);}
-				});  
+				});
 				t1.start();
 				toSpeak = "Smiling";
 			// Default behavior: Can't show the thing you want
@@ -327,7 +329,7 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		if(demo && kubiManager.getStatus() == KubiManager.STATUS_CONNECTED) {
 			demo = false;
 			kubiManager.getKubi().performGesture(Kubi.GESTURE_LEFT);
@@ -336,65 +338,65 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 			kubiManager.getKubi().performGesture(Kubi.GESTURE_NOD);
 			kubiManager.getKubi().performGesture(Kubi.GESTURE_SCAN);
 			kubiManager.getKubi().performGesture(Kubi.GESTURE_SHAKE);
-			
+
 		}
-		
+
 		if (isSleep) {
 			oldMainThread.setRunning(false);
-		}		
+		}
 	}
 
 	private boolean tryConnectingToKubi() {
 		if (kubiManager.getStatus() == KubiManager.STATUS_CONNECTED) {
 			return true;
-		} 
+		}
 		final int trials = 5;
 		for (int i = 0; i < trials; i++) {
 			kubiManager.findAllKubis();
 			if (kubiManager.getStatus() == KubiManager.STATUS_CONNECTED) {
 				return true;
-			} 
+			}
 		}
 		return false;
 	}
 
 	@Override
 	public void processAsrReadyForSpeech() {
-		Toast.makeText(this, "I'm listening", Toast.LENGTH_LONG).show();
+//		Toast.makeText(this, "I'm listening", Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void processAsrError(int errorCode) {
 
 		String errorMessage;
-		switch (errorCode) 
+		switch (errorCode)
         {
-	        case SpeechRecognizer.ERROR_AUDIO: 
-	        	errorMessage = "Audio recording error"; 
+	        case SpeechRecognizer.ERROR_AUDIO:
+	        	errorMessage = "Audio recording error";
 	        	break;
-	        case SpeechRecognizer.ERROR_CLIENT: 
+	        case SpeechRecognizer.ERROR_CLIENT:
 	        	errorMessage = "Client side error";
 	        	break;
-	        case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS: 
-	        	errorMessage = "Insufficient permissions" ; 
+	        case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+	        	errorMessage = "Insufficient permissions" ;
 	        	break;
-	        case SpeechRecognizer.ERROR_NETWORK: 
+	        case SpeechRecognizer.ERROR_NETWORK:
 	        	errorMessage = "Network related error" ;
 	        	break;
-	        case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:                
-	            errorMessage = "Network operation timeout"; 
+	        case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+	            errorMessage = "Network operation timeout";
 	            break;
-	        case SpeechRecognizer.ERROR_RECOGNIZER_BUSY: 
-	        	errorMessage = "RecognitionServiceBusy" ; 
+	        case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+	        	errorMessage = "RecognitionServiceBusy" ;
 	        	break;
-	        case SpeechRecognizer.ERROR_SERVER: 
-	        	errorMessage = "Server sends error status"; 
+	        case SpeechRecognizer.ERROR_SERVER:
+	        	errorMessage = "Server sends error status";
 	        	break;
-	        case SpeechRecognizer.ERROR_NO_MATCH: 
+	        case SpeechRecognizer.ERROR_NO_MATCH:
 	        	errorMessage = "pardon me";
 	        	//errorMessage = "No matching message" ;
 	        	break;
-	        case SpeechRecognizer.ERROR_SPEECH_TIMEOUT: 
+	        case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
 	        	errorMessage = null;
 	        	//errorMessage = "Input not audible";
 	        	break;
@@ -410,21 +412,21 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 		} catch (Exception e) {
 			Log.e(TAG, "English not available for TTS, default language used instead");
 		}
-		
+
 		// If there is an error, shows feedback to the user and writes it in the log
 	    Log.e(TAG, "Error: "+ errorMessage);
-	    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+//	    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
 
 	}
 
 	// Shut down TTS engine when finished
-	@Override
-	public void onDestroy() {
-		Log.d(TAG, "Destroying...");
-		destroyMainThread();
-		tts.shutdown();
-		super.onDestroy();
-	}
+//	@Override
+//	public void onDestroy() {
+//		Log.d(TAG, "Destroying...");
+//		destroyMainThread();
+//		tts.shutdown();
+//		super.onDestroy();
+//	}
 
 	private void destroyMainThread() {
 		boolean retry = true;

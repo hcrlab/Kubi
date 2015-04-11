@@ -1,43 +1,29 @@
 package uw.hcrlab.kubi;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.revolverobotics.kubiapi.KubiManager;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import sandra.libs.asr.asrlib.ASR;
-import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
-import trash.KubiCallback;
 import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
 
 
-public class MainActivity extends ASR {
+public class MainActivity extends Activity {
     private String TAG = MainActivity.class.getSimpleName();
 
     /* Activity's Properties */
     private Robot robot;
-
-    /* ASR's Properties */
-
-    // The ID of the bot to use for the chatbot, can be changed
-    // you can also make a new bot by creating an account in pandorabots.com and making a new chatbot robot
-    private String PANDORA_BOT_ID = "b9581e5f6e343f72";
-    private Bot bot;
-
-    // Map containing key = simple questions and value = how the robot responds
-    private Map<String, String> simpleResponses;
-
 
     /* Activity's methods */
 
@@ -50,8 +36,14 @@ public class MainActivity extends ASR {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "Creating Main Activity ...");
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        setup();
+
+        //Notice: this is how each activity will get the robot and connect it to the robot face
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        setContentView(R.layout.activity_main);
+        robot = Robot.getInstance((RobotFace)findViewById(R.id.face), this);
     }
 
     /*
@@ -62,8 +54,6 @@ public class MainActivity extends ASR {
     protected void onRestart() {
         Log.i(TAG, "Restarting Main Activity ...");
         super.onRestart();
-        //TODO: implement this
-        /* get the information that has been saved from onStop() */
     }
 
     /*
@@ -74,8 +64,6 @@ public class MainActivity extends ASR {
     protected void onStart() {
         Log.i(TAG, "Starting Main Activity ...");
         super.onStart();
-        //TODO: implement this
-        /* get the information that has been saved from onCreate() or onRestart() */
     }
 
     /*
@@ -87,9 +75,8 @@ public class MainActivity extends ASR {
     protected void onResume() {
         Log.i(TAG, "Resuming Main Activity ...");
         super.onResume();
-        //TODO: implement this
-        /* get the information that has been saved from onPause() */
-        robot.start();
+
+        robot.startup();
     }
 
     /*
@@ -103,8 +90,6 @@ public class MainActivity extends ASR {
     protected void onPause() {
         Log.i(TAG, "Pausing Main Activity ...");
         super.onPause();
-        //TODO: implement this
-        /* saving ... */
 
         robot.shutdown();
     }
@@ -120,8 +105,6 @@ public class MainActivity extends ASR {
     protected void onStop() {
         Log.i(TAG, "Stopping Main Activity ...");
         super.onStop();
-        //TODO: implement this
-        /* saving ... */
     }
 
     /*
@@ -134,8 +117,6 @@ public class MainActivity extends ASR {
     protected void onDestroy() {
         Log.i(TAG, "Destroying Main Activity ...");
         super.onDestroy();
-        //TODO: implement this
-        /* saving ... */
     }
 
     /* Setting up the Menu */
@@ -170,83 +151,11 @@ public class MainActivity extends ASR {
         switch (e.getAction()) {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
-                // TODO: modify this
+                robot.listen();
                 break;
             default:
                 break;
         }
         return true;
-    }
-
-    /* ASR's methods */
-
-    @Override
-    public void processAsrResults(ArrayList<String> nBestList, float[] nBestConfidences) {
-        String speechInput = nBestList.get(0);
-        Log.i(TAG, "Speech input: " + speechInput);
-        String response = SpeechUtils.getResponse(speechInput);
-        if (response == null) {
-            response = simpleResponses.get(speechInput);
-        }
-        try {
-            if(response != null){
-                Log.i(TAG, "Saying : " + response);
-                robot.say(response);
-            }  else {
-                Log.i(TAG, "Default response");
-                bot.initiateQuery(response);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Could not response to sppech input: " + speechInput);
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void processAsrReadyForSpeech() {
-        Log.i(TAG, "Listening to user's speech.");
-        Toast.makeText(this, "I'm listening.", Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void processAsrError(int errorCode) {
-        String errorMessage = SpeechUtils.getErrorMessage(errorCode);
-
-        if (errorMessage != null) {
-            robot.say(errorMessage);
-        }
-
-        // If there is an error, shows feedback to the user and writes it in the log
-        Log.e(TAG, "Error: "+ errorMessage);
-        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
-    }
-
-    private void setup() {
-        Log.i(TAG, "Initializing local variables ...");
-
-        //Notice: this is how each activity will get the robot and connect it to the robot face
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_main);
-        robot = Robot.getInstance((RobotFace)findViewById(R.id.face), this);
-
-        // TODO: old stuff below here needs to be updated
-
-        /* initialize speech recognizer */
-        createRecognizer(getApplicationContext());
-
-        /*
-         Parse the simple questions and responses that the robot is able to perform.
-         These responses are defined under res/values/arrays.xml
-          */
-        this.simpleResponses = new HashMap<String, String>();
-        String[] stringArray = getResources().getStringArray(R.array.promptsAndResponses);
-        for (String entry : stringArray) {
-            String[] splitResult = entry.split("\\|", 2);
-            simpleResponses.put(splitResult[0], splitResult[1]);
-        }
-
-        /* A chat bot web service that the user can optionally use to answer responses */
-        //TODO: When is the chatbot ever used?
-        //bot = new Bot(this, PANDORA_BOT_ID, this.tts);
     }
 }

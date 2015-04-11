@@ -1,9 +1,12 @@
 package uw.hcrlab.kubi;
 
+import android.app.Activity;
 import android.content.Context;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.revolverobotics.kubiapi.IKubiManagerDelegate;
 import com.revolverobotics.kubiapi.Kubi;
@@ -12,13 +15,16 @@ import com.revolverobotics.kubiapi.KubiSearchResult;
 
 import java.util.ArrayList;
 
+import sandra.libs.asr.asrlib.ASR;
 import sandra.libs.tts.TTS;
+import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.screen.RobotFace;
+import uw.hcrlab.kubi.speech.SpeechUtils;
 
 /**
  * Created by kimyen on 4/7/15.
  */
-public class Robot implements IKubiManagerDelegate {
+public class Robot extends ASR implements IKubiManagerDelegate {
     public static String TAG = Robot.class.getSimpleName();
 
     private static Robot robotInstance = null;
@@ -27,7 +33,13 @@ public class Robot implements IKubiManagerDelegate {
     private RobotFace robotFace;
     private KubiManager kubiManager;
 
+    // The ID of the bot to use for the chatbot, can be changed
+    // you can also make a new bot by creating an account in pandorabots.com and making a new chatbot robot
+    private String PANDORA_BOT_ID = "b9581e5f6e343f72";
+    private Bot bot;
     private TTS tts;
+
+    private Context currentCxt;
 
     /**
      *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
@@ -37,13 +49,15 @@ public class Robot implements IKubiManagerDelegate {
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
 
+        createRecognizer(App.getContext());
+
         //Setup the Robot instance with the new face
         setup(face, context);
     }
 
     /**
      * Gets the singleton instance of the Robot object. Note that after calling this method, the
-     * robot.start() method must be called, or the RobotFace will never be drawn.
+     * robot.startup() method must be called, or the RobotFace will never be drawn.
      *
      * @param face A RobotFace view that can be drawn to
      * @param context The current activity
@@ -73,17 +87,21 @@ public class Robot implements IKubiManagerDelegate {
      * @param context The current activity
      */
     private void setup(RobotFace face, Context context) {
+        currentCxt = context;
+
         robotFace = face;
         robotFace.setOnTouchListener(faceListener);
 
         tts = TTS.getInstance(context);
+        bot = new Bot((Activity)context, PANDORA_BOT_ID, tts);
+
         thread = new RobotThread(robotFace, kubiManager);
     }
 
     /**
      * Starts the robot by starting the RobotThread if it has not already been started.
      */
-    public void start() {
+    public void startup() {
         if (thread.isAlive()) {
             Log.i(TAG, "Robot already started ...");
             return;
@@ -120,6 +138,27 @@ public class Robot implements IKubiManagerDelegate {
             Log.e(TAG, "English not available for TTS, default language used instead");
         }
     }
+
+    public void listen() {
+        Log.i(TAG, "listening");
+        try {
+            super.listen(RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH, 1);
+        } catch (Exception ex) {
+            Toast.makeText(currentCxt, "ASR could not be started: invalid params", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, ex.getMessage());
+        }
+    }
+
+    /**
+     * Touch listener for the RobotFace
+     */
+    private View.OnTouchListener faceListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            Log.i(TAG, "RobotFace touch occured!");
+            return false;
+        }
+    };
 
     /* IKubiManagerDelegate methods */
 
@@ -158,13 +197,45 @@ public class Robot implements IKubiManagerDelegate {
         }
     }
 
-    /**
-     * Touch listener for the RobotFace
-     */
-    private View.OnTouchListener faceListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            return false;
+    @Override
+    public void processAsrResults(ArrayList<String> nBestList, float[] nBestConfidences) {
+        String speechInput = nBestList.get(0);
+        Log.i(TAG, "Speech input: " + speechInput);
+
+        String response = SpeechUtils.getResponse(speechInput);
+
+        try {
+            if(response != null){
+                //We have a preprogrammed response, so use it
+                Log.i(TAG, "Saying : " + response);
+                say(response);
+            }  else {
+                //We don't have a preprogrammed response, so use the bot to create a response
+                Log.i(TAG, "Default response");
+                bot.initiateQuery(speechInput);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error responding to speech input: " + speechInput);
+            e.printStackTrace();
         }
-    };
+    }
+
+    @Override
+    public void processAsrReadyForSpeech() {
+        Log.i(TAG, "Listening to user's speech.");
+        Toast.makeText(currentCxt, "I'm listening.", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void processAsrError(int errorCode) {
+        String errorMessage = SpeechUtils.getErrorMessage(errorCode);
+
+        if (errorMessage != null) {
+            say(errorMessage);
+        }
+
+        // If there is an error, shows feedback to the user and writes it in the log
+        Log.e(TAG, "Error: "+ errorMessage);
+        Toast.makeText(currentCxt, errorMessage, Toast.LENGTH_LONG).show();
+    }
 }

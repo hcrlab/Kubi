@@ -52,7 +52,7 @@ import android.util.Log;
  *
  */
 
-public abstract class ASR extends Activity implements RecognitionListener{
+public abstract class ASR implements RecognitionListener{
 
 	private static SpeechRecognizer myASR;
 	Context ctx;
