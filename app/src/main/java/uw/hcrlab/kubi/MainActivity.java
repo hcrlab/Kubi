@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -35,8 +36,14 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "Creating Main Activity ...");
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        setup();
+
+        //Notice: this is how each activity will get the robot and connect it to the robot face
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        setContentView(R.layout.activity_main);
+        robot = Robot.getInstance((RobotFace)findViewById(R.id.face), this);
     }
 
     /*
@@ -47,8 +54,6 @@ public class MainActivity extends Activity {
     protected void onRestart() {
         Log.i(TAG, "Restarting Main Activity ...");
         super.onRestart();
-        //TODO: implement this
-        /* get the information that has been saved from onStop() */
     }
 
     /*
@@ -59,8 +64,6 @@ public class MainActivity extends Activity {
     protected void onStart() {
         Log.i(TAG, "Starting Main Activity ...");
         super.onStart();
-        //TODO: implement this
-        /* get the information that has been saved from onCreate() or onRestart() */
     }
 
     /*
@@ -72,8 +75,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         Log.i(TAG, "Resuming Main Activity ...");
         super.onResume();
-        //TODO: implement this
-        /* get the information that has been saved from onPause() */
+
         robot.startup();
     }
 
@@ -88,8 +90,6 @@ public class MainActivity extends Activity {
     protected void onPause() {
         Log.i(TAG, "Pausing Main Activity ...");
         super.onPause();
-        //TODO: implement this
-        /* saving ... */
 
         robot.shutdown();
     }
@@ -105,8 +105,6 @@ public class MainActivity extends Activity {
     protected void onStop() {
         Log.i(TAG, "Stopping Main Activity ...");
         super.onStop();
-        //TODO: implement this
-        /* saving ... */
     }
 
     /*
@@ -119,8 +117,6 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         Log.i(TAG, "Destroying Main Activity ...");
         super.onDestroy();
-        //TODO: implement this
-        /* saving ... */
     }
 
     /* Setting up the Menu */
@@ -161,14 +157,5 @@ public class MainActivity extends Activity {
                 break;
         }
         return true;
-    }
-
-    private void setup() {
-        Log.i(TAG, "Initializing local variables ...");
-
-        //Notice: this is how each activity will get the robot and connect it to the robot face
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_main);
-        robot = Robot.getInstance((RobotFace)findViewById(R.id.face), this);
     }
 }
