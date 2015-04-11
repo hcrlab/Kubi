@@ -1,5 +1,6 @@
 package uw.hcrlab.kubi;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.util.Log;
@@ -17,18 +18,11 @@ import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
 
 
-public class MainActivity extends ASR {
+public class MainActivity extends Activity {
     private String TAG = MainActivity.class.getSimpleName();
 
     /* Activity's Properties */
     private Robot robot;
-
-    /* ASR's Properties */
-
-    // The ID of the bot to use for the chatbot, can be changed
-    // you can also make a new bot by creating an account in pandorabots.com and making a new chatbot robot
-    private String PANDORA_BOT_ID = "b9581e5f6e343f72";
-    private Bot bot;
 
     /* Activity's methods */
 
@@ -161,63 +155,12 @@ public class MainActivity extends ASR {
         switch (e.getAction()) {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
-
-                Log.i(TAG, "listening");
-                try {
-                    super.listen(RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH, 1);
-                } catch (Exception ex) {
-                    Toast.makeText(getApplicationContext(),"ASR could not be started: invalid params", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, ex.getMessage());
-                }
-
-                // TODO: modify this
+                robot.listen();
                 break;
             default:
                 break;
         }
         return true;
-    }
-
-    /* ASR's methods */
-
-    @Override
-    public void processAsrResults(ArrayList<String> nBestList, float[] nBestConfidences) {
-        String speechInput = nBestList.get(0);
-        Log.i(TAG, "Speech input: " + speechInput);
-
-        String response = SpeechUtils.getResponse(speechInput);
-
-        try {
-            if(response != null){
-                Log.i(TAG, "Saying : " + response);
-                robot.say(response);
-            }  else {
-                Log.i(TAG, "Default response");
-                bot.initiateQuery(speechInput);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error responding to speech input: " + speechInput);
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void processAsrReadyForSpeech() {
-        Log.i(TAG, "Listening to user's speech.");
-        Toast.makeText(this, "I'm listening.", Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void processAsrError(int errorCode) {
-        String errorMessage = SpeechUtils.getErrorMessage(errorCode);
-
-        if (errorMessage != null) {
-            robot.say(errorMessage);
-        }
-
-        // If there is an error, shows feedback to the user and writes it in the log
-        Log.e(TAG, "Error: "+ errorMessage);
-        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
     }
 
     private void setup() {
@@ -227,14 +170,5 @@ public class MainActivity extends ASR {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         robot = Robot.getInstance((RobotFace)findViewById(R.id.face), this);
-
-        // TODO: Move the ASR stuff to a service
-
-        /* initialize speech recognizer */
-        createRecognizer(getApplicationContext());
-
-        /* A chat bot web service that the user can optionally use to answer responses */
-        //TODO: Move the chat bot over to Robot
-        bot = new Bot(this, PANDORA_BOT_ID, robot.tts);
     }
 }
