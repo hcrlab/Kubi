@@ -19,8 +19,8 @@ public class ScreenConstants {
 	public final static int ALPHA = 20;
 
 	/* RobotFace constants */
-	public final static float LEFT_EYE_HORIZONTAL_FACTOR = 4f/6;
-	public final static float RIGHT_EYE_HORIZONTAL_FACTOR = 12f/16;
+	public final static float LEFT_EYE_HORIZONTAL_FACTOR = 5f/16;
+	public final static float RIGHT_EYE_HORIZONTAL_FACTOR = 11f/16;
 	public final static float EYE_VETICAL_FACTOR = 1f/3;
 	public final static float DEFAULT_EYE_RADIUS = 200;
 	public final static float LOOK_LIMIT_FACTOR = 2f/3;
