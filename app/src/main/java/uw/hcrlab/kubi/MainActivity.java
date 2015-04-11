@@ -1,6 +1,7 @@
 package uw.hcrlab.kubi;
 
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -8,16 +9,10 @@ import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.revolverobotics.kubiapi.KubiManager;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import sandra.libs.asr.asrlib.ASR;
-import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
-import trash.KubiCallback;
 import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
 
@@ -85,7 +80,7 @@ public class MainActivity extends ASR {
         super.onResume();
         //TODO: implement this
         /* get the information that has been saved from onPause() */
-        robot.start();
+        robot.startup();
     }
 
     /*
@@ -166,6 +161,15 @@ public class MainActivity extends ASR {
         switch (e.getAction()) {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
+
+                Log.i(TAG, "listening");
+                try {
+                    super.listen(RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH, 1);
+                } catch (Exception ex) {
+                    Toast.makeText(getApplicationContext(),"ASR could not be started: invalid params", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, ex.getMessage());
+                }
+
                 // TODO: modify this
                 break;
             default:
@@ -189,10 +193,10 @@ public class MainActivity extends ASR {
                 robot.say(response);
             }  else {
                 Log.i(TAG, "Default response");
-                bot.initiateQuery(response);
+                bot.initiateQuery(speechInput);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Could not response to speech input: " + speechInput);
+            Log.e(TAG, "Error responding to speech input: " + speechInput);
             e.printStackTrace();
         }
     }

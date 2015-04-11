@@ -45,7 +45,7 @@ public class Robot implements IKubiManagerDelegate {
 
     /**
      * Gets the singleton instance of the Robot object. Note that after calling this method, the
-     * robot.start() method must be called, or the RobotFace will never be drawn.
+     * robot.startup() method must be called, or the RobotFace will never be drawn.
      *
      * @param face A RobotFace view that can be drawn to
      * @param context The current activity
@@ -89,7 +89,7 @@ public class Robot implements IKubiManagerDelegate {
     /**
      * Starts the robot by starting the RobotThread if it has not already been started.
      */
-    public void start() {
+    public void startup() {
         if (thread.isAlive()) {
             Log.i(TAG, "Robot already started ...");
             return;
@@ -127,6 +127,17 @@ public class Robot implements IKubiManagerDelegate {
         }
     }
 
+    /**
+     * Touch listener for the RobotFace
+     */
+    private View.OnTouchListener faceListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            Log.i(TAG, "RobotFace touch occured!");
+            return false;
+        }
+    };
+
     /* IKubiManagerDelegate methods */
 
     @Override
@@ -163,14 +174,4 @@ public class Robot implements IKubiManagerDelegate {
             manager.connectToKubi(result.get(0));
         }
     }
-
-    /**
-     * Touch listener for the RobotFace
-     */
-    private View.OnTouchListener faceListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            return false;
-        }
-    };
 }
