@@ -47,10 +47,6 @@ public class MainActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         robot = Robot.getInstance((RobotFace)findViewById(R.id.face), this);
-
-        Button conversationButton = (Button) findViewById(R.id.convoButton);
-        Button lessonButton = (Button) findViewById(R.id.lessonButton);
-        initializeButtons(conversationButton, lessonButton);
     }
 
     /*
@@ -82,6 +78,10 @@ public class MainActivity extends Activity {
     protected void onResume() {
         Log.i(TAG, "Resuming Main Activity ...");
         super.onResume();
+
+        Button conversationButton = (Button) findViewById(R.id.convoButton);
+        Button lessonButton = (Button) findViewById(R.id.lessonButton);
+        initializeButtons(conversationButton, lessonButton);
 
         robot.startup();
     }
@@ -158,6 +158,7 @@ public class MainActivity extends Activity {
         switch (e.getAction()) {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
+                // send to Firebase instead
                 robot.listen();
                 break;
             default:

@@ -22,5 +22,7 @@
     <string name="say_something">Enter speech</string>
     <string name="gesture_title">Gestures</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_lesson">LessonActivity</string>
+    <string name="title_activity_conversation">ConversationActivity</string>
 
 </resources>
