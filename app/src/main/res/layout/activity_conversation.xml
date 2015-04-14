@@ -23,8 +23,7 @@
             android:id="@+id/face"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_gravity="top"
-            android:background="@drawable/abc_ic_voice_search" />
+            android:layout_gravity="top"/>
 
         <ImageButton
             android:layout_width="wrap_content"

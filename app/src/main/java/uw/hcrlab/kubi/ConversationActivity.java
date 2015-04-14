@@ -144,7 +144,7 @@ public class ConversationActivity extends Activity {
         switch (e.getAction()) {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
-                robot.listen();
+                //robot.listen();
                 break;
             default:
                 break;

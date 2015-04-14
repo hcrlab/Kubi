@@ -118,6 +118,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         while (true) {
             try {
+                thread.setRunning(false);
                 thread.join();
                 return;
             } catch (InterruptedException e) {

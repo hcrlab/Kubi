@@ -159,7 +159,7 @@ public class MainActivity extends Activity {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
                 // send to Firebase instead
-                robot.listen();
+                //robot.listen();
                 break;
             default:
                 break;
@@ -173,12 +173,14 @@ public class MainActivity extends Activity {
         conversationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                robot.shutdown();
                 startActivity(conversationIntent);
             }
         });
         lessonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                robot.shutdown();
                 startActivity(lessonIntent);
             }
         });
