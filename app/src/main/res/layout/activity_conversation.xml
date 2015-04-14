@@ -23,30 +23,14 @@
             android:id="@+id/face"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_gravity="top"
-            />
+            android:layout_gravity="top"/>
 
-        <LinearLayout
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center|bottom">
-
-            <Button
-                android:id="@+id/lessonButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lesson"
-                android:orientation="horizontal"
-                android:layout_gravity="left" />
-            <Button
-                android:id="@+id/convoButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chat"
-                android:orientation="horizontal"
-                android:layout_gravity="right" />
-
-        </LinearLayout>
+            android:id="@+id/speechButton"
+            android:layout_gravity="right|bottom"
+            android:background="@drawable/abc_ic_voice_search_api_holo_light" />
 
         <!--<org.opencv.android.JavaCameraView-->
             <!--android:id="@+id/camera_preview"-->

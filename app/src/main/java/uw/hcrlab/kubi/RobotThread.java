@@ -94,10 +94,10 @@ public class RobotThread extends Thread {
 
     public void setRunning(boolean running) {
         this.isRunning = running;
-        if (!running) {
-            RobotFaceUtils.showAction(robotFace, Action.SLEEP);
+        /*if (!running) {
+            RobotFaceUtils.showAction(robotFace, Action.BLINK);
             kubiFaceDown();
-        }
+        }*/
     }
 
     private void kubiFaceDown() {

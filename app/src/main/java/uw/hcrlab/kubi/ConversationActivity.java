@@ -1,29 +1,19 @@
 package uw.hcrlab.kubi;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-
-import sandra.libs.asr.asrlib.ASR;
-import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.screen.RobotFace;
-import uw.hcrlab.kubi.speech.SpeechUtils;
 
 
-public class MainActivity extends Activity {
-    private String TAG = MainActivity.class.getSimpleName();
+public class ConversationActivity extends Activity {
+    private String TAG = ConversationActivity.class.getSimpleName();
 
     /* Activity's Properties */
     private Robot robot;
@@ -38,14 +28,14 @@ public class MainActivity extends Activity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "Creating Main Activity ...");
+        Log.i(TAG, "Creating Conversation Activity ...");
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
         //Notice: this is how each activity will get the robot and connect it to the robot face
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_conversation);
         robot = Robot.getInstance((RobotFace)findViewById(R.id.face), this);
     }
 
@@ -55,7 +45,7 @@ public class MainActivity extends Activity {
      */
     @Override
     protected void onRestart() {
-        Log.i(TAG, "Restarting Main Activity ...");
+        Log.i(TAG, "Restarting Conversation Activity ...");
         super.onRestart();
     }
 
@@ -65,7 +55,7 @@ public class MainActivity extends Activity {
      */
     @Override
     protected void onStart() {
-        Log.i(TAG, "Starting Main Activity ...");
+        Log.i(TAG, "Starting Conversation Activity ...");
         super.onStart();
     }
 
@@ -76,12 +66,8 @@ public class MainActivity extends Activity {
      */
     @Override
     protected void onResume() {
-        Log.i(TAG, "Resuming Main Activity ...");
+        Log.i(TAG, "Resuming Conversation Activity ...");
         super.onResume();
-
-        Button conversationButton = (Button) findViewById(R.id.convoButton);
-        Button lessonButton = (Button) findViewById(R.id.lessonButton);
-        initializeButtons(conversationButton, lessonButton);
 
         robot.startup();
     }
@@ -95,7 +81,7 @@ public class MainActivity extends Activity {
      */
     @Override
     protected void onPause() {
-        Log.i(TAG, "Pausing Main Activity ...");
+        Log.i(TAG, "Pausing Conversation Activity ...");
         super.onPause();
 
         robot.shutdown();
@@ -110,7 +96,7 @@ public class MainActivity extends Activity {
      */
     @Override
     protected void onStop() {
-        Log.i(TAG, "Stopping Main Activity ...");
+        Log.i(TAG, "Stopping Conversation Activity ...");
         super.onStop();
     }
 
@@ -122,7 +108,7 @@ public class MainActivity extends Activity {
      */
     @Override
     protected void onDestroy() {
-        Log.i(TAG, "Destroying Main Activity ...");
+        Log.i(TAG, "Destroying Conversation Activity ...");
         super.onDestroy();
     }
 
@@ -132,7 +118,7 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(TAG, "Creating Option Menu ...");
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_conversation, menu);
         return true;
     }
 
@@ -158,31 +144,11 @@ public class MainActivity extends Activity {
         switch (e.getAction()) {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
-                // send to Firebase instead
                 //robot.listen();
                 break;
             default:
                 break;
         }
         return true;
-    }
-
-    private void initializeButtons(Button conversationButton, Button lessonButton) {
-        final Intent conversationIntent = new Intent(this, ConversationActivity.class);
-        final Intent lessonIntent = new Intent(this, LessonActivity.class);
-        conversationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                robot.shutdown();
-                startActivity(conversationIntent);
-            }
-        });
-        lessonButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                robot.shutdown();
-                startActivity(lessonIntent);
-            }
-        });
     }
 }
