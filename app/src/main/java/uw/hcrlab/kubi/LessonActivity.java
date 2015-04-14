@@ -1,13 +1,16 @@
 package uw.hcrlab.kubi;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import uw.hcrlab.kubi.screen.RobotFace;
 
@@ -69,6 +72,10 @@ public class LessonActivity extends Activity {
         Log.i(TAG, "Resuming Lesson Activity ...");
         super.onResume();
 
+        Button backButton = (Button) findViewById(R.id.backButton);
+        Button settingButton = (Button) findViewById(R.id.settingsButton);
+        initializeButtons(backButton, settingButton);
+        
         robot.startup();
     }
 
@@ -83,7 +90,7 @@ public class LessonActivity extends Activity {
     protected void onPause() {
         Log.i(TAG, "Pausing Lesson Activity ...");
         super.onPause();
-
+        
         robot.shutdown();
     }
 
@@ -144,11 +151,28 @@ public class LessonActivity extends Activity {
         switch (e.getAction()) {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
-                //robot.listen();
+                // TODO: send to Firebase
                 break;
             default:
                 break;
         }
         return true;
+    }
+
+    private void initializeButtons(Button backButton, Button settingButton) {
+        final Intent mainActivityIntent = new Intent(this, MainActivity.class);
+        backButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                robot.shutdown();
+                startActivity(mainActivityIntent);
+            }
+        });
+        settingButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                // TODO: implement this
+            }
+        });
     }
 }

@@ -158,8 +158,7 @@ public class MainActivity extends Activity {
         switch (e.getAction()) {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
-                // send to Firebase instead
-                //robot.listen();
+                // TODO: send to Firebase
                 break;
             default:
                 break;
