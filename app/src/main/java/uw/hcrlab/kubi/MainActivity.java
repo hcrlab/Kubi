@@ -1,14 +1,17 @@
 package uw.hcrlab.kubi;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -44,6 +47,10 @@ public class MainActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         robot = Robot.getInstance((RobotFace)findViewById(R.id.face), this);
+
+        Button conversationButton = (Button) findViewById(R.id.convoButton);
+        Button lessonButton = (Button) findViewById(R.id.lessonButton);
+        initializeButtons(conversationButton, lessonButton);
     }
 
     /*
@@ -157,5 +164,22 @@ public class MainActivity extends Activity {
                 break;
         }
         return true;
+    }
+
+    private void initializeButtons(Button conversationButton, Button lessonButton) {
+        final Intent conversationIntent = new Intent(this, ConversationActivity.class);
+        final Intent lessonIntent = new Intent(this, LessonActivity.class);
+        conversationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(conversationIntent);
+            }
+        });
+        lessonButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(lessonIntent);
+            }
+        });
     }
 }
