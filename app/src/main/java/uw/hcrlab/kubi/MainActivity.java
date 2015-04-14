@@ -81,7 +81,8 @@ public class MainActivity extends Activity {
 
         Button conversationButton = (Button) findViewById(R.id.convoButton);
         Button lessonButton = (Button) findViewById(R.id.lessonButton);
-        initializeButtons(conversationButton, lessonButton);
+        Button settingButton = (Button) findViewById(R.id.settingsButton);
+        initializeButtons(conversationButton, lessonButton, settingButton);
 
         robot.startup();
     }
@@ -166,7 +167,7 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    private void initializeButtons(Button conversationButton, Button lessonButton) {
+    private void initializeButtons(Button conversationButton, Button lessonButton, Button settingButton) {
         final Intent conversationIntent = new Intent(this, ConversationActivity.class);
         final Intent lessonIntent = new Intent(this, LessonActivity.class);
         conversationButton.setOnClickListener(new View.OnClickListener() {
@@ -181,6 +182,12 @@ public class MainActivity extends Activity {
             public void onClick(View view) {
                 robot.shutdown();
                 startActivity(lessonIntent);
+            }
+        });
+        settingButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                //TODO: implement this
             }
         });
     }
