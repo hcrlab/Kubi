@@ -54,13 +54,6 @@
             android:layout_gravity="bottom|right"
             android:background="@drawable/mic_button"/>
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/speechButton"
-            android:layout_gravity="right|bottom"
-            android:background="@drawable/abc_ic_voice_search_api_holo_light" />
-
         <!--<org.opencv.android.JavaCameraView-->
             <!--android:id="@+id/camera_preview"-->
             <!--android:layout_width="fill_parent"-->
