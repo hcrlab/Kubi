@@ -8,18 +8,26 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.firebase.client.AuthData;
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.revolverobotics.kubiapi.IKubiManagerDelegate;
 import com.revolverobotics.kubiapi.Kubi;
 import com.revolverobotics.kubiapi.KubiManager;
 import com.revolverobotics.kubiapi.KubiSearchResult;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import sandra.libs.asr.asrlib.ASR;
 import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
+import uw.hcrlab.kubi.wizard.Response;
 
 /**
  * Created by kimyen on 4/7/15.
@@ -41,18 +49,78 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private Context currentCxt;
 
+    private Firebase fb = new Firebase("https://hcrkubi.firebaseio.com");
+    private Firebase responses;
+
     /**
      *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
      *  are updated when getInstance() is called.
      */
-    private Robot(RobotFace face, Context context){
+    private Robot(RobotFace face, final Context context){
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
+        kubiManager.findAllKubis();
 
         createRecognizer(App.getContext());
 
-        //Setup the Robot instance with the new face
         setup(face, context);
+
+        fb.authWithPassword("hcr@cs.uw.edu", "hcrpass", new Firebase.AuthResultHandler() {
+            @Override
+            public void onAuthenticated(AuthData authData) {
+                Toast.makeText(currentCxt, "Logged In", Toast.LENGTH_SHORT);
+                Log.d(TAG, "Authenticated");
+            }
+
+            @Override
+            public void onAuthenticationError(FirebaseError firebaseError) {
+                Toast.makeText(currentCxt, "Auth Error", Toast.LENGTH_SHORT);
+                Log.e(TAG, "Authentication Error!");
+                Log.e(TAG, firebaseError.toString());
+            }
+        });
+
+        responses = fb.child("response");
+
+        responses.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot ref, String s) {
+                Log.d(TAG, "Child Added!");
+
+                if(!ref.child("handled").getValue(Boolean.class)) {
+
+                    Log.d(TAG, "Child Added - unhandled!");
+                }
+                //String res = dataSnapshot.getValue(String.class);
+                //Toast.makeText(currentCxt, "Message: " + res, Toast.LENGTH_SHORT);
+                //Log.e(TAG, res.getSpeech().getText());
+                //say(res.getSpeech().getText());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+    }
+
+    public void cleanup() {
+        kubiManager.disconnect();
     }
 
     /**
@@ -128,7 +196,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     /**
-     * Generates text-to-speech for the provided message.
+     * Generates text-to-Speech for the provided message.
      *
      * @param msg Message to speak
      */
@@ -207,11 +275,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         try {
             if(response != null){
-                //We have a preprogrammed response, so use it
+                //We have a preprogrammed Response, so use it
                 Log.i(TAG, "Saying : " + response);
                 say(response);
             }  else {
-                //We don't have a preprogrammed response, so use the bot to create a response
+                //We don't have a preprogrammed Response, so use the bot to create a Response
                 Log.i(TAG, "Default response");
                 bot.initiateQuery(speechInput);
             }
