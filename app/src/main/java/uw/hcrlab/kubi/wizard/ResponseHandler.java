@@ -22,10 +22,10 @@ public class ResponseHandler implements ChildEventListener {
     }
 
     @Override
-    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+    public void onChildAdded(DataSnapshot snap, String s) {
         Log.d(TAG, "Child Added!");
 
-        if(!ref.child("handled").getValue(Boolean.class)) {
+        if(!snap.child("handled").getValue(Boolean.class)) {
             Log.d(TAG, "Child Added - unhandled!");
         }
     }
