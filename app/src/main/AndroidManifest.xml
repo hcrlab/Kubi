@@ -15,7 +15,7 @@
     <!-- Camera permissions -->
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <!-- Speech Recognition permissions -->
+    <!-- Speech.java Recognition permissions -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
 

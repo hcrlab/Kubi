@@ -8,26 +8,23 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
-import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.revolverobotics.kubiapi.IKubiManagerDelegate;
 import com.revolverobotics.kubiapi.Kubi;
 import com.revolverobotics.kubiapi.KubiManager;
 import com.revolverobotics.kubiapi.KubiSearchResult;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import sandra.libs.asr.asrlib.ASR;
 import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
-import uw.hcrlab.kubi.wizard.Response;
+import uw.hcrlab.kubi.wizard.ResponseHandler;
 
 /**
  * Created by kimyen on 4/7/15.
@@ -49,8 +46,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private Context currentCxt;
 
-    private Firebase fb = new Firebase("https://hcrkubi.firebaseio.com");
     private Firebase responses;
+
+    private ResponseHandler _responses;
 
     /**
      *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
@@ -65,22 +63,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         setup(face, context);
 
-        fb.authWithPassword("hcr@cs.uw.edu", "hcrpass", new Firebase.AuthResultHandler() {
-            @Override
-            public void onAuthenticated(AuthData authData) {
-                Toast.makeText(currentCxt, "Logged In", Toast.LENGTH_SHORT);
-                Log.d(TAG, "Authenticated");
-            }
+        if(App.InWizardMode()) {
+            _responses = new ResponseHandler();
+        }
 
-            @Override
-            public void onAuthenticationError(FirebaseError firebaseError) {
-                Toast.makeText(currentCxt, "Auth Error", Toast.LENGTH_SHORT);
-                Log.e(TAG, "Authentication Error!");
-                Log.e(TAG, firebaseError.toString());
-            }
-        });
-
-        responses = fb.child("response");
+        responses = App.getFirebase().child("response");
 
         responses.addChildEventListener(new ChildEventListener() {
             @Override
@@ -196,7 +183,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     /**
-     * Generates text-to-Speech for the provided message.
+     * Generates text-to-Speech.java for the provided message.
      *
      * @param msg Message to speak
      */

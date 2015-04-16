@@ -47,7 +47,7 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 	private MenuItem mItemListenInput;
 
     private OldRobotFace robotFace;    // The face of the robot as shown on screen
-    private TTS tts;       			 // Convert text to Speech component of android
+    private TTS tts;       			 // Convert text to Speech.java component of android
 	private KubiManager kubiManager; // Manager that manages the connected Kubi
 
     private Bot bot;
@@ -108,10 +108,10 @@ public class OldKubiDemoActivity extends ASR implements Observer {
 //	    mOpenCvCameraView.setCvCameraViewListener(this);
 //	    */
 //
-//        // Set up text to Speech capability, using the library in TTSLib
+//        // Set up text to Speech.java capability, using the library in TTSLib
 //        tts = TTS.getInstance(this);
 //
-//		//Initialize the Speech recognizer
+//		//Initialize the Speech.java recognizer
 //		createRecognizer(getApplicationContext());
 //
 //		this.simpleResponses = new HashMap<String, String>();

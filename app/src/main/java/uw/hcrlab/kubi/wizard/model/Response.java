@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi.wizard;
+package uw.hcrlab.kubi.wizard.model;
 
 /**
  * Created by Alexander on 4/14/2015.
