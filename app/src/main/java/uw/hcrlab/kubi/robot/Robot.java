@@ -22,7 +22,7 @@ import uw.hcrlab.kubi.App;
 import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.screen.RobotFaceUtils;
 import uw.hcrlab.kubi.speech.SpeechUtils;
-import uw.hcrlab.kubi.wizard.ResponseHandler;
+import uw.hcrlab.kubi.wizard.CommandHandler;
 
 /**
  * Created by kimyen on 4/7/15.
@@ -46,7 +46,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private Context currentCxt;
 
-    private ResponseHandler responses;
+    private CommandHandler responses;
+    private CommandHandler lessons;
+    private CommandHandler questions;
+    private CommandHandler quizzes;
 
     /**
      *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
@@ -62,7 +65,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         setup(face, context);
 
         if(App.InWizardMode()) {
-            responses = new ResponseHandler(this);
+            responses = new CommandHandler("response");
+            lessons = new CommandHandler("lesson");
+            questions = new CommandHandler("question");
+            quizzes = new CommandHandler("quiz");
         }
     }
 
@@ -96,6 +102,16 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     /**
+     * This version will not create a new robot or setup the current robot, it will simply provide
+     * the current instance
+     *
+     * @return The current robot instance
+     */
+    public static Robot getInstance() {
+        return robotInstance;
+    }
+
+    /**
      * Handles the setup actions which must occur every time a new face is passed in.
      *
      * @param face The RobotFace view for the current Activity
@@ -125,6 +141,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         if(App.InWizardMode()) {
             responses.Listen();
+            lessons.Listen();
+            questions.Listen();
+            quizzes.Listen();
         }
     }
 
@@ -138,6 +157,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             try {
                 if(App.InWizardMode()) {
                     responses.Stop();
+                    lessons.Stop();
+                    questions.Stop();
+                    quizzes.Stop();
                 }
 
                 if(thread != null) {

@@ -6,22 +6,19 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 
 import uw.hcrlab.kubi.robot.Action;
-import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.wizard.model.Speech;
 import uw.hcrlab.kubi.wizard.model.Task;
 
 /**
  * Created by Alexander on 4/16/2015.
+ *
+ * Handles general commands such as responses, lessons, quizzes, and questions
  */
-public class ResponseHandler extends WizardHandler {
-    public static String TAG = ResponseHandler.class.getSimpleName();
+public class CommandHandler extends WizardHandler {
+    public static String TAG = CommandHandler.class.getSimpleName();
 
-    private Robot kubi;
-
-    public ResponseHandler(Robot kubi) {
-        super("response");
-
-        this.kubi = kubi;
+    public CommandHandler(String ref) {
+        super(ref);
     }
 
     @Override
@@ -31,20 +28,25 @@ public class ResponseHandler extends WizardHandler {
                 Task res = taskData.getValue(Task.class);
 
                 Speech sp = res.getSpeech();
-
                 if(sp != null) {
-                    kubi.say(sp.getText(), sp.getLanguage());
+                    robot.say(sp.getText(), sp.getLanguage());
                 }
 
                 String action = res.getAction();
-
                 if(action != null) {
-                    kubi.act(Action.valueOf(action));
+                    Log.d(TAG, "Got action request: " + action);
+                    robot.act(Action.valueOf(action));
                 }
 
-                String expr = res.getExpr();
+                String image = res.getImage();
+                if(image != null) {
+                    Log.d(TAG, "You need to display an image!");
+                }
 
-                //What do we do with expressions?
+                String[] buttons = res.getButtons();
+                if(buttons != null) {
+                    Log.d(TAG, "You need to display buttons!");
+                }
             }
 
             snap.child("handled").getRef().setValue(true);
