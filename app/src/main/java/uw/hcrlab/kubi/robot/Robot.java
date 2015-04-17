@@ -199,7 +199,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void act(Action action) {
-        RobotFaceUtils.showAction(robotFace, action);
+        thread.act(action);
     }
 
     /**

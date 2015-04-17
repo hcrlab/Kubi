@@ -6,6 +6,7 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 
 import uw.hcrlab.kubi.robot.Action;
+import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.wizard.model.Speech;
 import uw.hcrlab.kubi.wizard.model.Task;
 
@@ -26,6 +27,10 @@ public class CommandHandler extends WizardHandler {
         if(!snap.child("handled").getValue(Boolean.class)) {
             for (DataSnapshot taskData : snap.child("tasks").getChildren()) {
                 Task res = taskData.getValue(Task.class);
+
+                if(robot == null) {
+                    robot = Robot.getInstance();
+                }
 
                 Speech sp = res.getSpeech();
                 if(sp != null) {

@@ -50,6 +50,7 @@ public class RobotFace extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int arg1, int arg2, int arg3) {
+        //TODO: Should this occur here? All calls to showAction should happen from RobotThread
 		RobotFaceUtils.showAction(this, Action.BLINK);
 	}
 
