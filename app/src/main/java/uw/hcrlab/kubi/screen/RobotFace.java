@@ -1,15 +1,13 @@
 package uw.hcrlab.kubi.screen;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PointF;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.util.ArrayList;
-import java.util.Observer;
+import uw.hcrlab.kubi.robot.Action;
+import uw.hcrlab.kubi.robot.State;
 
 public class RobotFace extends SurfaceView implements SurfaceHolder.Callback {
 	private RobotEye leftEye;

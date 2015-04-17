@@ -5,6 +5,8 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
 
+import uw.hcrlab.kubi.robot.State;
+
 /**
  * This class contains methods that draw the robot eye.
  * 

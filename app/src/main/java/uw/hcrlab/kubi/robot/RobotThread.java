@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi;
+package uw.hcrlab.kubi.robot;
 
 import android.util.Log;
 
@@ -9,7 +9,6 @@ import java.util.Random;
 
 import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.screen.RobotFaceUtils;
-import uw.hcrlab.kubi.screen.Action;
 
 /**
  * Created by kimyen on 4/5/15.
