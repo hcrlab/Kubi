@@ -301,4 +301,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         Log.e(TAG, "Error: "+ errorMessage);
         Toast.makeText(currentCxt, errorMessage, Toast.LENGTH_LONG).show();
     }
+
+    public boolean isAsSleep(){
+        return thread.isAsleep();
+    }
 }

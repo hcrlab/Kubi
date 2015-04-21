@@ -116,18 +116,20 @@ public class RobotThread extends Thread {
         }
     }
 
-    private void kubiLookAround() {
-        try {
-            kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM);
-        } catch (Throwable e) {}
+    public boolean isAsleep(){
+        return this.isAsleep;
     }
 
     public void setRunning(boolean running) {
         this.isRunning = running;
-        /*if (!running) {
-            RobotFaceUtils.showAction(robotFace, Action.BLINK);
-            kubiFaceDown();
-        }*/
+    }
+
+    /* private methods */
+
+    private void kubiLookAround() {
+        try {
+            kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM);
+        } catch (Throwable e) {}
     }
 
     private void kubiFaceDown() {
@@ -139,7 +141,7 @@ public class RobotThread extends Thread {
     }
 
     private long getNextSleepTime() {
-        return System.currentTimeMillis() + SLEEP_TIME; // + random.nextInt(10) * 60 * 1000;
+        return System.currentTimeMillis() + SLEEP_TIME; //+ random.nextInt(10) * 60 * 1000;
     }
 
     private long getNextBlinkTime() {

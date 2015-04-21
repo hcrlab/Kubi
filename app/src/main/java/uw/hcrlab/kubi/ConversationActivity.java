@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import uw.hcrlab.kubi.robot.Action;
 import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.screen.RobotFace;
 
@@ -179,6 +180,9 @@ public class ConversationActivity extends Activity {
         micButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                if (robot.isAsSleep()) {
+                    robot.act(Action.WAKE);
+                }
                 robot.listen();
             }
         });
