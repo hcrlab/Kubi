@@ -61,7 +61,7 @@ public abstract class ASR implements RecognitionListener{
 	
 	/**
 	 * Creates the single SpeechRecognizer instance and assigns a listener
-	 * @see CustomRecognitionListener.java
+	 * see CustomRecognitionListener.java
 	 * @param ctx context of the interaction
 	 * */
 	public void createRecognizer(Context ctx) {
@@ -143,6 +143,7 @@ public abstract class ASR implements RecognitionListener{
 			}
 		}
 		else
+            Log.i(LIB_LOGTAG, "Error: No Matching Message");
 			processAsrError(SpeechRecognizer.ERROR_NO_MATCH);
 	}
 

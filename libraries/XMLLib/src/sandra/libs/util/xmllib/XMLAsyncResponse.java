@@ -24,7 +24,7 @@ package sandra.libs.util.xmllib;
 
 /**
  * Interface to send results back from an AsyncTask to the invoking activity
- * @see http://stackoverflow.com/questions/12575068/how-to-get-the-result-of-onpostexecute-to-main-activity-because-asynctask-is-a
+ * see http://stackoverflow.com/questions/12575068/how-to-get-the-result-of-onpostexecute-to-main-activity-because-asynctask-is-a
  * 
  * @author Zoraida Callejas
  * @author Michael McTear

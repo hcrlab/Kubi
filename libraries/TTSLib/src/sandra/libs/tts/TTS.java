@@ -40,8 +40,8 @@ import android.util.Log;
  *  
  * @version 2.2, 07/17/13
  * 
- * @see http://gl.wikipedia.org/wiki/Singleton
- * @see http://developer.android.com/reference/android/speech/tts/TextToSpeech.html
+ * see http://gl.wikipedia.org/wiki/Singleton
+ * see http://developer.android.com/reference/android/speech/tts/TextToSpeech.html
  */
 public class TTS implements OnInitListener{
 
