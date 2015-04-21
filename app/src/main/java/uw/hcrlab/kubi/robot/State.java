@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi.screen;
+package uw.hcrlab.kubi.robot;
 
 public enum State {
 	SAD, 

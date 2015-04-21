@@ -15,6 +15,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE'
+    }
 }
 
 dependencies {
@@ -24,4 +30,5 @@ dependencies {
     compile project(':libraries:TTSLib')
     compile project(':libraries:VPALib')
     compile project(':libraries:ASRLib')
+    compile 'com.firebase:firebase-client-android:2.2.3+'
 }

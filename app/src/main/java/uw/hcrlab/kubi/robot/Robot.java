@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi;
+package uw.hcrlab.kubi.robot;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,8 +18,11 @@ import java.util.ArrayList;
 import sandra.libs.asr.asrlib.ASR;
 import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
+import uw.hcrlab.kubi.App;
 import uw.hcrlab.kubi.screen.RobotFace;
+import uw.hcrlab.kubi.screen.RobotFaceUtils;
 import uw.hcrlab.kubi.speech.SpeechUtils;
+import uw.hcrlab.kubi.wizard.CommandHandler;
 
 /**
  * Created by kimyen on 4/7/15.
@@ -28,6 +31,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     public static String TAG = Robot.class.getSimpleName();
 
     private static Robot robotInstance = null;
+
+    private String mDefaultLanguage = "EN";
 
     private RobotThread thread;
     private RobotFace robotFace;
@@ -41,18 +46,34 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private Context currentCxt;
 
+    private CommandHandler responses;
+    private CommandHandler lessons;
+    private CommandHandler questions;
+    private CommandHandler quizzes;
+
     /**
      *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
      *  are updated when getInstance() is called.
      */
-    private Robot(RobotFace face, Context context){
+    private Robot(RobotFace face, final Context context){
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
+        kubiManager.findAllKubis();
 
         createRecognizer(App.getContext());
 
-        //Setup the Robot instance with the new face
         setup(face, context);
+
+        if(App.InWizardMode()) {
+            responses = new CommandHandler("response");
+            lessons = new CommandHandler("lesson");
+            questions = new CommandHandler("question");
+            quizzes = new CommandHandler("quiz");
+        }
+    }
+
+    public void cleanup() {
+        kubiManager.disconnect();
     }
 
     /**
@@ -81,6 +102,16 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     /**
+     * This version will not create a new robot or setup the current robot, it will simply provide
+     * the current instance
+     *
+     * @return The current robot instance
+     */
+    public static Robot getInstance() {
+        return robotInstance;
+    }
+
+    /**
      * Handles the setup actions which must occur every time a new face is passed in.
      *
      * @param face The RobotFace view for the current Activity
@@ -94,20 +125,26 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         tts = TTS.getInstance(context);
         bot = new Bot((Activity)context, PANDORA_BOT_ID, tts);
-
-        thread = new RobotThread(robotFace, kubiManager);
     }
 
     /**
      * Starts the robot by starting the RobotThread if it has not already been started.
      */
     public void startup() {
-        if (thread.isAlive()) {
+        if (thread != null) {
             Log.i(TAG, "Robot already started ...");
             return;
         }
 
+        thread = new RobotThread(robotFace, kubiManager);
         thread.start();
+
+        if(App.InWizardMode()) {
+            responses.Listen();
+            lessons.Listen();
+            questions.Listen();
+            quizzes.Listen();
+        }
     }
 
     /**
@@ -118,8 +155,19 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         while (true) {
             try {
-                thread.setRunning(false);
-                thread.join();
+                if(App.InWizardMode()) {
+                    responses.Stop();
+                    lessons.Stop();
+                    questions.Stop();
+                    quizzes.Stop();
+                }
+
+                if(thread != null) {
+                    thread.setRunning(false);
+                    thread.join();
+                    thread = null;
+                }
+
                 return;
             } catch (InterruptedException e) {
                 Log.e(TAG, "Robot thread didn't join. Trying again.");
@@ -128,15 +176,24 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     /**
-     * Generates text-to-speech for the provided message.
+     * Generates text-to-Speech.java for the provided message.
      *
      * @param msg Message to speak
      */
-    public void say(String msg) {
+    public void say(String msg, String language) {
         try {
-            tts.speak(msg, "EN");
+            tts.speak(msg, language);
         } catch (Exception e) {
-            Log.e(TAG, "English not available for TTS, default language used instead");
+            Log.e(TAG, language + " not available for TTS, default language used instead");
+        }
+    }
+
+    public void say(String msg, String language, int speed) {
+        try {
+            tts.setRate(speed / 100.0f);
+            tts.speak(msg, language);
+        } catch (Exception e) {
+            Log.e(TAG, language + " not available for TTS, default language used instead");
         }
     }
 
@@ -150,13 +207,17 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }
     }
 
+    public void act(Action action) {
+        thread.act(action);
+    }
+
     /**
      * Touch listener for the RobotFace
      */
     private View.OnTouchListener faceListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            Log.i(TAG, "RobotFace touch occured!");
+            Log.i(TAG, "RobotFace touch occurred!");
             return false;
         }
     };
@@ -172,7 +233,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     @Override
     public void kubiManagerFailed(KubiManager manager, int reason) {
-        Log.i(TAG, "Failed. Reason: " + reason);
+        Log.i(TAG, "Kubi Manager Failed: " + reason);
         if (reason == KubiManager.FAIL_CONNECTION_LOST || reason == KubiManager.FAIL_DISTANCE) {
             manager.findAllKubis();
         }
@@ -207,11 +268,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         try {
             if(response != null){
-                //We have a preprogrammed response, so use it
+                //We have a preprogrammed Response, so use it
                 Log.i(TAG, "Saying : " + response);
-                say(response);
+                say(response, mDefaultLanguage);
             }  else {
-                //We don't have a preprogrammed response, so use the bot to create a response
+                //We don't have a preprogrammed Response, so use the bot to create a Response
                 Log.i(TAG, "Default response");
                 bot.initiateQuery(speechInput);
             }
@@ -232,7 +293,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         String errorMessage = SpeechUtils.getErrorMessage(errorCode);
 
         if (errorMessage != null) {
-            say(errorMessage);
+            say(errorMessage, mDefaultLanguage);
         }
 
         // If there is an error, shows feedback to the user and writes it in the log

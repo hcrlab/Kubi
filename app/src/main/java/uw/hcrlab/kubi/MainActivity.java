@@ -3,7 +3,6 @@ package uw.hcrlab.kubi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,14 +11,9 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-
-import sandra.libs.asr.asrlib.ASR;
-import sandra.libs.vpa.vpalib.Bot;
+import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.screen.RobotFace;
-import uw.hcrlab.kubi.speech.SpeechUtils;
 
 
 public class MainActivity extends Activity {
@@ -125,33 +119,6 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         Log.i(TAG, "Destroying Main Activity ...");
         super.onDestroy();
-    }
-
-    /* Setting up the Menu */
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "Creating Option Menu ...");
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.i(TAG, "Called onOptionsItemSelected; selected item: " + item);
-        /*
-         Handle action bar item clicks here. The action bar will automatically handle clicks on the Home/Up button,
-         so long as you specify a parent activity in AndroidManifest.xml.
-          */
-        int id = item.getItemId();
-
-        // TODO: modify this if to map with options
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /* Touch events */

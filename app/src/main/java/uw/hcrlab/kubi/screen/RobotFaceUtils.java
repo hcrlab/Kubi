@@ -6,6 +6,9 @@ import android.graphics.Paint.Style;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
+import uw.hcrlab.kubi.robot.Action;
+import uw.hcrlab.kubi.robot.State;
+
 /**
  * This class contains methods that animate the robot face action.
  * The animation happens in a constant speed, which is bad.
