@@ -79,12 +79,12 @@ public class RobotEyeUtils {
 		paint.setColor(ScreenConstants.EYE_COLOR);
 		// draw the bottom bound
 		RectF rect = generateRectangle(robotEye);
-		canvas.drawArc(rect, 0, 180, true, paint);
+		canvas.drawArc(rect, 0, 180, false, paint);
 		// draw the top bound
 		rect = generateRectangle(robotEye.getCoordinate().x, robotEye.getCoordinate().y,
 				robotEye.getRadius(), Math.abs(robotEye.getRadius() - i));
 		if (robotEye.getRadius() > i) {
-			canvas.drawArc(rect, 180, 180, true, paint);
+			canvas.drawArc(rect, 180, 180, false, paint);
 		} else {
 			paint.setColor(ScreenConstants.BACKGROUND_COLOR);
 			canvas.drawArc(rect, 0, 180, true, paint);
