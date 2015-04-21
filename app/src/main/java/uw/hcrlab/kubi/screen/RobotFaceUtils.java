@@ -430,7 +430,7 @@ public class RobotFaceUtils {
 		SurfaceHolder holder = face.getHolder();
 		
 		// goes back to normal
-		for (int i = (int) (ScreenConstants.DEFAULT_EYE_RADIUS * 2); i > 0; i -= 20) {
+		for (int i = (int) (ScreenConstants.DEFAULT_EYE_RADIUS * 2); i > 0; i -= 15) {
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -541,8 +541,8 @@ public class RobotFaceUtils {
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
-                    RobotEyeUtils.MoveEyeVertical(canvas, paint, face.getLeftEye(), -50);
-                    RobotEyeUtils.MoveEyeVertical(canvas, paint, face.getRightEye(), -50);
+                    RobotEyeUtils.moveEyeVertical(canvas, paint, face.getLeftEye(), -50, State.HAPPY);
+                    RobotEyeUtils.moveEyeVertical(canvas, paint, face.getRightEye(), -50, State.HAPPY);
 				}
 			} finally {
 				if (canvas != null) {
@@ -627,7 +627,7 @@ public class RobotFaceUtils {
 		SurfaceHolder holder = face.getHolder();
 		
 		// closing the right eye
-		for (int i = 0; i < ScreenConstants.DEFAULT_EYE_RADIUS * 2; i += 100 ){
+		for (int i = 0; i <= ScreenConstants.DEFAULT_EYE_RADIUS * 2; i += 100 ){
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {

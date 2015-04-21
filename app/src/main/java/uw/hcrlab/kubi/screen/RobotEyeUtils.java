@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.provider.SyncStateContract;
 
 import uw.hcrlab.kubi.robot.State;
 
@@ -61,12 +62,12 @@ public class RobotEyeUtils {
 		paint.setColor(ScreenConstants.EYE_COLOR);
 		// draw the top bound
 		RectF rect = generateRectangle(robotEye);
-		canvas.drawArc(rect, 180, 180, true, paint);
+		canvas.drawArc(rect, 180, 180, false, paint);
 		// draw the bottom bound
 		rect = generateRectangle(robotEye.getCoordinate().x, robotEye.getCoordinate().y,
 				robotEye.getRadius(), Math.abs(robotEye.getRadius() - i));
 		if (robotEye.getRadius() > i) {
-			canvas.drawArc(rect, 0, 180, true, paint);
+			canvas.drawArc(rect, 0, 180, false, paint);
 		} else {
 			paint.setColor(ScreenConstants.BACKGROUND_COLOR);
 			canvas.drawArc(rect, 180, 180, true, paint);
@@ -77,6 +78,7 @@ public class RobotEyeUtils {
 
 	public static void moveUpperLid(Canvas canvas, Paint paint, RobotEye robotEye, int i) {
 		paint.setColor(ScreenConstants.EYE_COLOR);
+        paint.setStyle(ScreenConstants.FILL_STYLE);
 		// draw the bottom bound
 		RectF rect = generateRectangle(robotEye);
 		canvas.drawArc(rect, 0, 180, false, paint);
@@ -95,14 +97,18 @@ public class RobotEyeUtils {
 
 	public static void moveBothLids(Canvas canvas, Paint paint, RobotEye robotEye, int i) {
 		canvas.save();
-		//canvas.rotate(ALPHA, robotEye.getCoordinate().x, robotEye.getCoordinate().y);
+        if (robotEye.getSide() == EyeSide.LEFT) {
+            canvas.rotate(ScreenConstants.ALPHA, robotEye.getCoordinate().x, robotEye.getCoordinate().y);
+        } else {
+            canvas.rotate(-ScreenConstants.ALPHA, robotEye.getCoordinate().x, robotEye.getCoordinate().y);
+        }
 		paint.setColor(ScreenConstants.EYE_COLOR);
 		RectF rect = generateRectangle(robotEye.getCoordinate().x, robotEye.getCoordinate().y,
 				robotEye.getRadius(), Math.abs(robotEye.getRadius() - i));
 		canvas.drawOval(rect, paint);
 		// draw iris
 		drawIris(canvas, paint, robotEye);
-		//canvas.restore();
+		canvas.restore();
 	}
 
 	public static void drawEnlargePupil(Canvas canvas, Paint paint, RobotEye robotEye, float a, float b) {
@@ -111,16 +117,17 @@ public class RobotEyeUtils {
 	}
 
 	public static void expandEye(Canvas canvas, Paint paint, RobotEye robotEye, float i) {
-		RobotEye newEye = robotEye.copy();
-		newEye.setIrisRadius(robotEye.getIrisRadius() + i);
-		newEye.setRadius(robotEye.getRadius() + i/2);
-		drawEye(canvas, paint, newEye, State.NORMAL);
+        robotEye.setIrisRadius(robotEye.getIrisRadius() + i);
+        robotEye.setRadius(robotEye.getRadius() + i/2);
+		drawEye(canvas, paint, robotEye, State.NORMAL);
+        robotEye.setIrisRadius(robotEye.getIrisRadius() - i);
+        robotEye.setRadius(robotEye.getRadius() - i/2);
 	}
 
-	public static void MoveEyeVertical(Canvas canvas, Paint paint, RobotEye robotEye, float i) {
-		RobotEye newEye = robotEye.copy();
-		newEye.getCoordinate().set(robotEye.getCoordinate().x, robotEye.getCoordinate().y + i);
-		drawEye(canvas, paint, newEye, State.NORMAL);
+	public static void moveEyeVertical(Canvas canvas, Paint paint, RobotEye robotEye, float i, State state) {
+        robotEye.getCoordinate().set(robotEye.getCoordinate().x, robotEye.getCoordinate().y + i);
+		drawEye(canvas, paint, robotEye, state);
+        robotEye.getCoordinate().set(robotEye.getCoordinate().x, robotEye.getCoordinate().y - i);
 	}
 
 	public static void changeAngle(Canvas canvas, Paint paint, RobotEye robotEye, float alpha) {
@@ -132,9 +139,15 @@ public class RobotEyeUtils {
 
 	/* move the iris i to the right and j down */
 	public static void moveIris(Canvas canvas, Paint paint, RobotEye robotEye, float i, float j) {
-		RobotEye newEye = robotEye.copy();
-		newEye.getIrisCoordinate().set(robotEye.getIrisCoordinate().x + i, robotEye.getIrisCoordinate().y + j);
-		drawEye(canvas, paint, newEye, State.NORMAL);
+        paint.setStyle(ScreenConstants.FILL_STYLE);
+        paint.setColor(ScreenConstants.EYE_COLOR);
+        // Draw the outer shape of the eye
+        drawEyeShape(canvas, paint, State.NORMAL, robotEye);
+
+        // Draw the iris
+        paint.setColor(ScreenConstants.IRIS_COLOR);
+        canvas.drawCircle(robotEye.getIrisCoordinate().x + i, robotEye.getIrisCoordinate().y + j,
+                robotEye.getIrisRadius(), paint);
 	}
 
 	/* move the iris x to the right and y down */
@@ -241,7 +254,6 @@ public class RobotEyeUtils {
 
 	/*
 	 * This method draws bottom half circle with stroke style
-	 * TODO: test this method
 	 */
 	private static void drawSleepShape(Canvas canvas, Paint paint, RobotEye robotEye) {
 		paint.setStyle(ScreenConstants.STROKE_STYLE);

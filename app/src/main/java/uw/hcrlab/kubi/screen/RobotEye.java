@@ -39,10 +39,6 @@ public class RobotEye {
 		this.side = side;
 	}
 
-    public RobotEye copy() {
-        return this.copy();
-    }
-
 	public PointF getCoordinate() {
 		return coordinate;
 	}
