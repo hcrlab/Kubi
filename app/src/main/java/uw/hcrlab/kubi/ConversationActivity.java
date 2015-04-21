@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.screen.RobotFace;
 
 

@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi;
+package uw.hcrlab.kubi.robot;
 
 import android.util.Log;
 
@@ -6,10 +6,10 @@ import com.revolverobotics.kubiapi.Kubi;
 import com.revolverobotics.kubiapi.KubiManager;
 
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.screen.RobotFaceUtils;
-import uw.hcrlab.kubi.screen.Action;
 
 /**
  * Created by kimyen on 4/5/15.
@@ -18,6 +18,8 @@ public class RobotThread extends Thread {
     /* injected from MainActivity */
     private final RobotFace robotFace;
     private final KubiManager kubiManager;
+
+    private ConcurrentLinkedQueue<Action> queue = new ConcurrentLinkedQueue<Action>();
 
     /* Class variables */
     private static final String TAG = RobotThread.class.getSimpleName();
@@ -53,6 +55,10 @@ public class RobotThread extends Thread {
         nextBoringTime = getNextBoringTime();
     }
 
+    public void act(Action action) {
+        queue.add(action);
+    }
+
     @Override
     public void run() {
         Log.d(TAG, "Starting the main loop");
@@ -70,15 +76,25 @@ public class RobotThread extends Thread {
                         isRunning = false;
                     }
 
-                    if (Math.abs(System.currentTimeMillis() - nextBlinkTime) < EPSILON)  {
-                        Log.i(TAG, "Blink at " + System.currentTimeMillis());
-                        RobotFaceUtils.showAction(robotFace, Action.BLINK);
+                    Action action = queue.poll();
+                    if(action != null) {
+                        Log.d(TAG, action.toString() + " at " + System.currentTimeMillis());
+                        RobotFaceUtils.showAction(robotFace, action);
+
                         nextBlinkTime = getNextBlinkTime();
-                    }
-                    if (Math.abs(System.currentTimeMillis() - nextBoringTime) < EPSILON) {
-                        Log.i(TAG, "Look around at " + System.currentTimeMillis());
-                        kubiLookAround();
+                        nextSleepTime = getNextSleepTime();
                         nextBoringTime = getNextBoringTime();
+                    } else {
+                        if (Math.abs(System.currentTimeMillis() - nextBlinkTime) < EPSILON) {
+                            Log.i(TAG, "Blink at " + System.currentTimeMillis());
+                            RobotFaceUtils.showAction(robotFace, Action.BLINK);
+                            nextBlinkTime = getNextBlinkTime();
+                        }
+                        if (Math.abs(System.currentTimeMillis() - nextBoringTime) < EPSILON) {
+                            Log.i(TAG, "Look around at " + System.currentTimeMillis());
+                            kubiLookAround();
+                            nextBoringTime = getNextBoringTime();
+                        }
                     }
                 }
 
