@@ -218,6 +218,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             Log.i(TAG, "RobotFace touch occurred!");
+            act(Action.WAKE);
             return false;
         }
     };

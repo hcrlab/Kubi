@@ -24,13 +24,14 @@ public class RobotThread extends Thread {
     /* Class variables */
     private static final String TAG = RobotThread.class.getSimpleName();
     private boolean isRunning;
+    private boolean isAsleep;
 
     /* Idle behavior periods */
 
     // the different between real time and calculated time to perform an action
     private final long EPSILON = 100;
     // sleep after 11 minutes
-    private final long SLEEP_TIME = 11 * 60 * 1000;
+    private final long SLEEP_TIME = 20 * 1000; //11 * 60 * 1000;
     // blink after 5 seconds
     private final long BLINK_TIME = 5 * 1000;
     // look around every 3 minutes
@@ -49,6 +50,7 @@ public class RobotThread extends Thread {
         this.robotFace = robotFace;
         this.kubiManager = kubiManager;
         this.isRunning = true;
+        this.isAsleep = false;
 
         nextSleepTime = getNextSleepTime();
         nextBlinkTime = getNextBlinkTime();
@@ -68,23 +70,33 @@ public class RobotThread extends Thread {
         while (isRunning) {
             try {
                 synchronized (robotFace) {
-                    if (Math.abs(System.currentTimeMillis() - nextSleepTime) < EPSILON) {
+                    if (!isAsleep && Math.abs(System.currentTimeMillis() - nextSleepTime) < EPSILON) {
                         Log.i(TAG, "Sleep at " + System.currentTimeMillis());
                         RobotFaceUtils.showAction(robotFace, Action.SLEEP);
                         kubiFaceDown();
-                        nextSleepTime = 0;
-                        isRunning = false;
+                        isAsleep = true;
                     }
 
                     Action action = queue.poll();
+
                     if(action != null) {
                         Log.d(TAG, action.toString() + " at " + System.currentTimeMillis());
-                        RobotFaceUtils.showAction(robotFace, action);
+
+                        //Ignore !Asleep and action == WAKE
+                        if(isAsleep || action != Action.WAKE) {
+                            if(isAsleep && action != Action.WAKE) {
+                                RobotFaceUtils.showAction(robotFace, Action.WAKE);
+                            }
+
+                            isAsleep = false;
+
+                            RobotFaceUtils.showAction(robotFace, action);
+                        }
 
                         nextBlinkTime = getNextBlinkTime();
                         nextSleepTime = getNextSleepTime();
                         nextBoringTime = getNextBoringTime();
-                    } else {
+                    } else if (!isAsleep){
                         if (Math.abs(System.currentTimeMillis() - nextBlinkTime) < EPSILON) {
                             Log.i(TAG, "Blink at " + System.currentTimeMillis());
                             RobotFaceUtils.showAction(robotFace, Action.BLINK);
@@ -96,6 +108,8 @@ public class RobotThread extends Thread {
                             nextBoringTime = getNextBoringTime();
                         }
                     }
+
+                    Thread.sleep(250, 0);
                 }
 
             } catch (Exception e) {}
@@ -125,7 +139,7 @@ public class RobotThread extends Thread {
     }
 
     private long getNextSleepTime() {
-        return System.currentTimeMillis() + SLEEP_TIME + random.nextInt(10) * 60 * 1000;
+        return System.currentTimeMillis() + SLEEP_TIME; // + random.nextInt(10) * 60 * 1000;
     }
 
     private long getNextBlinkTime() {
