@@ -109,14 +109,14 @@ public class RobotEyeUtils {
 	}
 
 	public static void expandEye(Canvas canvas, Paint paint, RobotEye robotEye, float i) {
-		RobotEye newEye = robotEye;
+		RobotEye newEye = robotEye.copy();
 		newEye.setIrisRadius(robotEye.getIrisRadius() + i);
 		newEye.setRadius(robotEye.getRadius() + i/2);
 		drawEye(canvas, paint, newEye, State.NORMAL);
 	}
 
 	public static void MoveEyeVertical(Canvas canvas, Paint paint, RobotEye robotEye, float i) {
-		RobotEye newEye = robotEye;
+		RobotEye newEye = robotEye.copy();
 		newEye.getCoordinate().set(robotEye.getCoordinate().x, robotEye.getCoordinate().y + i);
 		drawEye(canvas, paint, newEye, State.NORMAL);
 	}
@@ -130,13 +130,13 @@ public class RobotEyeUtils {
 
 	/* move the iris i to the right and j down */
 	public static void moveIris(Canvas canvas, Paint paint, RobotEye robotEye, float i, float j) {
-		RobotEye newEye = robotEye;
+		RobotEye newEye = robotEye.copy();
 		newEye.getIrisCoordinate().set(robotEye.getIrisCoordinate().x + i, robotEye.getIrisCoordinate().y + j);
 		drawEye(canvas, paint, newEye, State.NORMAL);
 	}
 
 	/* move the iris x to the right and y down */
-	public static void moveUpperLidsAndIri(Canvas canvas, Paint paint, RobotEye robotEye, float i, float x, float y) {
+	public static void moveUpperLidsAndIris(Canvas canvas, Paint paint, RobotEye robotEye, float i, float x, float y) {
 		paint.setColor(ScreenConstants.EYE_COLOR);
 		// draw the bottom bound
 		RectF rect = generateRectangle(robotEye);

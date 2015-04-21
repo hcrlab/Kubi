@@ -461,8 +461,8 @@ public class RobotFaceUtils {
 				synchronized (holder) {
 					// clear the screen
 					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-                    RobotEyeUtils.moveUpperLidsAndIri(canvas, paint, face.getLeftEye(), i, 0, i/3);
-                    RobotEyeUtils.moveUpperLidsAndIri(canvas, paint, face.getRightEye(), i, 0, i/3);
+                    RobotEyeUtils.moveUpperLidsAndIris(canvas, paint, face.getLeftEye(), i, 0, i/3);
+                    RobotEyeUtils.moveUpperLidsAndIris(canvas, paint, face.getRightEye(), i, 0, i/3);
 				}
 			} finally {
 				if (canvas != null) {
