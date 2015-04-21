@@ -34,7 +34,7 @@ public class CommandHandler extends WizardHandler {
 
                 Speech sp = res.getSpeech();
                 if(sp != null) {
-                    robot.say(sp.getText(), sp.getLanguage());
+                    robot.say(sp.getText(), sp.getLanguage(), sp.getSpeed());
                 }
 
                 String action = res.getAction();

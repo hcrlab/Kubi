@@ -46,7 +46,8 @@ import android.util.Log;
 public class TTS implements OnInitListener{
 
 	private TextToSpeech myTTS;		
-	private static TTS singleton;	
+	private static TTS singleton;
+	private boolean mResetRate = false;
 	
 	private static final String LOGTAG = "TTS";
 	
@@ -149,7 +150,10 @@ public class TTS implements OnInitListener{
 	 */
 	public void speak(String text, String languageCode, String countryCode) throws Exception{
 		setLocale(languageCode, countryCode);
-		myTTS.speak(text, TextToSpeech.QUEUE_ADD, null); 		
+		myTTS.speak(text, TextToSpeech.QUEUE_ADD, null);
+
+		if(mResetRate)
+			myTTS.setSpeechRate(1.0f);
 	}
 	
 	/**
@@ -162,7 +166,10 @@ public class TTS implements OnInitListener{
 	 */
 	public void speak(String text, String languageCode) throws Exception{
 		setLocale(languageCode);
-		myTTS.speak(text, TextToSpeech.QUEUE_ADD, null); 		
+		myTTS.speak(text, TextToSpeech.QUEUE_ADD, null);
+
+		if(mResetRate)
+			myTTS.setSpeechRate(1.0f);
 	}
 	
 	/**
@@ -172,9 +179,16 @@ public class TTS implements OnInitListener{
 	 */
 	public void speak(String text){
 		setLocale();
-		myTTS.speak(text, TextToSpeech.QUEUE_ADD, null); 		
+		myTTS.speak(text, TextToSpeech.QUEUE_ADD, null);
+
+		if(mResetRate)
+			myTTS.setSpeechRate(1.0f);
 	}
-	
+
+	public void setRate(float rate) {
+		myTTS.setSpeechRate(rate);
+		mResetRate = true;
+	}
 	/**
 	 * Stops the synthesizer if it is speaking 
 	 */
