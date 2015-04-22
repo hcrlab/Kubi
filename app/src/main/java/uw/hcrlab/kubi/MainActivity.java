@@ -79,6 +79,7 @@ public class MainActivity extends Activity {
         initializeButtons(conversationButton, lessonButton, settingButton);
 
         robot.startup();
+        App.FbConnect();
     }
 
     /*
@@ -93,6 +94,7 @@ public class MainActivity extends Activity {
         Log.i(TAG, "Pausing Main Activity ...");
         super.onPause();
 
+        App.FbDisconnect();
         robot.shutdown();
     }
 
