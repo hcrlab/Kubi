@@ -30,8 +30,8 @@ public class RobotThread extends Thread {
 
     // the different between real time and calculated time to perform an action
     private final long EPSILON = 100;
-    // sleep after 11 minutes
-    private final long SLEEP_TIME = 20 * 1000; //11 * 60 * 1000;
+    // sleep after 10 minutes
+    private final long SLEEP_TIME = 10 * 60 * 1000;
     // blink after 5 seconds
     private final long BLINK_TIME = 5 * 1000;
     // look around every 3 minutes
@@ -139,7 +139,7 @@ public class RobotThread extends Thread {
     }
 
     private long getNextSleepTime() {
-        return System.currentTimeMillis() + SLEEP_TIME; // + random.nextInt(10) * 60 * 1000;
+        return System.currentTimeMillis() + SLEEP_TIME;
     }
 
     private long getNextBlinkTime() {

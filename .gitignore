@@ -26,7 +26,6 @@ local.properties
 build/
 project.properties
 *.iml
-*/*.iml
 
 # Eclipse project files
 .classpath
