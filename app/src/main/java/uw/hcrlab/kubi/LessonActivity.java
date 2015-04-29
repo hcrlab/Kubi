@@ -78,6 +78,7 @@ public class LessonActivity extends Activity {
         initializeButtons(backButton, settingButton);
         
         robot.startup();
+        App.FbConnect();
     }
 
     /*
@@ -91,7 +92,8 @@ public class LessonActivity extends Activity {
     protected void onPause() {
         Log.i(TAG, "Pausing Lesson Activity ...");
         super.onPause();
-        
+
+        App.FbDisconnect();
         robot.shutdown();
     }
 
