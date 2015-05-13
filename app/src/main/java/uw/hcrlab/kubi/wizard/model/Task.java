@@ -5,6 +5,7 @@ package uw.hcrlab.kubi.wizard.model;
  */
 public class Task {
     private Speech speech;
+    private String emotion;
     private String action;
     private String image;
     private String[] buttons;
@@ -12,8 +13,9 @@ public class Task {
     @SuppressWarnings("unused")
     private Task() {}
 
-    Task(Speech speech, String action, String image, String[] buttons) {
+    Task(Speech speech, String emotion, String action, String image, String[] buttons) {
         this.speech = speech;
+        this.emotion = emotion;
         this.action = action;
         this.image = image;
         this.buttons = buttons;
@@ -21,6 +23,10 @@ public class Task {
 
     public Speech getSpeech() {
         return speech;
+    }
+
+    public String getEmotion() {
+        return emotion;
     }
 
     public String getAction() {

@@ -6,6 +6,7 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 
 import uw.hcrlab.kubi.robot.Action;
+import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.wizard.model.Speech;
 import uw.hcrlab.kubi.wizard.model.Task;
@@ -37,10 +38,16 @@ public class CommandHandler extends WizardHandler {
                     robot.say(sp.getText(), sp.getLanguage(), sp.getSpeed());
                 }
 
+                String emotion = res.getEmotion();
+                if(emotion != null) {
+                    Log.d(TAG, "Got emotion request: " + emotion);
+                    robot.act(FaceAction.valueOf(emotion));
+                }
+
                 String action = res.getAction();
                 if(action != null) {
                     Log.d(TAG, "Got action request: " + action);
-                    robot.act(Action.valueOf(action));
+                    robot.perform(Action.valueOf(action));
                 }
 
                 String image = res.getImage();

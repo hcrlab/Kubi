@@ -20,7 +20,6 @@ import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.App;
 import uw.hcrlab.kubi.screen.RobotFace;
-import uw.hcrlab.kubi.screen.RobotFaceUtils;
 import uw.hcrlab.kubi.speech.SpeechUtils;
 import uw.hcrlab.kubi.wizard.CommandHandler;
 
@@ -207,8 +206,12 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }
     }
 
-    public void act(Action action) {
-        thread.act(action);
+    public void act(FaceAction faceAction) {
+        thread.act(faceAction);
+    }
+
+    public void perform(Action action) {
+        thread.perform(action);
     }
 
     /**
@@ -218,7 +221,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             Log.i(TAG, "RobotFace touch occurred!");
-            act(Action.WAKE);
+            act(FaceAction.WAKE);
             return false;
         }
     };

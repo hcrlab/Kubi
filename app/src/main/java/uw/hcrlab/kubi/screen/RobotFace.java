@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import uw.hcrlab.kubi.robot.Action;
+import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.State;
 
 public class RobotFace extends SurfaceView implements SurfaceHolder.Callback {
@@ -51,7 +51,7 @@ public class RobotFace extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int arg1, int arg2, int arg3) {
         //TODO: Should this occur here? All calls to showAction should happen from RobotThread
-		RobotFaceUtils.showAction(this, Action.BLINK);
+		RobotFaceUtils.showAction(this, FaceAction.BLINK);
 	}
 
 	@Override
