@@ -291,11 +291,13 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     @Override
     public void processAsrError(int errorCode) {
+        super.stopListening();
+
         String errorMessage = SpeechUtils.getErrorMessage(errorCode);
 
-        if (errorMessage != null) {
-            say(errorMessage, mDefaultLanguage);
-        }
+//        if (errorMessage != null) {
+//            say(errorMessage, mDefaultLanguage);
+//        }
 
         // If there is an error, shows feedback to the user and writes it in the log
         Log.e(TAG, "Error: "+ errorMessage);
