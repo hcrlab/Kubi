@@ -6,7 +6,7 @@ import android.graphics.Paint.Style;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
-import uw.hcrlab.kubi.robot.Action;
+import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.State;
 
 /**
@@ -41,8 +41,8 @@ public class RobotFaceUtils {
 		}
 	}
 
-    public static void showAction(RobotFace face, Action action) {
-		switch (action) {
+    public static void showAction(RobotFace face, FaceAction faceAction) {
+		switch (faceAction) {
 			case SMILE: 		showSmile(face);		break;
 			case WINK:			showWink(face);			break;
 			case BLINK: 		showBlink(face);		break;

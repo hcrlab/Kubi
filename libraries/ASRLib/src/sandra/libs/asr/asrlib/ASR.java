@@ -54,14 +54,14 @@ import android.util.Log;
 
 public abstract class ASR implements RecognitionListener{
 
-	private static SpeechRecognizer myASR;
+    private static SpeechRecognizer myASR;
 	Context ctx;
 	
 	private static final String LIB_LOGTAG = "ASRLIB";
 	
 	/**
 	 * Creates the single SpeechRecognizer instance and assigns a listener
-	 * @see CustomRecognitionListener.java
+//	 * @see CustomRecognitionListener.java
 	 * @param ctx context of the interaction
 	 * */
 	public void createRecognizer(Context ctx) {
@@ -72,6 +72,7 @@ public abstract class ASR implements RecognitionListener{
 			List<ResolveInfo> intActivities = packManager.queryIntentActivities(
 					new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
 			if (intActivities.size() != 0) {
+                Log.i(LIB_LOGTAG, "create speech recognizer");
 				myASR = SpeechRecognizer.createSpeechRecognizer(ctx);
 				myASR.setRecognitionListener(this);
 			}
