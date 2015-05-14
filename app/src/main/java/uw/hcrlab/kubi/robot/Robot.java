@@ -1,11 +1,14 @@
 package uw.hcrlab.kubi.robot;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.speech.RecognizerIntent;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.revolverobotics.kubiapi.IKubiManagerDelegate;
@@ -37,6 +40,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private RobotThread thread;
     private RobotFace robotFace;
     private KubiManager kubiManager;
+
+    private View leftCard;
+    private View rightCard;
 
     // The ID of the bot to use for the chatbot, can be changed
     // you can also make a new bot by creating an account in pandorabots.com and making a new chatbot robot
@@ -291,7 +297,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     @Override
     public void processAsrError(int errorCode) {
-        super.stopListening();
+        //super.stopListening();
+        super.cancel();
 
         String errorMessage = SpeechUtils.getErrorMessage(errorCode);
 
@@ -300,7 +307,59 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 //        }
 
         // If there is an error, shows feedback to the user and writes it in the log
-        Log.e(TAG, "Error: "+ errorMessage);
+        Log.e(TAG, "Error: " + errorMessage);
         Toast.makeText(currentCxt, errorMessage, Toast.LENGTH_LONG).show();
+    }
+
+    public void setCards(View left, View right) {
+        this.leftCard = left;
+        this.rightCard = right;
+    }
+
+    public enum Hand {
+        Left,
+        Right
+    }
+
+    public void showCard(Hand leftOrRight) {
+        final View card = leftOrRight == Hand.Left ? leftCard : rightCard;
+
+        if(card == null) return;
+
+        if(((FrameLayout.LayoutParams)card.getLayoutParams()).bottomMargin < 0) {
+            ValueAnimator anim = ValueAnimator.ofInt(-card.getHeight() - 10, 20);
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    int val = (Integer) valueAnimator.getAnimatedValue();
+
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)card.getLayoutParams();
+                    params.bottomMargin = val;
+                    card.setLayoutParams(params);
+                }
+            });
+            anim.setDuration(500);
+            anim.start();
+        }
+    }
+
+    public void hideCard(Hand leftOrRight) {
+        final View card = leftOrRight == Hand.Left ? leftCard : rightCard;
+
+        if(card == null) return;
+
+        ValueAnimator anim = ValueAnimator.ofInt(20, -card.getHeight() - 10);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                int val = (Integer) valueAnimator.getAnimatedValue();
+
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)card.getLayoutParams();
+                params.bottomMargin = val;
+                card.setLayoutParams(params);
+            }
+        });
+        anim.setDuration(500);
+        anim.start();
     }
 }

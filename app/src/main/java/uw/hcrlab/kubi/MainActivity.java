@@ -1,16 +1,25 @@
 package uw.hcrlab.kubi;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.screen.RobotFace;
@@ -63,6 +72,9 @@ public class MainActivity extends Activity {
         super.onStart();
     }
 
+    View left = null;
+    View right = null;
+
     /*
     Called when the activity will start interacting with the user. At this point your activity is at
     the top of the activity stack, with user input going to it.
@@ -78,6 +90,27 @@ public class MainActivity extends Activity {
         Button settingButton = (Button) findViewById(R.id.settingsButton);
         initializeButtons(conversationButton, lessonButton, settingButton);
 
+        left = (View) findViewById(R.id.leftCard);
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "image clicked!");
+                robot.hideCard(Robot.Hand.Left);
+                robot.hideCard(Robot.Hand.Right);
+            }
+        });
+
+        right = (View) findViewById(R.id.rightCard);
+        right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "image clicked!");
+                robot.hideCard(Robot.Hand.Left);
+                robot.hideCard(Robot.Hand.Right);
+            }
+        });
+
+        robot.setCards(left, right);
         robot.startup();
         App.FbConnect();
     }
@@ -129,6 +162,9 @@ public class MainActivity extends Activity {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
                 // TODO: send to Firebase
+                robot.showCard(Robot.Hand.Left);
+                robot.showCard(Robot.Hand.Right);
+
                 break;
             default:
                 break;
