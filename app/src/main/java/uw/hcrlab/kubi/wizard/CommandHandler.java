@@ -45,6 +45,7 @@ public class CommandHandler extends WizardHandler {
                 }
 
                 String action = res.getAction();
+                Log.e(TAG, "action= " + action );
                 if(action != null) {
                     Log.d(TAG, "Got action request: " + action);
                     robot.perform(Action.valueOf(action));

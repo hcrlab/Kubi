@@ -150,8 +150,24 @@ public class RobotThread extends Thread {
             case SLEEP: kubiFaceDown(); break;
             case WAKE:  kubiFaceUp(); break;
             case LOOK_AROUND: kubiLookAround(); break;
-            case NOD: kubiManager.getKubi().performGesture(Kubi.GESTURE_NOD); break;
-            case SHAKE: kubiManager.getKubi().performGesture(Kubi.GESTURE_SHAKE); break;
+            case NOD: kubiNod(); break;
+            case SHAKE: kubiShake(); break;
+        }
+    }
+
+    private void kubiShake(){
+        try {
+            kubiManager.getKubi().performGesture(Kubi.GESTURE_SHAKE);
+        } catch (Throwable e) {
+            Log.e(TAG, "Cannot show gesture : GESTURE_SHAKE");
+        }
+    }
+
+    private void kubiNod(){
+        try {
+            kubiManager.getKubi().performGesture(Kubi.GESTURE_NOD);
+        } catch (Throwable e) {
+            Log.e(TAG, "Cannot show gesture : GESTURE_NOD");
         }
     }
 
