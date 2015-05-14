@@ -218,7 +218,14 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void perform(Action action) {
-        thread.perform(action);
+        switch (action) {
+            case SLEEP: kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN); break;
+            case WAKE:  kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_UP); break;
+            case LOOK_AROUND: kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM); break;
+            case NOD: kubiManager.getKubi().performGesture(Kubi.GESTURE_NOD); break;
+            case SHAKE: kubiManager.getKubi().performGesture(Kubi.GESTURE_SHAKE); break;
+        }
+        //thread.perform(action);
     }
 
     /**

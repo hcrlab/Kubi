@@ -81,7 +81,9 @@ public class RobotThread extends Thread {
                     }
 
                     FaceAction faceAction = faceActions.poll();
+                    Log.i(TAG, "" + actions.size());
                     Action action = actions.poll();
+                    Log.i(TAG, "" + actions.size());
 
                     if(faceAction != null || action != null) {
                         if (faceAction != null)
@@ -98,6 +100,10 @@ public class RobotThread extends Thread {
                             isAsleep = false;
 
                             RobotFaceUtils.showAction(robotFace, faceAction);
+                        }
+
+                        if (faceAction == FaceAction.SLEEP) {
+                            isAsleep = true;
                         }
 
                         performAction(action);

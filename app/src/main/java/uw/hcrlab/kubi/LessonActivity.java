@@ -12,6 +12,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import uw.hcrlab.kubi.robot.Action;
+import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.screen.RobotFace;
 
@@ -155,6 +160,66 @@ public class LessonActivity extends Activity {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
                 // TODO: send to Firebase
+                Timer timer = new Timer();
+
+                TimerTask yesnod = new TimerTask() {
+                    @Override
+                    public void run() {
+                        robot.say("Yes", "EN");
+                        robot.perform(Action.NOD);
+                    }
+                };
+                timer.schedule(yesnod, 2000);
+
+                TimerTask noshake = new TimerTask() {
+                    @Override
+                    public void run() {
+                        robot.say("No", "EN");
+                        robot.perform(Action.SHAKE);
+                    }
+                };
+                timer.schedule(noshake, 8000);
+
+                TimerTask sleep = new TimerTask() {
+                    @Override
+                    public void run() {
+                        robot.act(FaceAction.SLEEP);
+                        robot.perform(Action.SLEEP);
+                    }
+                };
+                timer.schedule(sleep, 14000);
+
+                TimerTask wake = new TimerTask() {
+                    @Override
+                    public void run() {
+                        robot.act(FaceAction.WAKE);
+                        robot.perform(Action.WAKE);
+                    }
+                };
+                timer.schedule(wake, 20000);
+
+                TimerTask lookaround = new TimerTask() {
+                    @Override
+                    public void run() {
+                        robot.perform(Action.LOOK_AROUND);
+                    }
+                };
+                timer.schedule(lookaround, 26000);
+                TimerTask lookaround2 = new TimerTask() {
+                    @Override
+                    public void run() {
+                        robot.perform(Action.LOOK_AROUND);
+                    }
+                };
+                timer.schedule(lookaround2, 28000);
+                TimerTask lookaround3 = new TimerTask() {
+                    @Override
+                    public void run() {
+                        robot.perform(Action.LOOK_AROUND);
+                    }
+                };
+                timer.schedule(lookaround3, 30000);
+
                 break;
             default:
                 break;
