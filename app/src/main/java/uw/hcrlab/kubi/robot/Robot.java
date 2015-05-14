@@ -195,6 +195,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     public void say(String msg, String language, int speed) {
         try {
+            Log.i(TAG, "Say: " + msg);
             tts.setRate(speed / 100.0f);
             tts.speak(msg, language);
         } catch (Exception e) {

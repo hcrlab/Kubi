@@ -150,6 +150,8 @@ public class RobotThread extends Thread {
             case SLEEP: kubiFaceDown(); break;
             case WAKE:  kubiFaceUp(); break;
             case LOOK_AROUND: kubiLookAround(); break;
+            case NOD: kubiManager.getKubi().performGesture(Kubi.GESTURE_NOD); break;
+            case SHAKE: kubiManager.getKubi().performGesture(Kubi.GESTURE_SHAKE); break;
         }
     }
 
