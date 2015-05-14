@@ -12,6 +12,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import uw.hcrlab.kubi.robot.Action;
+import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.screen.RobotFace;
 
@@ -155,6 +160,35 @@ public class LessonActivity extends Activity {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
                 // TODO: send to Firebase
+                Timer timer = new Timer();
+
+                TimerTask yesnod = new TimerTask() {
+                    @Override
+                    public void run() {
+                        robot.say("Yes", "EN");
+                        robot.perform(Action.SHAKE);
+                    }
+                };
+                timer.schedule(yesnod, 2000);
+
+                TimerTask noshake = new TimerTask() {
+                    @Override
+                    public void run() {
+                        robot.say("No", "EN");
+                        robot.perform(Action.NOD);
+                    }
+                };
+                timer.schedule(noshake, 8000);
+
+                TimerTask sleep = new TimerTask() {
+                    @Override
+                    public void run() {
+                        robot.act(FaceAction.SLEEP);
+                        robot.perform(Action.SLEEP);
+                    }
+                };
+                timer.schedule(sleep, 14000);
+
                 break;
             default:
                 break;
