@@ -4,4 +4,13 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <dimen name="finger_height">70dp</dimen>
+    <dimen name="finger_width">120dp</dimen>
+    <dimen name="hand_height">210dp</dimen>
+    <dimen name="card_hand_width">280dp</dimen>
+    <dimen name="card_width">200dp</dimen>
+    <dimen name="card_height">300dp</dimen>
+    <dimen name="card_margin">150dp</dimen>
+    <dimen name="card_margin_btm_init">-310dp</dimen>
+
 </resources>

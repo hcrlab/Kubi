@@ -72,9 +72,11 @@ public abstract class ASR implements RecognitionListener{
 			List<ResolveInfo> intActivities = packManager.queryIntentActivities(
 					new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
 			if (intActivities.size() != 0) {
-                Log.i(LIB_LOGTAG, "create speech recognizer");
-				myASR = SpeechRecognizer.createSpeechRecognizer(ctx);
-				myASR.setRecognitionListener(this);
+				if(myASR == null) {
+					Log.i(LIB_LOGTAG, "create speech recognizer");
+					myASR = SpeechRecognizer.createSpeechRecognizer(ctx);
+					myASR.setRecognitionListener(this);
+				}
 			}
 			else
 				myASR = null;
@@ -116,6 +118,10 @@ public abstract class ASR implements RecognitionListener{
 	public void stopListening(){
 		myASR.stopListening();
 	}
+
+	public void cancel() {
+		myASR.cancel();
+	}
 	
 	/********************************************************************************************************
 	 * This class implements the {@link android.speech.RecognitionListener} interface, 
@@ -143,8 +149,10 @@ public abstract class ASR implements RecognitionListener{
 				processAsrResults (results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION), null); 
 			}
 		}
-		else
+		else {
+			Log.e(LIB_LOGTAG, "in onResults with error");
 			processAsrError(SpeechRecognizer.ERROR_NO_MATCH);
+		}
 	}
 
 	/*
@@ -163,6 +171,7 @@ public abstract class ASR implements RecognitionListener{
 	 */
 	@Override
 	public void onError(int errorCode) {
+		Log.e(LIB_LOGTAG, "in onError");
 		processAsrError(errorCode);
 	}
 
