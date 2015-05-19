@@ -55,6 +55,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private CommandHandler lessons;
     private CommandHandler questions;
     private CommandHandler quizzes;
+    private CommandHandler practice;
 
     /**
      *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
@@ -74,6 +75,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             lessons = new CommandHandler("lesson");
             questions = new CommandHandler("question");
             quizzes = new CommandHandler("quiz");
+            practice = new CommandHandler("practice");
         }
     }
 
@@ -149,6 +151,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             lessons.Listen();
             questions.Listen();
             quizzes.Listen();
+            practice.Listen();
         }
     }
 
@@ -165,6 +168,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
                     lessons.Stop();
                     questions.Stop();
                     quizzes.Stop();
+                    practice.Stop();
                 }
 
                 if(thread != null) {
@@ -196,7 +200,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     public void say(String msg, String language, int speed) {
         try {
             Log.i(TAG, "Say: " + msg);
-            tts.setRate(speed / 100.0f);
+            //tts.setRate(speed / 100.0f);
             tts.speak(msg, language);
         } catch (Exception e) {
             Log.e(TAG, language + " not available for TTS, default language used instead");
