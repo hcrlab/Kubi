@@ -61,12 +61,6 @@ public class CommandHandler extends WizardHandler {
                 if(buttons != null) {
                     Log.d(TAG, "You need to display buttons!");
                 }
-
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
 
             snap.child("handled").getRef().setValue(true);
