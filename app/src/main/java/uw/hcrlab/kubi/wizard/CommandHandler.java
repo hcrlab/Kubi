@@ -33,6 +33,7 @@ public class CommandHandler extends WizardHandler {
         Map<String, Integer> drawables = new HashMap<String, Integer>();
 
         drawables.put("APPLE", R.drawable.apple);
+        drawables.put("BANANA", R.drawable.banana);
 
         return drawables.get("APPLE");
     }
@@ -78,7 +79,7 @@ public class CommandHandler extends WizardHandler {
                 }
 
                 String right = res.getRightImage();
-                if(left != null) {
+                if(right != null) {
                     Log.d(TAG, "Displaying right hand image");
 
                     String rightTxt = res.getRightText();

@@ -50,6 +50,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private View leftCard;
     private View rightCard;
 
+    private Boolean leftIsShowing = false;
+    private Boolean rightIsShowing = false;
+
     // The ID of the bot to use for the chatbot, can be changed
     // you can also make a new bot by creating an account in pandorabots.com and making a new chatbot robot
     private String PANDORA_BOT_ID = "b9581e5f6e343f72";
@@ -340,18 +343,32 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         this.leftCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            Log.d(TAG, "left image clicked!");
-            hideCard(Robot.Hand.Left);
-            hideCard(Robot.Hand.Right);
+                Log.d(TAG, "left image clicked!");
+                if (leftIsShowing) {
+                    hideCard(Robot.Hand.Left);
+                    leftIsShowing = false;
+                }
+
+                if (rightIsShowing) {
+                    hideCard(Robot.Hand.Right);
+                    rightIsShowing = false;
+                }
             }
         });
 
         this.rightCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            Log.d(TAG, "right image clicked!");
-            hideCard(Robot.Hand.Left);
-            hideCard(Robot.Hand.Right);
+                Log.d(TAG, "right image clicked!");
+                if (leftIsShowing) {
+                    hideCard(Robot.Hand.Left);
+                    leftIsShowing = false;
+                }
+
+                if (rightIsShowing) {
+                    hideCard(Robot.Hand.Right);
+                    rightIsShowing = false;
+                }
             }
         });
     }
@@ -370,9 +387,13 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         ImageView i = null;
 
         if(leftOrRight == Hand.Left) {
+            leftIsShowing = true;
+
             t = (TextView)card.findViewById(R.id.leftCardText);
             i = (ImageView)card.findViewById(R.id.leftCardImage);
         } else {
+            rightIsShowing = true;
+
             t = (TextView)card.findViewById(R.id.rightCardText);
             i = (ImageView)card.findViewById(R.id.rightCardImage);
         }
