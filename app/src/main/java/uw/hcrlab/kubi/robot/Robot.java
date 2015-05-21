@@ -1,5 +1,6 @@
 package uw.hcrlab.kubi.robot;
 
+import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
@@ -407,11 +408,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                int val = (Integer) valueAnimator.getAnimatedValue();
+                    int val = (Integer) valueAnimator.getAnimatedValue();
 
-                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)card.getLayoutParams();
-                params.bottomMargin = val;
-                card.setLayoutParams(params);
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) card.getLayoutParams();
+                    params.bottomMargin = val;
+                    card.setLayoutParams(params);
                 }
             });
             anim.setDuration(500);
@@ -419,24 +420,26 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }
     }
 
-    public void hideCard(Hand leftOrRight) {
+    public ValueAnimator hideCard(Hand leftOrRight) {
         final View card = leftOrRight == Hand.Left ? leftCard : rightCard;
 
-        if(card == null) return;
+        if(card == null) return null;
 
         ValueAnimator anim = ValueAnimator.ofInt(20, -card.getHeight() - 10);
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-            int val = (Integer) valueAnimator.getAnimatedValue();
+                int val = (Integer) valueAnimator.getAnimatedValue();
 
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)card.getLayoutParams();
-            params.bottomMargin = val;
-            card.setLayoutParams(params);
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) card.getLayoutParams();
+                params.bottomMargin = val;
+                card.setLayoutParams(params);
             }
         });
         anim.setDuration(500);
         anim.start();
+
+        return anim;
     }
 }
