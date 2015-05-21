@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:id="@+id/rightCard"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/card_hand_width"
+    android:layout_height="@dimen/card_height"
+    android:layout_gravity="bottom|right"
+    android:layout_marginRight="@dimen/card_margin"
+    android:layout_marginBottom="@dimen/card_margin_btm_init">
+
+    <FrameLayout
+        android:layout_width="@dimen/card_width"
+        android:layout_height="@dimen/card_height"
+        android:layout_gravity="left"
+        android:background="@drawable/card_border">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rightCardText"
+            android:gravity="center"
+            android:textSize="@dimen/card_text_size"/>
+
+        <ImageView
+            android:layout_width="@dimen/card_image_width"
+            android:layout_height="@dimen/card_image_height"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="@dimen/card_image_bottom_margin"
+            android:id="@+id/rightCardImage"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="@dimen/finger_width"
+        android:layout_height="@dimen/hand_height"
+        android:layout_gravity="center|right">
+
+        <View
+            android:id="@+id/rightFingerOne"
+            android:layout_width="@dimen/finger_width"
+            android:layout_height="@dimen/finger_height"
+            android:background="@drawable/finger"/>
+        <View
+            android:id="@+id/rightFingerTwo"
+            android:layout_width="@dimen/finger_width"
+            android:layout_height="@dimen/finger_height"
+            android:background="@drawable/finger"/>
+        <View
+            android:id="@+id/rightFingerThr"
+            android:layout_width="@dimen/finger_width"
+            android:layout_height="@dimen/finger_height"
+            android:background="@drawable/finger"/>
+
+    </LinearLayout>
+
+</FrameLayout>
