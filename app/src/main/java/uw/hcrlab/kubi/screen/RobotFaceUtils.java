@@ -52,10 +52,13 @@ public class RobotFaceUtils {
 			case WAKE:			showWake(face);			break;
 			case SURPRISED: 	showSurprised(face);	break;
 			case THINK:			showThink(face);		break;
-			case GUILTY:		showGuilty(face);		break;
+			case GUILTY:		showLookDownLeft(face);		break;
 			case LOOK_LEFT:		showLookLeft(face);		break;
 			case LOOK_RIGHT:	showLookRight(face);	break;
-			case NBLINK:		showNBlink(face);	break;
+			case NBLINK:		showNBlink(face);	    break;
+            case LOOK_DOWN:     showLookDown(face);     break;
+            case LOOK_DOWN_LEFT:     showLookDownLeft(face);     break;
+            case LOOK_DOWN_RIGHT:     showLookDownRight(face);     break;
 			default:			break;
 		}
 	}
@@ -183,7 +186,7 @@ public class RobotFaceUtils {
         drawFace(face, State.NORMAL);
 	}
 
-	private static void showGuilty(RobotFace face) {
+	private static void showLookDown(RobotFace face) {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
 		
@@ -205,45 +208,11 @@ public class RobotFaceUtils {
 			}
 		}
 
-		// move the pupil from the middle to the left
-		for (int i = 0; i > -limit/3; i -= 1 ){
-			int j = (int) Math.sqrt(limit * limit - Math.abs(i) * Math.abs(i));
-			try {
-				canvas = holder.lockCanvas();
-				synchronized (holder) {
-					// clear the screen
-					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-                    moveBothIris(face, canvas, i, j);
-				}
-			} finally {
-				if (canvas != null) {
-					holder.unlockCanvasAndPost(canvas);
-				}
-			}
-		}
-
 		// delay
 		try {
-			Thread.sleep(1500);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
-
-		// move the pupil from the left to the middle
-		for (int i = - limit/3; i < 0; i += 1 ){
-			int j = (int) Math.sqrt(limit * limit - Math.abs(i) * Math.abs(i));
-			try {
-				canvas = holder.lockCanvas();
-				synchronized (holder) {
-					// clear the screen
-					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-                    moveBothIris(face, canvas, i, j);
-				}
-			} finally {
-				if (canvas != null) {
-					holder.unlockCanvasAndPost(canvas);
-				}
-			}
 		}
 		
 		// move the pupil up
@@ -273,6 +242,188 @@ public class RobotFaceUtils {
 
 		showNBlink(face);
 	}
+
+    private static void showLookDownLeft(RobotFace face) {
+        Canvas canvas = null;
+        SurfaceHolder holder = face.getHolder();
+
+        int limit = (int)(ScreenConstants.DEFAULT_EYE_RADIUS * ScreenConstants.LOOK_LIMIT_FACTOR);
+
+        // move the pupil down
+        for (int j = 0; j > -limit; j-= 5){
+            try {
+                canvas = holder.lockCanvas();
+                synchronized (holder) {
+                    // clear the screen
+                    canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
+                    moveBothIris(face, canvas, 0, -j);
+                }
+            } finally {
+                if (canvas != null) {
+                    holder.unlockCanvasAndPost(canvas);
+                }
+            }
+        }
+
+        // move the pupil from the middle to the left
+        for (int i = 0; i > -limit/3; i -= 1 ){
+            int j = (int) Math.sqrt(limit * limit - Math.abs(i) * Math.abs(i));
+            try {
+                canvas = holder.lockCanvas();
+                synchronized (holder) {
+                    // clear the screen
+                    canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
+                    moveBothIris(face, canvas, i, j);
+                }
+            } finally {
+                if (canvas != null) {
+                    holder.unlockCanvasAndPost(canvas);
+                }
+            }
+        }
+
+        // delay
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // move the pupil from the left to the middle
+        for (int i = - limit/3; i < 0; i += 1 ){
+            int j = (int) Math.sqrt(limit * limit - Math.abs(i) * Math.abs(i));
+            try {
+                canvas = holder.lockCanvas();
+                synchronized (holder) {
+                    // clear the screen
+                    canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
+                    moveBothIris(face, canvas, i, j);
+                }
+            } finally {
+                if (canvas != null) {
+                    holder.unlockCanvasAndPost(canvas);
+                }
+            }
+        }
+
+        // move the pupil up
+        for (int j = -limit; j < 0; j+= 5){
+            try {
+                canvas = holder.lockCanvas();
+                synchronized (holder) {
+                    // clear the screen
+                    canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
+                    moveBothIris(face, canvas, 0, -j);
+                }
+            } finally {
+                if (canvas != null) {
+                    holder.unlockCanvasAndPost(canvas);
+                }
+            }
+        }
+
+        drawFace(face, State.NORMAL);
+
+        // delay
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        showNBlink(face);
+    }
+
+    private static void showLookDownRight(RobotFace face) {
+        Canvas canvas = null;
+        SurfaceHolder holder = face.getHolder();
+
+        int limit = (int)(ScreenConstants.DEFAULT_EYE_RADIUS * ScreenConstants.LOOK_LIMIT_FACTOR);
+
+        // move the pupil down
+        for (int j = 0; j > -limit; j-= 5){
+            try {
+                canvas = holder.lockCanvas();
+                synchronized (holder) {
+                    // clear the screen
+                    canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
+                    moveBothIris(face, canvas, 0, -j);
+                }
+            } finally {
+                if (canvas != null) {
+                    holder.unlockCanvasAndPost(canvas);
+                }
+            }
+        }
+
+        // move the pupil from the middle to the right
+        for (int i = 0; i > -limit/3; i -= 1 ){
+            int j = (int) Math.sqrt(limit * limit - Math.abs(i) * Math.abs(i));
+            try {
+                canvas = holder.lockCanvas();
+                synchronized (holder) {
+                    // clear the screen
+                    canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
+                    moveBothIris(face, canvas, -i, j);
+                }
+            } finally {
+                if (canvas != null) {
+                    holder.unlockCanvasAndPost(canvas);
+                }
+            }
+        }
+
+        // delay
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // move the pupil from the right to the middle
+        for (int i = - limit/3; i < 0; i += 1 ){
+            int j = (int) Math.sqrt(limit * limit - Math.abs(i) * Math.abs(i));
+            try {
+                canvas = holder.lockCanvas();
+                synchronized (holder) {
+                    // clear the screen
+                    canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
+                    moveBothIris(face, canvas, -i, j);
+                }
+            } finally {
+                if (canvas != null) {
+                    holder.unlockCanvasAndPost(canvas);
+                }
+            }
+        }
+
+        // move the pupil up
+        for (int j = -limit; j < 0; j+= 5){
+            try {
+                canvas = holder.lockCanvas();
+                synchronized (holder) {
+                    // clear the screen
+                    canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
+                    moveBothIris(face, canvas, 0, -j);
+                }
+            } finally {
+                if (canvas != null) {
+                    holder.unlockCanvasAndPost(canvas);
+                }
+            }
+        }
+
+        drawFace(face, State.NORMAL);
+
+        // delay
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        showNBlink(face);
+    }
 
     private static void showThink(RobotFace face) {
 		Canvas canvas = null;
