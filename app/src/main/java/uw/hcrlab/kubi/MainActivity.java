@@ -85,32 +85,18 @@ public class MainActivity extends Activity {
         Log.i(TAG, "Resuming Main Activity ...");
         super.onResume();
 
-        Button conversationButton = (Button) findViewById(R.id.convoButton);
-        Button lessonButton = (Button) findViewById(R.id.lessonButton);
         Button settingButton = (Button) findViewById(R.id.settingsButton);
-        initializeButtons(conversationButton, lessonButton, settingButton);
+        settingButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                //TODO: implement this
+            }
+        });
 
         left = (View) findViewById(R.id.leftCard);
-        left.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "image clicked!");
-                robot.hideCard(Robot.Hand.Left);
-                robot.hideCard(Robot.Hand.Right);
-            }
-        });
-
         right = (View) findViewById(R.id.rightCard);
-        right.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "image clicked!");
-                robot.hideCard(Robot.Hand.Left);
-                robot.hideCard(Robot.Hand.Right);
-            }
-        });
-
         robot.setCards(left, right);
+
         robot.startup();
         App.FbConnect();
     }
@@ -170,30 +156,5 @@ public class MainActivity extends Activity {
                 break;
         }
         return true;
-    }
-
-    private void initializeButtons(Button conversationButton, Button lessonButton, Button settingButton) {
-        final Intent conversationIntent = new Intent(this, ConversationActivity.class);
-        final Intent lessonIntent = new Intent(this, LessonActivity.class);
-        conversationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                robot.shutdown();
-                startActivity(conversationIntent);
-            }
-        });
-        lessonButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                robot.shutdown();
-                startActivity(lessonIntent);
-            }
-        });
-        settingButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                //TODO: implement this
-            }
-        });
     }
 }

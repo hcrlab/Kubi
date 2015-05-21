@@ -336,6 +336,24 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     public void setCards(View left, View right) {
         this.leftCard = left;
         this.rightCard = right;
+
+        this.leftCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            Log.d(TAG, "left image clicked!");
+            hideCard(Robot.Hand.Left);
+            hideCard(Robot.Hand.Right);
+            }
+        });
+
+        this.rightCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            Log.d(TAG, "right image clicked!");
+            hideCard(Robot.Hand.Left);
+            hideCard(Robot.Hand.Right);
+            }
+        });
     }
 
     public enum Hand {
@@ -347,7 +365,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         final View card = leftOrRight == Hand.Left ? leftCard : rightCard;
 
         if(card == null) return;
-
 
         TextView t = null;
         ImageView i = null;
