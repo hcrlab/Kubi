@@ -26,6 +26,7 @@ public class CommandHandler extends WizardHandler {
     @Override
     public void onChildAdded(DataSnapshot snap, String s) {
         if(!snap.child("handled").getValue(Boolean.class)) {
+            Log.i(TAG, "received a new command");
             for (DataSnapshot taskData : snap.child("tasks").getChildren()) {
                 Task res = taskData.getValue(Task.class);
 
@@ -45,7 +46,7 @@ public class CommandHandler extends WizardHandler {
                 }
 
                 String action = res.getAction();
-                Log.e(TAG, action);
+                // Log.e(TAG, action);
                 if(action != null) {
                     Log.d(TAG, "Got action request: " + action);
                     robot.perform(Action.valueOf(action));
