@@ -19,6 +19,7 @@
     <dimen name="card_image_height">240dp</dimen>
 
     <dimen name="card_text_size">28sp</dimen>
+    <dimen name="card_text_top_margin">10dp</dimen>
     <dimen name="card_image_bottom_margin">20dp</dimen>
 
 </resources>

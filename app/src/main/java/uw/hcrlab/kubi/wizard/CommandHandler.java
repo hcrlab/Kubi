@@ -5,6 +5,12 @@ import android.util.Log;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.robot.Action;
 import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
@@ -21,6 +27,15 @@ public class CommandHandler extends WizardHandler {
 
     public CommandHandler(String ref) {
         super(ref);
+    }
+
+    private int getDrawable(String command) {
+        Map<String, Integer> drawables = new HashMap<String, Integer>();
+
+        drawables.put("APPLE", R.drawable.apple);
+        drawables.put("BANANA", R.drawable.banana);
+
+        return drawables.get("APPLE");
     }
 
     @Override
@@ -51,9 +66,28 @@ public class CommandHandler extends WizardHandler {
                     robot.perform(Action.valueOf(action));
                 }
 
-                String image = res.getImage();
-                if(image != null) {
-                    Log.d(TAG, "You need to display an image!");
+                String left = res.getLeftImage();
+                if(left != null) {
+                    Log.d(TAG, "Displaying left hand image");
+
+                    String leftTxt = res.getLeftText();
+                    if(leftTxt == null) {
+                        leftTxt = "";
+                    }
+
+                    robot.showCard(Robot.Hand.Left, getDrawable(left), leftTxt);
+                }
+
+                String right = res.getRightImage();
+                if(right != null) {
+                    Log.d(TAG, "Displaying right hand image");
+
+                    String rightTxt = res.getRightText();
+                    if(rightTxt == null) {
+                        rightTxt = "";
+                    }
+
+                    robot.showCard(Robot.Hand.Right, getDrawable(right), rightTxt);
                 }
 
                 String[] buttons = res.getButtons();
