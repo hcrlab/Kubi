@@ -3,6 +3,7 @@ package uw.hcrlab.kubi.screen;
 import android.content.Context;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -10,6 +11,8 @@ import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.State;
 
 public class RobotFace extends SurfaceView implements SurfaceHolder.Callback {
+    public static String TAG = RobotFace.class.getSimpleName();
+
 	private RobotEye leftEye;
 	private RobotEye rightEye;
 
@@ -36,14 +39,15 @@ public class RobotFace extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		PointF leftEyeCoordinate = new PointF(screenWidth * ScreenConstants.LEFT_EYE_HORIZONTAL_FACTOR,
-				screenHeight * ScreenConstants.EYE_VETICAL_FACTOR);
-		PointF rightEyeCoordinate = new PointF(screenWidth * ScreenConstants.RIGHT_EYE_HORIZONTAL_FACTOR,
-				screenHeight * ScreenConstants.EYE_VETICAL_FACTOR);
+        float radius = this.screenHeight/6;
+        float leftEyeXPosition = this.screenWidth/2 - 1.25f * radius;
+        float rightEyeXPosition = this.screenWidth/2 + 1.25f * radius;
+        float eyeYPosition = radius + 0.25f * radius;
 
-		// Initialize the eyes (this assumes the screen has been measured)
-		leftEye = new RobotEye(leftEyeCoordinate, ScreenConstants.DEFAULT_EYE_RADIUS, EyeSide.LEFT);
-		rightEye = new RobotEye(rightEyeCoordinate, ScreenConstants.DEFAULT_EYE_RADIUS, EyeSide.RIGHT);
+        PointF leftEyeCoordinate = new PointF(leftEyeXPosition, eyeYPosition);
+        PointF rightEyeCoordinate = new PointF(rightEyeXPosition, eyeYPosition);
+        leftEye = new RobotEye(leftEyeCoordinate, radius, EyeSide.LEFT);
+        rightEye = new RobotEye(rightEyeCoordinate, radius, EyeSide.RIGHT);
 
 		RobotFaceUtils.drawFace(this, State.NORMAL);
 	}
