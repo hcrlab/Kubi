@@ -42,16 +42,6 @@
             android:layout_width="@dimen/finger_width"
             android:layout_height="@dimen/finger_height"
             android:background="@drawable/finger"/>
-        <View
-            android:id="@+id/rightFingerTwo"
-            android:layout_width="@dimen/finger_width"
-            android:layout_height="@dimen/finger_height"
-            android:background="@drawable/finger"/>
-        <View
-            android:id="@+id/rightFingerThr"
-            android:layout_width="@dimen/finger_width"
-            android:layout_height="@dimen/finger_height"
-            android:background="@drawable/finger"/>
 
     </LinearLayout>
 

@@ -25,7 +25,7 @@ public class RobotEye {
 	private EyeSide side;
 	
 	/* the ratio between the eye radius and the iris radius */
-	private float ratio = 2.5f /6;
+	private float ratio = 2.0f /6;
 	
 	public RobotEye(float radius, EyeSide side) {
 		this(new PointF(0, 0), radius, side);
