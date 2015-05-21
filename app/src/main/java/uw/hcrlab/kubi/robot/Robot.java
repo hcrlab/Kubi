@@ -8,7 +8,13 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AnticipateOvershootInterpolator;
+import android.view.animation.BounceInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.revolverobotics.kubiapi.IKubiManagerDelegate;
@@ -22,6 +28,7 @@ import sandra.libs.asr.asrlib.ASR;
 import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.App;
+import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
 import uw.hcrlab.kubi.wizard.CommandHandler;
@@ -325,21 +332,37 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         Right
     }
 
-    public void showCard(Hand leftOrRight) {
+    public void showCard(Hand leftOrRight, int resID, String text) {
         final View card = leftOrRight == Hand.Left ? leftCard : rightCard;
 
         if(card == null) return;
 
+
+        TextView t = null;
+        ImageView i = null;
+
+        if(leftOrRight == Hand.Left) {
+            t = (TextView)card.findViewById(R.id.leftCardText);
+            i = (ImageView)card.findViewById(R.id.leftCardImage);
+        } else {
+            t = (TextView)card.findViewById(R.id.rightCardText);
+            i = (ImageView)card.findViewById(R.id.rightCardImage);
+        }
+
+        t.setText(text);
+        i.setImageResource(resID);
+
         if(((FrameLayout.LayoutParams)card.getLayoutParams()).bottomMargin < 0) {
             ValueAnimator anim = ValueAnimator.ofInt(-card.getHeight() - 10, 20);
+            anim.setInterpolator(new AnticipateOvershootInterpolator());
             anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    int val = (Integer) valueAnimator.getAnimatedValue();
+                int val = (Integer) valueAnimator.getAnimatedValue();
 
-                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)card.getLayoutParams();
-                    params.bottomMargin = val;
-                    card.setLayoutParams(params);
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)card.getLayoutParams();
+                params.bottomMargin = val;
+                card.setLayoutParams(params);
                 }
             });
             anim.setDuration(500);
@@ -353,14 +376,15 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         if(card == null) return;
 
         ValueAnimator anim = ValueAnimator.ofInt(20, -card.getHeight() - 10);
+        anim.setInterpolator(new AccelerateDecelerateInterpolator());
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                int val = (Integer) valueAnimator.getAnimatedValue();
+            int val = (Integer) valueAnimator.getAnimatedValue();
 
-                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)card.getLayoutParams();
-                params.bottomMargin = val;
-                card.setLayoutParams(params);
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)card.getLayoutParams();
+            params.bottomMargin = val;
+            card.setLayoutParams(params);
             }
         });
         anim.setDuration(500);

@@ -162,8 +162,8 @@ public class MainActivity extends Activity {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "Screen touched ");
                 // TODO: send to Firebase
-                robot.showCard(Robot.Hand.Left);
-                robot.showCard(Robot.Hand.Right);
+                robot.showCard(Robot.Hand.Left, R.drawable.apple, "Apple");
+                robot.showCard(Robot.Hand.Right, R.drawable.apple, "Apple");
 
                 break;
             default:

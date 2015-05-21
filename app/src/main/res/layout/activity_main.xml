@@ -41,6 +41,7 @@
                 android:text="Lesson"
                 android:orientation="horizontal"
                 android:layout_gravity="left" />
+
             <Button
                 android:id="@+id/convoButton"
                 android:layout_width="wrap_content"
