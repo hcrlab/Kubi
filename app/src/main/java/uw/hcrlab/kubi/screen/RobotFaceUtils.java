@@ -94,7 +94,7 @@ public class RobotFaceUtils {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
 
-		int limit = getLookingLimit(face);
+		int limit = getLookingLimit(face, 0.7f);
 
 		// move the pupil to the right
 		for (int i = 0, count = 0; i <= limit; i += 10, count++ ){
@@ -144,7 +144,7 @@ public class RobotFaceUtils {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
 
-		int limit = getLookingLimit(face);
+		int limit = getLookingLimit(face, 0.9f);
 
 		// move the pupil to the left
 		for (int i = 0, count = 0; i <= limit; i += 10, count++ ){
@@ -194,7 +194,7 @@ public class RobotFaceUtils {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
 
-		int limit = getLookingLimit(face);
+		int limit = getLookingLimit(face, 0.9f);
 
 		// move the pupil down
 		for (int j = 0, count = 0; j > -limit; j-= 5, count++){
@@ -249,15 +249,15 @@ public class RobotFaceUtils {
 		showNBlink(face);
 	}
 
-	private static int getLookingLimit(RobotFace face) {
-		return (int)((face.getEyeRadius() - face.getEyeRadius()*face.getLeftEye().getRatio()) * 0.9f);
+	private static int getLookingLimit(RobotFace face, float factor) {
+		return (int)((face.getEyeRadius() - face.getEyeRadius()*face.getLeftEye().getRatio()) * factor);
 	}
 
 	private static void showLookDownLeft(RobotFace face) {
         Canvas canvas = null;
         SurfaceHolder holder = face.getHolder();
 
-		int limit = getLookingLimit(face);
+		int limit = getLookingLimit(face, 0.9f);
 
 		// move the pupil down
 		for (int j = 0, count = 0; j > -limit; j-= 5, count++){
@@ -318,7 +318,7 @@ public class RobotFaceUtils {
         Canvas canvas = null;
         SurfaceHolder holder = face.getHolder();
 
-		int limit = getLookingLimit(face);
+		int limit = getLookingLimit(face, 0.7f);
 
 		// move the pupil down
 		for (int j = 0, count = 0; j > -limit; j-= 5, count++){
@@ -379,7 +379,7 @@ public class RobotFaceUtils {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
 
-		int limit = getLookingLimit(face);
+		int limit = getLookingLimit(face, 0.9f);
 
 		// move the pupil up
 		for (int j = 0, count = 0; j < limit; j+= 5, count++){
