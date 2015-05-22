@@ -68,6 +68,8 @@ public class CommandHandler extends WizardHandler {
                     robot.perform(Action.valueOf(action));
                 }
 
+                int imageCount = 0;
+
                 String left = res.getLeftImage();
                 if(left != null) {
                     Log.d(TAG, "Displaying left hand image");
@@ -76,7 +78,7 @@ public class CommandHandler extends WizardHandler {
                     if(leftTxt == null) {
                         leftTxt = "";
                     }
-
+                    imageCount = 1;
                     robot.showCard(Robot.Hand.Left, getDrawable(left), leftTxt);
                 }
 
@@ -88,8 +90,15 @@ public class CommandHandler extends WizardHandler {
                     if(rightTxt == null) {
                         rightTxt = "";
                     }
-
+                    imageCount = (imageCount == 0) ? 2 : 3;
                     robot.showCard(Robot.Hand.Right, getDrawable(right), rightTxt);
+                }
+
+                switch(imageCount) {
+                    case 1: robot.act(FaceAction.LOOK_DOWN_LEFT); break;
+                    case 2: robot.act(FaceAction.LOOK_DOWN_RIGHT); break;
+                    case 3: robot.act(FaceAction.LOOK_DOWN); break;
+                    default: break;
                 }
 
                 String[] buttons = res.getButtons();

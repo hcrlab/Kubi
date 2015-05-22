@@ -19,6 +19,7 @@ public class RobotFace extends SurfaceView implements SurfaceHolder.Callback {
 	// The width & height of the view (set when the surface is initially created)
 	private int screenWidth;
 	private int screenHeight;
+	private float radius;
 
 	public RobotFace(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -39,7 +40,7 @@ public class RobotFace extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-        float radius = this.screenHeight/6;
+        radius = this.screenHeight/6;
         float leftEyeXPosition = this.screenWidth/2 - 1.25f * radius;
         float rightEyeXPosition = this.screenWidth/2 + 1.25f * radius;
         float eyeYPosition = radius + 0.25f * radius;
@@ -80,4 +81,6 @@ public class RobotFace extends SurfaceView implements SurfaceHolder.Callback {
 	public void setRightEye(RobotEye rightEye) {
 		this.rightEye = rightEye;
 	}
+
+	public float getEyeRadius() { return this.radius; }
 }

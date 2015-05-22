@@ -52,10 +52,13 @@ public class RobotFaceUtils {
 			case WAKE:			showWake(face);			break;
 			case SURPRISED: 	showSurprised(face);	break;
 			case THINK:			showThink(face);		break;
-			case GUILTY:		showGuilty(face);		break;
+			case GUILTY:		showLookDownLeft(face);		break;
 			case LOOK_LEFT:		showLookLeft(face);		break;
 			case LOOK_RIGHT:	showLookRight(face);	break;
-			case NBLINK:		showNBlink(face);	break;
+			case NBLINK:		showNBlink(face);	    break;
+            case LOOK_DOWN:     showLookDown(face);     break;
+            case LOOK_DOWN_LEFT:     showLookDownLeft(face);     break;
+            case LOOK_DOWN_RIGHT:     showLookDownRight(face);     break;
 			default:			break;
 		}
 	}
@@ -91,10 +94,11 @@ public class RobotFaceUtils {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
 
-		int limit = (int)(ScreenConstants.DEFAULT_EYE_RADIUS * ScreenConstants.LOOK_LIMIT_FACTOR);
+		int limit = getLookingLimit(face, 0.7f);
 
 		// move the pupil to the right
-		for (int i = 0; i <= limit; i += 10 ){
+		for (int i = 0, count = 0; i <= limit; i += 10, count++ ){
+			i += count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -117,7 +121,8 @@ public class RobotFaceUtils {
 		}
 
 		// goes back to normal
-		for (int i = limit; i >= 0; i -= 10) {
+		for (int i = limit, count = 0; i >= 0; i -= 10, count++) {
+			i -= count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -139,10 +144,11 @@ public class RobotFaceUtils {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
 
-		int limit = (int)(ScreenConstants.DEFAULT_EYE_RADIUS * ScreenConstants.LOOK_LIMIT_FACTOR);
+		int limit = getLookingLimit(face, 0.9f);
 
 		// move the pupil to the left
-		for (int i = 0; i <= limit; i += 10 ){
+		for (int i = 0, count = 0; i <= limit; i += 10, count++ ){
+			i += count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -165,7 +171,8 @@ public class RobotFaceUtils {
 		}
 				
 		// goes back to normal
-		for (int i = limit; i >= 0; i -= 10) {
+		for (int i = limit, count = 0; i >= 0; i -= 10, count++) {
+			i -= count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -183,14 +190,15 @@ public class RobotFaceUtils {
         drawFace(face, State.NORMAL);
 	}
 
-	private static void showGuilty(RobotFace face) {
+	private static void showLookDown(RobotFace face) {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
-		
-		int limit = (int)(ScreenConstants.DEFAULT_EYE_RADIUS * ScreenConstants.LOOK_LIMIT_FACTOR);
+
+		int limit = getLookingLimit(face, 0.9f);
 
 		// move the pupil down
-		for (int j = 0; j > -limit; j-= 5){
+		for (int j = 0, count = 0; j > -limit; j-= 5, count++){
+			j -= count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -205,49 +213,16 @@ public class RobotFaceUtils {
 			}
 		}
 
-		// move the pupil from the middle to the left
-		for (int i = 0; i > -limit/3; i -= 1 ){
-			int j = (int) Math.sqrt(limit * limit - Math.abs(i) * Math.abs(i));
-			try {
-				canvas = holder.lockCanvas();
-				synchronized (holder) {
-					// clear the screen
-					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-                    moveBothIris(face, canvas, i, j);
-				}
-			} finally {
-				if (canvas != null) {
-					holder.unlockCanvasAndPost(canvas);
-				}
-			}
-		}
-
 		// delay
 		try {
-			Thread.sleep(1500);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
-		// move the pupil from the left to the middle
-		for (int i = - limit/3; i < 0; i += 1 ){
-			int j = (int) Math.sqrt(limit * limit - Math.abs(i) * Math.abs(i));
-			try {
-				canvas = holder.lockCanvas();
-				synchronized (holder) {
-					// clear the screen
-					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
-                    moveBothIris(face, canvas, i, j);
-				}
-			} finally {
-				if (canvas != null) {
-					holder.unlockCanvasAndPost(canvas);
-				}
-			}
-		}
 		
 		// move the pupil up
-		for (int j = -limit; j < 0; j+= 5){
+		for (int j = -limit, count = 0; j < 0; j+= 5, count++){
+			j += count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -274,14 +249,141 @@ public class RobotFaceUtils {
 		showNBlink(face);
 	}
 
+	private static int getLookingLimit(RobotFace face, float factor) {
+		return (int)((face.getEyeRadius() - face.getEyeRadius()*face.getLeftEye().getRatio()) * factor);
+	}
+
+	private static void showLookDownLeft(RobotFace face) {
+        Canvas canvas = null;
+        SurfaceHolder holder = face.getHolder();
+
+		int limit = getLookingLimit(face, 0.9f);
+
+		// move the pupil down
+		for (int j = 0, count = 0; j > -limit; j-= 5, count++){
+			j -= count;
+			int i = limit - (int) Math.sqrt(limit * limit - Math.abs(j) * Math.abs(j));
+			try {
+				canvas = holder.lockCanvas();
+				synchronized (holder) {
+					// clear the screen
+					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
+					moveBothIris(face, canvas, -i, -j);
+				}
+			} finally {
+				if (canvas != null) {
+					holder.unlockCanvasAndPost(canvas);
+				}
+			}
+		}
+
+        // delay
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+		// move the pupil up
+		for (int j = -limit, count = 0; j < 0; j+= 5, count++){
+			j += count;
+			int i = limit - (int) Math.sqrt(limit * limit - Math.abs(j) * Math.abs(j));
+			try {
+				canvas = holder.lockCanvas();
+				synchronized (holder) {
+					// clear the screen
+					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
+					moveBothIris(face, canvas, -i, -j);
+				}
+			} finally {
+				if (canvas != null) {
+					holder.unlockCanvasAndPost(canvas);
+				}
+			}
+		}
+
+        drawFace(face, State.NORMAL);
+
+        // delay
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        showNBlink(face);
+    }
+
+    private static void showLookDownRight(RobotFace face) {
+        Canvas canvas = null;
+        SurfaceHolder holder = face.getHolder();
+
+		int limit = getLookingLimit(face, 0.7f);
+
+		// move the pupil down
+		for (int j = 0, count = 0; j > -limit; j-= 5, count++){
+			j -= count;
+			int i = limit - (int) Math.sqrt(limit * limit - Math.abs(j) * Math.abs(j));
+			try {
+				canvas = holder.lockCanvas();
+				synchronized (holder) {
+					// clear the screen
+					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
+					moveBothIris(face, canvas, i, -j);
+				}
+			} finally {
+				if (canvas != null) {
+					holder.unlockCanvasAndPost(canvas);
+				}
+			}
+		}
+
+        // delay
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+		// move the pupil up
+		for (int j = -limit, count = 0; j < 0; j+= 5, count++){
+			j += count;
+			int i = limit - (int) Math.sqrt(limit * limit - Math.abs(j) * Math.abs(j));
+			try {
+				canvas = holder.lockCanvas();
+				synchronized (holder) {
+					// clear the screen
+					canvas.drawColor(ScreenConstants.BACKGROUND_COLOR);
+					moveBothIris(face, canvas, i, -j);
+				}
+			} finally {
+				if (canvas != null) {
+					holder.unlockCanvasAndPost(canvas);
+				}
+			}
+		}
+
+        drawFace(face, State.NORMAL);
+
+        // delay
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        showNBlink(face);
+    }
+
     private static void showThink(RobotFace face) {
 		Canvas canvas = null;
 		SurfaceHolder holder = face.getHolder();
 
-		int limit = (int)(ScreenConstants.DEFAULT_EYE_RADIUS * ScreenConstants.LOOK_LIMIT_FACTOR);
+		int limit = getLookingLimit(face, 0.9f);
 
 		// move the pupil up
-		for (int j = 0; j < limit; j+= 5){
+		for (int j = 0, count = 0; j < limit; j+= 5, count++){
+			j += count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -297,7 +399,8 @@ public class RobotFaceUtils {
 		}
 
 		// move the pupil from the middle to the right
-		for (int i = 0; i < limit/3; i += 1 ){
+		for (int i = 0, count = 0; i < limit/3; i += 1, count++ ){
+			i += count;
 			int j = (int) Math.sqrt(limit * limit - Math.abs(i) * Math.abs(i));
 			try {
 				canvas = holder.lockCanvas();
@@ -321,7 +424,8 @@ public class RobotFaceUtils {
 		}
 
 		// move the pupil from the right back to the middle
-		for (int i = limit/3; i < 0; i += 1 ){
+		for (int i = limit/3, count = 0; i < 0; i += 1, count++ ){
+			i += count;
 			int j = (int) Math.sqrt(limit * limit - Math.abs(i) * Math.abs(i));
 			try {
 				canvas = holder.lockCanvas();
@@ -338,7 +442,8 @@ public class RobotFaceUtils {
 		}
 
 		// move the pupil down
-		for (int j = limit; j > 0; j-= 5){
+		for (int j = limit, count = 0; j > 0; j-= 5, count++){
+			j -= count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -370,7 +475,8 @@ public class RobotFaceUtils {
 		SurfaceHolder holder = face.getHolder();
 
 		// expand the iris
-		for (int i = 0; i < (ScreenConstants.DEFAULT_EYE_RADIUS / 8); i += 10 ){
+		for (int i = 0, count = 0; i < (ScreenConstants.DEFAULT_EYE_RADIUS / 8); i += 10, count++ ){
+			i += count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -406,7 +512,8 @@ public class RobotFaceUtils {
 		}
 
 		// goes back to normal
-		for (int i = (int) (ScreenConstants.DEFAULT_EYE_RADIUS / 8); i > 0; i -= 2) {
+		for (int i = (int) (ScreenConstants.DEFAULT_EYE_RADIUS / 8), count = 0; i > 0; i -= 2, count++ ) {
+			i -= count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -430,7 +537,8 @@ public class RobotFaceUtils {
 		SurfaceHolder holder = face.getHolder();
 		
 		// goes back to normal
-		for (int i = (int) (ScreenConstants.DEFAULT_EYE_RADIUS * 2); i > 0; i -= 15) {
+		for (int i = (int) (ScreenConstants.DEFAULT_EYE_RADIUS * 2), count = 0; i > 0; i -= 15, count++) {
+			i -= count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -458,7 +566,8 @@ public class RobotFaceUtils {
 		SurfaceHolder holder = face.getHolder();
 
 		// closing eyes
-		for (int i = 0; i < ScreenConstants.DEFAULT_EYE_RADIUS * 2; i += 5 ){
+		for (int i = 0, count = 0; i < ScreenConstants.DEFAULT_EYE_RADIUS * 2; i += 5, count++ ){
+			i += count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -482,7 +591,8 @@ public class RobotFaceUtils {
 		SurfaceHolder holder = face.getHolder();
 			
 		// gazing
-		for (int i = 0; i < ScreenConstants.DEFAULT_EYE_RADIUS * 3/4; i += 4 ){
+		for (int i = 0, count = 0; i < ScreenConstants.DEFAULT_EYE_RADIUS * 3/4; i += 4, count++ ){
+			i += count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -504,7 +614,8 @@ public class RobotFaceUtils {
 			e.printStackTrace();
 		}
 		// goes back to normal
-		for (int i = (int) (ScreenConstants.DEFAULT_EYE_RADIUS * 3/4); i > 0; i -= 5) {
+		for (int i = (int) (ScreenConstants.DEFAULT_EYE_RADIUS * 3/4), count = 0; i > 0; i -= 5, count++) {
+			i -= count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -580,7 +691,8 @@ public class RobotFaceUtils {
 		SurfaceHolder holder = face.getHolder();
 		
 		// closing eye
-		for (int i = 0; i < ScreenConstants.DEFAULT_EYE_RADIUS * 2; i += 150 ){
+		for (int i = 0, count = 0; i < ScreenConstants.DEFAULT_EYE_RADIUS * 2; i += 150, count++ ){
+			i += count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -604,7 +716,8 @@ public class RobotFaceUtils {
 			e.printStackTrace();
 		}
 		// goes back to normal
-		for (int i = (int) (ScreenConstants.DEFAULT_EYE_RADIUS * 2); i > 0; i -= 150) {
+		for (int i = (int) (ScreenConstants.DEFAULT_EYE_RADIUS * 2), count = 0; i > 0; i -= 150, count++) {
+			i -= count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -627,7 +740,8 @@ public class RobotFaceUtils {
 		SurfaceHolder holder = face.getHolder();
 		
 		// closing the right eye
-		for (int i = 0; i <= ScreenConstants.DEFAULT_EYE_RADIUS * 2; i += 100 ){
+		for (int i = 0, count = 0; i <= ScreenConstants.DEFAULT_EYE_RADIUS * 2; i += 100, count++ ){
+			i += count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {
@@ -653,7 +767,8 @@ public class RobotFaceUtils {
 			e.printStackTrace();
 		}
 		// goes back to normal
-		for (int i = (int) (ScreenConstants.DEFAULT_EYE_RADIUS * 2); i > 0; i -= 100) {
+		for (int i = (int) (ScreenConstants.DEFAULT_EYE_RADIUS * 2), count = 0; i > 0; i -= 100, count++) {
+			i -= count;
 			try {
 				canvas = holder.lockCanvas();
 				synchronized (holder) {

@@ -13,5 +13,8 @@ public enum FaceAction {
 	GUILTY,
 	LOOK_LEFT,
 	LOOK_RIGHT,
-	NBLINK
+	NBLINK,
+    LOOK_DOWN,
+    LOOK_DOWN_LEFT,
+    LOOK_DOWN_RIGHT
 }
