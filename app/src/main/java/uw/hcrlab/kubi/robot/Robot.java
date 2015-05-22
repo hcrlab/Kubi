@@ -345,10 +345,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "left image clicked!");
-                if (leftIsShowing) {
-                    hideCard(Robot.Hand.Left);
-                    leftIsShowing = false;
-                }
+//                if (leftIsShowing) {
+//                    hideCard(Robot.Hand.Left);
+//                    leftIsShowing = false;
+//                }
 
                 if (rightIsShowing) {
                     hideCard(Robot.Hand.Right);
@@ -361,10 +361,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "right image clicked!");
-                if (leftIsShowing) {
-                    hideCard(Robot.Hand.Left);
-                    leftIsShowing = false;
-                }
+//                if (leftIsShowing) {
+//                    hideCard(Robot.Hand.Left);
+//                    leftIsShowing = false;
+//                }
 
                 if (rightIsShowing) {
                     hideCard(Robot.Hand.Right);
@@ -424,6 +424,12 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         final View card = leftOrRight == Hand.Left ? leftCard : rightCard;
 
         if(card == null) return null;
+
+        if(leftOrRight == Hand.Left && !leftIsShowing) return null;
+        if(leftOrRight == Hand.Right && !rightIsShowing) return null;
+
+        if(leftOrRight == Hand.Left) leftIsShowing = false;
+        if(leftOrRight == Hand.Right) rightIsShowing = false;
 
         ValueAnimator anim = ValueAnimator.ofInt(20, -card.getHeight() - 10);
         anim.setInterpolator(new AccelerateDecelerateInterpolator());

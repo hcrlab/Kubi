@@ -64,8 +64,13 @@ public class CommandHandler extends WizardHandler {
 
                 String action = res.getAction();
                 if(action != null) {
-                    Log.d(TAG, "Got action request: " + action);
-                    robot.perform(Action.valueOf(action));
+                    if(action.equalsIgnoreCase("LOWER_HANDS")) {
+                        robot.hideCard(Robot.Hand.Left);
+                        robot.hideCard(Robot.Hand.Right);
+                    } else {
+                        Log.d(TAG, "Got action request: " + action);
+                        robot.perform(Action.valueOf(action));
+                    }
                 }
 
                 int imageCount = 0;
