@@ -260,16 +260,28 @@ public class Kubi extends GattInterface {
 	 * @param green Green component (0-255)
 	 * @param blue Blue component (0-255)
 	 */
-	public void setIndicatorColor(byte red, byte green, byte blue)
+	public void setIndicatorColor(final byte red, final byte green, final byte blue)
 	{
-		// Send the values to the led colour characteristic
-		byte[] buff = new byte[3];
-		buff[0] = red;
-		buff[1] = green;
-		buff[2] = blue;
-		super.enqueueWrite(ledColor,buff);
+		this.mHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				// Send the values to the led colour characteristic
+				setColor(red, green, blue);
+			}
+		}, 200);
 	}
-	
+
+	private void setColor(byte red, byte green, byte blue) {
+		if(ledColor != null) {
+			byte[] buff = new byte[3];
+			buff[0] = red;
+			buff[1] = green;
+			buff[2] = blue;
+			super.enqueueWrite(ledColor, buff);
+		} else {
+			Log.e(TAG, "ledColor is NULL!");
+		}
+	}
 	
 	/**
 	 * Get's the kubi ID for this kubi
@@ -331,6 +343,10 @@ public class Kubi extends GattInterface {
             	moveTo(pan, tilt);
             }
 		}, 200);
+	}
+
+	public void act(Runnable action, long delay) {
+		this.mHandler.postDelayed(action, delay);
 	}
 
 

@@ -52,21 +52,24 @@ public class CommandHandler extends WizardHandler {
                 }
 
                 Speech sp = res.getSpeech();
-                if(sp != null) {
+                if(sp != null && sp.getText() != null && !sp.getText().equalsIgnoreCase("")) {
                     robot.say(sp.getText(), sp.getLanguage(), sp.getSpeed());
                 }
 
                 String emotion = res.getEmotion();
-                if(emotion != null) {
+                if(emotion != null && !emotion.equalsIgnoreCase("")) {
                     Log.d(TAG, "Got emotion request: " + emotion);
                     robot.act(FaceAction.valueOf(emotion));
                 }
 
                 String action = res.getAction();
-                if(action != null) {
+                if(action != null && !action.equalsIgnoreCase("")) {
                     if(action.equalsIgnoreCase("LOWER_HANDS")) {
                         robot.hideCard(Robot.Hand.Left);
                         robot.hideCard(Robot.Hand.Right);
+                    } else if (action.equalsIgnoreCase("RAISE_HANDS")) {
+                        robot.showCard(Robot.Hand.Left);
+                        robot.showCard(Robot.Hand.Right);
                     } else {
                         Log.d(TAG, "Got action request: " + action);
                         robot.perform(Action.valueOf(action));
@@ -76,7 +79,7 @@ public class CommandHandler extends WizardHandler {
                 int imageCount = 0;
 
                 String left = res.getLeftImage();
-                if(left != null) {
+                if(left != null && !left.equalsIgnoreCase("")) {
                     Log.d(TAG, "Displaying left hand image");
 
                     String leftTxt = res.getLeftText();
@@ -88,7 +91,7 @@ public class CommandHandler extends WizardHandler {
                 }
 
                 String right = res.getRightImage();
-                if(right != null) {
+                if(right != null && !right.equalsIgnoreCase("")) {
                     Log.d(TAG, "Displaying right hand image");
 
                     String rightTxt = res.getRightText();

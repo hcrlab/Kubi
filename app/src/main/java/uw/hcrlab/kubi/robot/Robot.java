@@ -1,18 +1,14 @@
 package uw.hcrlab.kubi.robot;
 
-import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.speech.RecognizerIntent;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AnticipateOvershootInterpolator;
-import android.view.animation.BounceInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,7 +40,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private String mDefaultLanguage = "EN";
 
-    private RobotThread thread;
+    private FaceThread thread;
     private RobotFace robotFace;
     private KubiManager kubiManager;
 
@@ -146,7 +142,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     /**
-     * Starts the robot by starting the RobotThread if it has not already been started.
+     * Starts the robot by starting the FaceThread if it has not already been started.
      */
     public void startup() {
         if (thread != null) {
@@ -154,7 +150,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             return;
         }
 
-        thread = new RobotThread(robotFace, kubiManager);
+        thread = new FaceThread(robotFace, kubiManager);
         thread.start();
 
         if(App.InWizardMode()) {
@@ -167,7 +163,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     /**
-     * Stops the RobotThread
+     * Stops the FaceThread
      */
     public void shutdown() {
         Log.i(TAG, "Shutting down Main Thread ...");
@@ -239,8 +235,74 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             case LOOK_AROUND: kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM); break;
             case NOD: kubiManager.getKubi().performGesture(Kubi.GESTURE_NOD); break;
             case SHAKE: kubiManager.getKubi().performGesture(Kubi.GESTURE_SHAKE); break;
+            case PAY_ATTENTION: kubiManager.getKubi().moveTo(0, 0); break;
+            case YAY: yay(); break;
+            case OOPS: oops(); break;
+            case EXCELLENT: excellent(); break;
         }
-        //thread.perform(action);
+    }
+
+    private void yay() {
+        final Kubi kubi = kubiManager.getKubi();
+
+        kubi.act(new Runnable() {
+            @Override
+            public void run() {
+                kubi.moveTo(0, 20, 1.0f, false);
+            }
+        }, 200);
+        kubi.act(new Runnable() {
+            @Override
+            public void run() {
+                kubi.moveTo(0, 0, 1.0f, false);
+            }
+        }, 800);
+    }
+
+    private void oops() {
+        final Kubi kubi = kubiManager.getKubi();
+
+        kubi.act(new Runnable() {
+            @Override
+            public void run() {
+                kubi.moveTo(0, -15, 1.0f, false);
+            }
+        }, 200);
+        kubi.act(new Runnable() {
+            @Override
+            public void run() {
+                kubi.moveTo(0, 0, 1.0f, false);
+            }
+        }, 600);
+    }
+
+    private void excellent() {
+        final Kubi kubi = kubiManager.getKubi();
+
+        kubi.act(new Runnable() {
+            @Override
+            public void run() {
+                kubi.moveTo(10, 20, 1.0f, false);
+            }
+        }, 200);
+        kubi.act(new Runnable() {
+            @Override
+            public void run() {
+                kubi.moveTo(0, 0, 1.0f, false);
+            }
+        }, 600);
+        kubi.act(new Runnable() {
+            @Override
+            public void run() {
+                kubi.moveTo(-10, 20, 1.0f, false);
+            }
+        }, 1000);
+        kubi.act(new Runnable() {
+            @Override
+            public void run() {
+                kubi.moveTo(0, 0, 1.0f, false);
+            }
+        }, 1400);
     }
 
     /**
@@ -328,10 +390,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         String errorMessage = SpeechUtils.getErrorMessage(errorCode);
 
-//        if (errorMessage != null) {
-//            say(errorMessage, mDefaultLanguage);
-//        }
-
         // If there is an error, shows feedback to the user and writes it in the log
         Log.e(TAG, "Error: " + errorMessage);
         Toast.makeText(currentCxt, errorMessage, Toast.LENGTH_LONG).show();
@@ -345,11 +403,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "left image clicked!");
-//                if (leftIsShowing) {
-//                    hideCard(Robot.Hand.Left);
-//                    leftIsShowing = false;
-//                }
-
                 if (rightIsShowing) {
                     hideCard(Robot.Hand.Right);
                     rightIsShowing = false;
@@ -361,14 +414,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "right image clicked!");
-//                if (leftIsShowing) {
-//                    hideCard(Robot.Hand.Left);
-//                    leftIsShowing = false;
-//                }
-
-                if (rightIsShowing) {
-                    hideCard(Robot.Hand.Right);
-                    rightIsShowing = false;
+                if (leftIsShowing) {
+                    hideCard(Robot.Hand.Left);
+                    leftIsShowing = false;
                 }
             }
         });
@@ -377,6 +425,35 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     public enum Hand {
         Left,
         Right
+    }
+
+    public void showCard(Hand leftOrRight) {
+        if(leftOrRight == Hand.Left && leftIsShowing) return;
+        if(leftOrRight == Hand.Right && rightIsShowing) return;
+
+        final View card = leftOrRight == Hand.Left ? leftCard : rightCard;
+
+        if(card == null) return;
+
+        if(leftOrRight == Hand.Left) leftIsShowing = true;
+        if(leftOrRight == Hand.Right) rightIsShowing = true;
+
+        if(((FrameLayout.LayoutParams)card.getLayoutParams()).bottomMargin < 0) {
+            ValueAnimator anim = ValueAnimator.ofInt(-card.getHeight() - 10, 20);
+            anim.setInterpolator(new AnticipateOvershootInterpolator());
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    int val = (Integer) valueAnimator.getAnimatedValue();
+
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) card.getLayoutParams();
+                    params.bottomMargin = val;
+                    card.setLayoutParams(params);
+                }
+            });
+            anim.setDuration(500);
+            anim.start();
+        }
     }
 
     public void showCard(Hand leftOrRight, int resID, String text) {
