@@ -34,8 +34,10 @@ public class CommandHandler extends WizardHandler {
 
         drawables.put("APPLE", R.drawable.apple);
         drawables.put("BANANA", R.drawable.banana);
+        drawables.put("GIRL", R.drawable.girl);
+        drawables.put("BOY", R.drawable.boy);
 
-        return drawables.get("APPLE");
+        return drawables.get(command);
     }
 
     @Override
