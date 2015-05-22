@@ -20,6 +20,9 @@ import com.revolverobotics.kubiapi.KubiManager;
 import com.revolverobotics.kubiapi.KubiSearchResult;
 
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import sandra.libs.asr.asrlib.ASR;
 import sandra.libs.tts.TTS;
@@ -43,6 +46,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private FaceThread thread;
     private RobotFace robotFace;
     private KubiManager kubiManager;
+
+    private boolean isAsleep = false;
+    private boolean isBored = false;
 
     private View leftCard;
     private View rightCard;
@@ -160,6 +166,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             quizzes.Listen();
             practice.Listen();
         }
+
+        resetTimers();
     }
 
     /**
@@ -225,10 +233,74 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void act(FaceAction faceAction) {
+        resetTimers();
+
         thread.act(faceAction);
     }
 
+
+    // look around every 3 minutes
+    private final long BORING_TIME = 1 * 60 * 1000;
+    private final long SLEEP_TIME = 5 * 60 * 1000;
+
+    private Random random = new Random();
+
+    private Timer bored;
+    private Timer sleep;
+
+    private void scheduleBored(long delay) {
+        if(bored != null) {
+            bored.cancel();
+        }
+
+        bored = new Timer();
+        bored.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                isBored = true;
+                thread.act(FaceAction.LOOK_LEFT);
+                kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM);
+                scheduleBored(random.nextInt(20) * 1000);
+            }
+        }, delay);
+    }
+
+    private void resetTimers() {
+        if(isBored) {
+            kubiManager.getKubi().moveTo(0, 0);
+            isBored = false;
+        }
+
+        scheduleBored(BORING_TIME);
+
+        if(isAsleep) {
+            thread.act(FaceAction.WAKE);
+            kubiManager.getKubi().moveTo(0, 0);
+            isAsleep = false;
+        }
+
+        if(sleep != null) {
+            sleep.cancel();
+        }
+
+        sleep = new Timer();
+        sleep.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                isAsleep = true;
+                thread.act(FaceAction.SLEEP);
+                kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN);
+
+                if(bored != null) {
+                    bored.cancel();
+                }
+            }
+        }, SLEEP_TIME);
+    }
+
     public void perform(Action action) {
+        resetTimers();
+
         switch (action) {
             case SLEEP: kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN); break;
             case WAKE:  kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_UP); break;
@@ -239,6 +311,14 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             case YAY: yay(); break;
             case OOPS: oops(); break;
             case EXCELLENT: excellent(); break;
+            case LOWER_HANDS:
+                hideCard(Robot.Hand.Left);
+                hideCard(Robot.Hand.Right);
+                break;
+            case RAISE_HANDS:
+                showCard(Robot.Hand.Left);
+                showCard(Robot.Hand.Right);
+                break;
         }
     }
 
@@ -312,7 +392,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             Log.i(TAG, "RobotFace touch occurred!");
-            act(FaceAction.WAKE);
+            resetTimers();
             return false;
         }
     };
