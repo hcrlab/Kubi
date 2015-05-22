@@ -5,5 +5,9 @@ public enum Action {
     WAKE,
     LOOK_AROUND,
     NOD,
-    SHAKE
+    SHAKE,
+    PAY_ATTENTION,
+    YAY,
+    OOPS,
+    EXCELLENT
 }

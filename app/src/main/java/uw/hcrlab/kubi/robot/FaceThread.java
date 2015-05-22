@@ -14,7 +14,7 @@ import uw.hcrlab.kubi.screen.RobotFaceUtils;
 /**
  * Created by kimyen on 4/5/15.
  */
-public class RobotThread extends Thread {
+public class FaceThread extends Thread {
     /* injected from MainActivity */
     private final RobotFace robotFace;
     private final KubiManager kubiManager;
@@ -22,9 +22,10 @@ public class RobotThread extends Thread {
     private ConcurrentLinkedQueue<FaceAction> faceActions = new ConcurrentLinkedQueue<FaceAction>();
 
     /* Class variables */
-    private static final String TAG = RobotThread.class.getSimpleName();
+    private static final String TAG = FaceThread.class.getSimpleName();
     private boolean isRunning;
     private boolean isAsleep;
+    private boolean isBored;
 
     /* Idle behavior periods */
 
@@ -43,9 +44,9 @@ public class RobotThread extends Thread {
     private long nextBlinkTime;
     private long nextBoringTime;
 
-    public RobotThread(RobotFace robotFace, KubiManager kubiManager) {
+    public FaceThread(RobotFace robotFace, KubiManager kubiManager) {
         super();
-        Log.i(TAG, "Initializing RobotThread ...");
+        Log.i(TAG, "Initializing FaceThread ...");
 
         this.robotFace = robotFace;
         this.kubiManager = kubiManager;
@@ -92,6 +93,11 @@ public class RobotThread extends Thread {
 
                             isAsleep = false;
 
+                            if(isBored) {
+                                kubiManager.getKubi().moveTo(0,0);
+                                isBored = false;
+                            }
+
                             RobotFaceUtils.showAction(robotFace, faceAction);
                         }
 
@@ -111,6 +117,7 @@ public class RobotThread extends Thread {
                         if (Math.abs(System.currentTimeMillis() - nextBoringTime) < EPSILON) {
                             Log.i(TAG, "Look around at " + System.currentTimeMillis());
                             kubiLookAround();
+                            isBored = true;
                             nextBoringTime = getNextBoringTime();
                         }
                     }
