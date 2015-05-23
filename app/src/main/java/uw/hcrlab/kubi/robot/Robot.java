@@ -258,67 +258,94 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             @Override
             public void run() {
                 isBored = true;
-                thread.act(FaceAction.LOOK_LEFT);
-                kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM);
-                scheduleBored(random.nextInt(20) * 1000);
+                if(kubiManager.getKubi() != null) {
+                    thread.act(FaceAction.LOOK_LEFT);
+                    kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM);
+                    scheduleBored(random.nextInt(20) * 1000);
+                }
             }
         }, delay);
     }
 
     private void resetTimers() {
-        if(isBored) {
-            kubiManager.getKubi().moveTo(0, 0);
-            isBored = false;
-        }
 
-        scheduleBored(BORING_TIME);
-
-        if(isAsleep) {
-            thread.act(FaceAction.WAKE);
-            kubiManager.getKubi().moveTo(0, 0);
-            isAsleep = false;
-        }
-
-        if(sleep != null) {
-            sleep.cancel();
-        }
-
-        sleep = new Timer();
-        sleep.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                isAsleep = true;
-                thread.act(FaceAction.SLEEP);
-                kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN);
-
-                if(bored != null) {
-                    bored.cancel();
-                }
+        if(kubiManager.getKubi() != null) {
+            if (isBored) {
+                kubiManager.getKubi().moveTo(0, 0);
+                isBored = false;
             }
-        }, SLEEP_TIME);
+
+            scheduleBored(BORING_TIME);
+
+            if (isAsleep) {
+                thread.act(FaceAction.WAKE);
+                kubiManager.getKubi().moveTo(0, 0);
+                isAsleep = false;
+            }
+
+            if (sleep != null) {
+                sleep.cancel();
+            }
+
+            sleep = new Timer();
+            sleep.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    isAsleep = true;
+                    thread.act(FaceAction.SLEEP);
+                    if(kubiManager.getKubi() != null) {
+                        kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN);
+                    }
+
+                    if (bored != null) {
+                        bored.cancel();
+                    }
+                }
+            }, SLEEP_TIME);
+        }
     }
 
     public void perform(Action action) {
         resetTimers();
 
-        switch (action) {
-            case SLEEP: kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN); break;
-            case WAKE:  kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_UP); break;
-            case LOOK_AROUND: kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM); break;
-            case NOD: kubiManager.getKubi().performGesture(Kubi.GESTURE_NOD); break;
-            case SHAKE: kubiManager.getKubi().performGesture(Kubi.GESTURE_SHAKE); break;
-            case PAY_ATTENTION: kubiManager.getKubi().moveTo(0, 0); break;
-            case YAY: yay(); break;
-            case OOPS: oops(); break;
-            case EXCELLENT: excellent(); break;
-            case LOWER_HANDS:
-                hideCard(Robot.Hand.Left);
-                hideCard(Robot.Hand.Right);
-                break;
-            case RAISE_HANDS:
-                showCard(Robot.Hand.Left);
-                showCard(Robot.Hand.Right);
-                break;
+        if(kubiManager.getKubi() != null) {
+            switch (action) {
+                case SLEEP:
+                    kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN);
+                    break;
+                case WAKE:
+                    kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_UP);
+                    break;
+                case LOOK_AROUND:
+                    kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM);
+                    break;
+                case NOD:
+                    kubiManager.getKubi().performGesture(Kubi.GESTURE_NOD);
+                    break;
+                case SHAKE:
+                    kubiManager.getKubi().performGesture(Kubi.GESTURE_SHAKE);
+                    break;
+                case PAY_ATTENTION:
+                    kubiManager.getKubi().moveTo(0, 0);
+                    break;
+                case YAY:
+                    yay();
+                    break;
+                case OOPS:
+                    oops();
+                    break;
+                case EXCELLENT:
+                    excellent();
+                    break;
+                case LOWER_HANDS:
+                    hideCard(Robot.Hand.Left);
+                    hideCard(Robot.Hand.Right);
+                    break;
+                case RAISE_HANDS:
+                    showCard(Robot.Hand.Left);
+                    showCard(Robot.Hand.Right);
+                    break;
+            }
         }
     }
 
