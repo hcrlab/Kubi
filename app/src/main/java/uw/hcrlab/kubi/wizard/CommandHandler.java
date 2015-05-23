@@ -36,6 +36,7 @@ public class CommandHandler extends WizardHandler {
         drawables.put("BANANA", R.drawable.banana);
         drawables.put("GIRL", R.drawable.girl);
         drawables.put("BOY", R.drawable.boy);
+        drawables.put("FRANCE", R.drawable.france);
 
         return drawables.get(command);
     }
@@ -64,16 +65,8 @@ public class CommandHandler extends WizardHandler {
 
                 String action = res.getAction();
                 if(action != null && !action.equalsIgnoreCase("")) {
-                    if(action.equalsIgnoreCase("LOWER_HANDS")) {
-                        robot.hideCard(Robot.Hand.Left);
-                        robot.hideCard(Robot.Hand.Right);
-                    } else if (action.equalsIgnoreCase("RAISE_HANDS")) {
-                        robot.showCard(Robot.Hand.Left);
-                        robot.showCard(Robot.Hand.Right);
-                    } else {
-                        Log.d(TAG, "Got action request: " + action);
-                        robot.perform(Action.valueOf(action));
-                    }
+                    Log.d(TAG, "Got action request: " + action);
+                    robot.perform(Action.valueOf(action));
                 }
 
                 int imageCount = 0;

@@ -23,26 +23,16 @@ public class FaceThread extends Thread {
 
     /* Class variables */
     private static final String TAG = FaceThread.class.getSimpleName();
-    private boolean isRunning;
-    private boolean isAsleep;
-    private boolean isBored;
+    private boolean isRunning = true;
+    private boolean isAsleep = false;
 
     /* Idle behavior periods */
-
-    // the different between real time and calculated time to perform an action
     private final long EPSILON = 100;
-    // sleep after 10 minutes
-    private final long SLEEP_TIME = 10 * 60 * 1000;
-    // blink after 5 seconds
-    private final long BLINK_TIME = 5 * 1000;
-    // look around every 3 minutes
-    private long BORING_TIME = 3 * 60 * 1000;
+    private final long BLINK_TIME = 2 * 1000;
 
     private Random random = new Random();
 
-    private long nextSleepTime;
     private long nextBlinkTime;
-    private long nextBoringTime;
 
     public FaceThread(RobotFace robotFace, KubiManager kubiManager) {
         super();
@@ -50,12 +40,8 @@ public class FaceThread extends Thread {
 
         this.robotFace = robotFace;
         this.kubiManager = kubiManager;
-        this.isRunning = true;
-        this.isAsleep = false;
 
-        nextSleepTime = getNextSleepTime();
         nextBlinkTime = getNextBlinkTime();
-        nextBoringTime = getNextBoringTime();
     }
 
     public void act(FaceAction faceAction) {
@@ -71,54 +57,21 @@ public class FaceThread extends Thread {
         while (isRunning) {
             try {
                 synchronized (robotFace) {
-                    if (!isAsleep && Math.abs(System.currentTimeMillis() - nextSleepTime) < EPSILON) {
-                        Log.i(TAG, "Sleep at " + System.currentTimeMillis());
-                        RobotFaceUtils.showAction(robotFace, FaceAction.SLEEP);
-                        kubiFaceDown();
-                        isAsleep = true;
-                    }
-
                     FaceAction faceAction = faceActions.poll();
 
-                    if(faceAction != null) {
-                        if (faceAction != null)
+                    if(!isAsleep || faceAction == FaceAction.WAKE) {
+                        if (faceAction != null) {
                             Log.d(TAG, faceAction.toString() + " at " + System.currentTimeMillis());
 
-                        //Ignore !Asleep and action == WAKE
-                        if(isAsleep || faceAction != FaceAction.WAKE) {
-                            if(isAsleep && faceAction != FaceAction.WAKE) {
-                                RobotFaceUtils.showAction(robotFace, FaceAction.WAKE);
-                                kubiFaceUp();
-                            }
-
-                            isAsleep = false;
-
-                            if(isBored) {
-                                kubiManager.getKubi().moveTo(0,0);
-                                isBored = false;
-                            }
+                            isAsleep = (faceAction == FaceAction.SLEEP);
 
                             RobotFaceUtils.showAction(robotFace, faceAction);
-                        }
-
-                        if (faceAction == FaceAction.SLEEP) {
-                            isAsleep = true;
-                        }
-
-                        nextBlinkTime = getNextBlinkTime();
-                        nextSleepTime = getNextSleepTime();
-                        nextBoringTime = getNextBoringTime();
-                    } else if (!isAsleep){
-                        if (Math.abs(System.currentTimeMillis() - nextBlinkTime) < EPSILON) {
+                            nextBlinkTime = getNextBlinkTime();
+                        } else if (nextBlinkTime - System.currentTimeMillis() < EPSILON) {
                             Log.i(TAG, "Blink at " + System.currentTimeMillis());
+
                             RobotFaceUtils.showAction(robotFace, FaceAction.BLINK);
                             nextBlinkTime = getNextBlinkTime();
-                        }
-                        if (Math.abs(System.currentTimeMillis() - nextBoringTime) < EPSILON) {
-                            Log.i(TAG, "Look around at " + System.currentTimeMillis());
-                            kubiLookAround();
-                            isBored = true;
-                            nextBoringTime = getNextBoringTime();
                         }
                     }
 
@@ -131,45 +84,9 @@ public class FaceThread extends Thread {
 
     public void setRunning(boolean running) {
         this.isRunning = running;
-        /*if (!running) {
-            RobotFaceUtils.showAction(robotFace, Action.BLINK);
-            kubiFaceDown();
-        }*/
-    }
-
-    private long getNextSleepTime() {
-        return System.currentTimeMillis() + SLEEP_TIME;
     }
 
     private long getNextBlinkTime() {
-        return System.currentTimeMillis() + BLINK_TIME + random.nextInt(10) * 1000;
-    }
-
-    private long getNextBoringTime() {
-        return System.currentTimeMillis() + BORING_TIME + random.nextInt(60) * 1000;
-    }
-
-    private void kubiFaceDown() {
-        try {
-            kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN);
-        } catch (Throwable e) {
-            Log.e(TAG, "Cannot show gesture : GESTURE_FACE_DOWN");
-        }
-    }
-
-    private void kubiFaceUp() {
-        try {
-            kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_UP);
-        } catch (Throwable e) {
-            Log.e(TAG, "Cannot show gesture : GESTURE_FACE_UP");
-        }
-    }
-
-    private void kubiLookAround() {
-        try {
-            kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM);
-        } catch (Throwable e) {
-            Log.e(TAG, "Cannot show gesture : GESTURE_RANDOM");
-        }
+        return System.currentTimeMillis() + BLINK_TIME + random.nextInt(10) * 200;
     }
 }

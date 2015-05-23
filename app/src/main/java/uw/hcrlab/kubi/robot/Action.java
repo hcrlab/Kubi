@@ -9,5 +9,7 @@ public enum Action {
     PAY_ATTENTION,
     YAY,
     OOPS,
-    EXCELLENT
+    EXCELLENT,
+    LOWER_HANDS,
+    RAISE_HANDS
 }
