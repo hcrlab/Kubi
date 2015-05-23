@@ -248,6 +248,12 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Timer bored;
     private Timer sleep;
 
+    private void kubiDo(int gesture) {
+        if(kubiManager.getKubi() != null) {
+            kubiManager.getKubi().performGesture(gesture);
+        }
+    }
+
     private void scheduleBored(long delay) {
         if(bored != null) {
             bored.cancel();
@@ -258,51 +264,44 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             @Override
             public void run() {
                 isBored = true;
-                if(kubiManager.getKubi() != null) {
-                    thread.act(FaceAction.LOOK_LEFT);
-                    kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM);
-                    scheduleBored(random.nextInt(20) * 1000);
-                }
+                thread.act(FaceAction.LOOK_LEFT);
+                kubiDo(Kubi.GESTURE_RANDOM);
+                scheduleBored(random.nextInt(20) * 1000);
             }
         }, delay);
     }
 
     private void resetTimers() {
-
-        if(kubiManager.getKubi() != null) {
-            if (isBored) {
-                kubiManager.getKubi().moveTo(0, 0);
-                isBored = false;
-            }
-
-            scheduleBored(BORING_TIME);
-
-            if (isAsleep) {
-                thread.act(FaceAction.WAKE);
-                kubiManager.getKubi().moveTo(0, 0);
-                isAsleep = false;
-            }
-
-            if (sleep != null) {
-                sleep.cancel();
-            }
-
-            sleep = new Timer();
-            sleep.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    isAsleep = true;
-                    thread.act(FaceAction.SLEEP);
-                    if(kubiManager.getKubi() != null) {
-                        kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN);
-                    }
-
-                    if (bored != null) {
-                        bored.cancel();
-                    }
-                }
-            }, SLEEP_TIME);
+        if (isBored) {
+            if(kubiManager.getKubi() != null) kubiManager.getKubi().moveTo(0, 0);
+            isBored = false;
         }
+
+        scheduleBored(BORING_TIME);
+
+        if (isAsleep) {
+            thread.act(FaceAction.WAKE);
+            if(kubiManager.getKubi() != null) kubiManager.getKubi().moveTo(0, 0);
+            isAsleep = false;
+        }
+
+        if (sleep != null) {
+            sleep.cancel();
+        }
+
+        sleep = new Timer();
+        sleep.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                isAsleep = true;
+                thread.act(FaceAction.SLEEP);
+                kubiDo(Kubi.GESTURE_FACE_DOWN);
+
+                if (bored != null) {
+                    bored.cancel();
+                }
+            }
+        }, SLEEP_TIME);
     }
 
     public void perform(Action action) {
@@ -352,16 +351,18 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private void yay() {
         final Kubi kubi = kubiManager.getKubi();
 
+        if(kubi == null) return;
+
         kubi.act(new Runnable() {
             @Override
             public void run() {
-                kubi.moveTo(0, 20, 1.0f, false);
+                if(kubi != null) kubi.moveTo(0, 20, 1.0f, false);
             }
         }, 200);
         kubi.act(new Runnable() {
             @Override
             public void run() {
-                kubi.moveTo(0, 0, 1.0f, false);
+                if(kubi != null) kubi.moveTo(0, 0, 1.0f, false);
             }
         }, 800);
     }
@@ -369,16 +370,18 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private void oops() {
         final Kubi kubi = kubiManager.getKubi();
 
+        if(kubi == null) return;
+
         kubi.act(new Runnable() {
             @Override
             public void run() {
-                kubi.moveTo(0, -15, 1.0f, false);
+                if(kubi != null) kubi.moveTo(0, -15, 1.0f, false);
             }
         }, 200);
         kubi.act(new Runnable() {
             @Override
             public void run() {
-                kubi.moveTo(0, 0, 1.0f, false);
+                if(kubi != null) kubi.moveTo(0, 0, 1.0f, false);
             }
         }, 600);
     }
@@ -386,16 +389,18 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private void excellent() {
         final Kubi kubi = kubiManager.getKubi();
 
+        if(kubi == null) return;
+
         kubi.act(new Runnable() {
             @Override
             public void run() {
-                kubi.moveTo(10, 20, 1.0f, false);
+                if(kubi != null) kubi.moveTo(10, 20, 1.0f, false);
             }
         }, 200);
         kubi.act(new Runnable() {
             @Override
             public void run() {
-                kubi.moveTo(0, 0, 1.0f, false);
+                if(kubi != null) kubi.moveTo(0, 0, 1.0f, false);
             }
         }, 600);
         kubi.act(new Runnable() {
