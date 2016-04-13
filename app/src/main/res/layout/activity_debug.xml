@@ -89,38 +89,14 @@
             </LinearLayout>
 
             <!-- main content row 2 -->
+            <!-- prompt container: this will contain a different fragment for each question type -->
             <LinearLayout android:layout_width="match_parent"
                 android:layout_height="0px"
                 android:layout_weight="4"
                 android:orientation="horizontal"
-                >
-                <!-- question display: this will be a different fragment for each question type -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:id="@+id/card1"
-                        android:src="@drawable/kubi_card" />
+                android:id="@+id/prompt_container"
+                />
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:id="@+id/card2"
-                        android:src="@drawable/kubi_card" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:id="@+id/card3"
-                        android:src="@drawable/kubi_card" />
-                </LinearLayout>
-
-            </LinearLayout>
         </LinearLayout>
 
         <!-- right margin -->
@@ -134,10 +110,33 @@
     </LinearLayout>
 
     <!-- bottom margin -->
-    <ImageView
+    <!--<ImageView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0px"-->
+        <!--android:layout_weight="1"-->
+        <!--android:id="@+id/bottom_margin"-->
+        <!--android:src="#000000" />-->
+
+    <LinearLayout
+        android:id="@+id/bottom_bar_container"
         android:layout_width="match_parent"
         android:layout_height="0px"
+        android:orientation="horizontal"
         android:layout_weight="1"
-        android:id="@+id/bottom_margin"
-        android:src="#000000" />
+        >
+        <EditText
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/debug_prompt"
+            android:inputType="text" />
+        <!--<Button-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:text="submit"-->
+            <!--android:id="@+id/submit"-->
+            <!--android:onClick="interpretDebugPrompt"-->
+            <!--/>-->
+    </LinearLayout>
+
 </LinearLayout>
