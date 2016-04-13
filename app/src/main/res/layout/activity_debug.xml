@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:stretchColumns="1"
+    android:background="#000000">
+    <!--android:orientation="vertical"-->
+
+    <TableRow android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        >
+
+        <!-- top margin -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:id="@+id/top_margin"
+            android:src="#000000"
+            />
+
+        <!-- progress indicator -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:id="@+id/progress"
+            android:src="@drawable/kubi_progress" />
+
+    </TableRow>
+    <TableRow android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        >
+
+        <!-- left margin -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/left_margin"
+            android:layout_gravity="left"
+            android:src="#000000"
+            />
+
+        <TableLayout android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            >
+            <TableRow android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <!-- hint -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hint"
+                    android:layout_gravity="left"
+                    android:src="@drawable/kubi_hints" />
+
+                <!-- eyes -->
+                <WebView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/webview_eyes"
+                    />
+
+                <!-- placeholder to the right of eyes-->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:id="@+id/block_to_the_right_of_eyes"
+                    android:src="#000000"
+                    />
+
+            </TableRow>
+            <TableRow android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                >
+
+                <!-- question display: this will be a different fragment for each question type -->
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:id="@+id/card1"
+                    android:src="@drawable/kubi_card" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/card2"
+                    android:src="@drawable/kubi_card" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right"
+                    android:id="@+id/card3"
+                    android:src="@drawable/kubi_card" />
+
+            </TableRow>
+
+        </TableLayout>
+        <!-- right margin -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:id="@+id/right_margin"
+            android:src="#000000"
+            />
+
+    </TableRow>
+
+    <TableRow android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        >
+        <!-- bottom margin -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:id="@+id/bottom_margin"
+            android:src="#000000" />
+    </TableRow>
+
+</TableLayout>

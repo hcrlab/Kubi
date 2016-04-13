@@ -1,32 +1,23 @@
 package uw.hcrlab.kubi;
 
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 
 import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.screen.RobotFace;
 
 
 public class MainActivity extends Activity {
-    private String TAG = MainActivity.class.getSimpleName();
+    private static String TAG = MainActivity.class.getSimpleName();
 
     /* Activity's Properties */
     private Robot robot;
@@ -87,16 +78,35 @@ public class MainActivity extends Activity {
         Log.i(TAG, "Resuming Main Activity ...");
         super.onResume();
 
-        Button settingButton = (Button) findViewById(R.id.settingsButton);
-        settingButton.setOnClickListener(new View.OnClickListener(){
+        final Button menuButton = (Button) findViewById(R.id.menuButton);
+        menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: implement this
-            }
-        });
+                Log.i(MainActivity.TAG, "clicked settings button");
+                // show a menu
+                PopupMenu popup = new PopupMenu(MainActivity.this, menuButton);
+                popup.getMenuInflater()
+                        .inflate(R.menu.menu_mainactivity_options, popup.getMenu());
+                Log.i(MainActivity.TAG, "menu inflated");
 
-        left = (View) findViewById(R.id.leftCard);
-        right = (View) findViewById(R.id.rightCard);
+                // launch activity according to the item's intent
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Log.i(MainActivity.TAG, "menu item clicked");
+                        switch (item.getItemId()) {
+                            case R.id.startDebugActivity:
+                                startActivity(new Intent("uw.hcrlab.kubi.DebugActivity"));
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+            }});
+
+
+        left = findViewById(R.id.leftCard);
+        right = findViewById(R.id.rightCard);
         robot.setCards(left, right);
 
         robot.startup();
