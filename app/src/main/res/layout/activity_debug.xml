@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:stretchColumns="1"
-    android:background="#000000">
-    <!--android:orientation="vertical"-->
+    android:background="#000000"
+    android:orientation="vertical"
+    >
 
-    <TableRow android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
+    <!-- top margin row -->
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="end"
         >
 
         <!-- top margin -->
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
             android:id="@+id/top_margin"
             android:src="#000000"
             />
@@ -23,111 +27,117 @@
         <!-- progress indicator -->
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:id="@+id/progress"
             android:src="@drawable/kubi_progress" />
 
-    </TableRow>
-    <TableRow android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+    </LinearLayout>
+
+    <!-- main content row -->
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="6"
+        android:orientation="horizontal"
         >
 
         <!-- left margin -->
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:id="@+id/left_margin"
-            android:layout_gravity="left"
             android:src="#000000"
             />
 
-        <TableLayout android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+        <!-- main content -->
+        <LinearLayout android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="8"
             >
-            <TableRow android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <!-- main content row 1 -->
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="3"
+                android:orientation="horizontal"
+                >
                 <!-- hint -->
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0px"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:id="@+id/hint"
-                    android:layout_gravity="left"
                     android:src="@drawable/kubi_hints" />
 
                 <!-- eyes -->
                 <WebView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_width="0px"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
                     android:id="@+id/webview_eyes"
                     />
 
                 <!-- placeholder to the right of eyes-->
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
+                    android:layout_width="0px"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:id="@+id/block_to_the_right_of_eyes"
                     android:src="#000000"
                     />
+            </LinearLayout>
 
-            </TableRow>
-            <TableRow android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
+            <!-- main content row 2 -->
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="4"
+                android:orientation="horizontal"
                 >
-
                 <!-- question display: this will be a different fragment for each question type -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:id="@+id/card1"
+                        android:src="@drawable/kubi_card" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:id="@+id/card1"
-                    android:src="@drawable/kubi_card" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:id="@+id/card2"
+                        android:src="@drawable/kubi_card" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:id="@+id/card2"
-                    android:src="@drawable/kubi_card" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:id="@+id/card3"
+                        android:src="@drawable/kubi_card" />
+                </LinearLayout>
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="right"
-                    android:id="@+id/card3"
-                    android:src="@drawable/kubi_card" />
+            </LinearLayout>
+        </LinearLayout>
 
-            </TableRow>
-
-        </TableLayout>
         <!-- right margin -->
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:id="@+id/right_margin"
             android:src="#000000"
             />
+    </LinearLayout>
 
-    </TableRow>
-
-    <TableRow android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        >
-        <!-- bottom margin -->
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:id="@+id/bottom_margin"
-            android:src="#000000" />
-    </TableRow>
-
-</TableLayout>
+    <!-- bottom margin -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1"
+        android:id="@+id/bottom_margin"
+        android:src="#000000" />
+</LinearLayout>
