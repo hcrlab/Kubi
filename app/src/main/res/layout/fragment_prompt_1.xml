@@ -6,7 +6,6 @@
     android:orientation="horizontal"
     android:background="#000000">
 
-
     <fragment
         android:name="uw.hcrlab.kubi.FlashCardFragment"
         android:layout_width="wrap_content"
