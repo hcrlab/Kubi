@@ -106,7 +106,7 @@ public class DebugActivity extends FragmentActivity {
             case (3):
             case (4):
             default:
-                String msg = String.format("invalid: '%d'", input);
+                String msg = String.format("Invalid debug input -- %d", input);
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                 editText.getText().clear();
 

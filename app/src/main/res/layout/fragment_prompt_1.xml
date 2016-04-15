@@ -8,18 +8,21 @@
 
     <FrameLayout
         android:id="@+id/card1_container"
-        android:layout_width="wrap_content"
+        android:layout_width="0px"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         />
     <FrameLayout
         android:id="@+id/card2_container"
-        android:layout_width="wrap_content"
+        android:layout_width="0px"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         />
     <FrameLayout
         android:id="@+id/card3_container"
-        android:layout_width="wrap_content"
+        android:layout_width="0px"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         />
 
     <!--fragments need to be added dynamically, can't nest statically -->

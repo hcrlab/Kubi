@@ -16,18 +16,20 @@ public class Prompt1Fragment extends Prompt {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i(TAG, "Creating prompt 1 fragment ...");
+        Log.i(TAG, "Creating prompt 1 fragment from " + this.data);
         View view = inflater.inflate(R.layout.fragment_prompt_1, container, false);
 
         if (savedInstanceState != null) {
             return view;
         }
+
         // add the card fragments
         for (PromptData.Option option: this.data.options) {
             FlashCardFragment cardFragment = new FlashCardFragment();
             cardFragment.configure(option);
 
-            View cardContainer = getViewByIdString(String.format("card%d_container", option.idx), view);
+            View cardContainer = KubiLingoUtils.getViewByIdString(
+                    String.format("card%d_container", option.idx), view, this);
             getActivity().getSupportFragmentManager().beginTransaction()
                     .add(cardContainer.getId(), (Fragment) cardFragment).commit();
 
@@ -73,17 +75,6 @@ public class Prompt1Fragment extends Prompt {
 //        }
 
         return view;
-    }
-
-    public View getViewByIdString(String name, View view) {
-        int cardResourceId = getResources().getIdentifier(
-                name, "id", getActivity().getPackageName());
-        View target = view.findViewById(cardResourceId);
-        if (target == null) {
-            Log.i(TAG, String.format("getViewByStringID can't find '%s'", name));
-        }
-
-        return target;
     }
 
 }
