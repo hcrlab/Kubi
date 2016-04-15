@@ -3,8 +3,13 @@ package uw.hcrlab.kubi.lesson;
 import java.util.ArrayList;
 
 public class PromptData {
+    // Corresponds with question type numbers in the google doc slides
     public int type;
+
+    // For flash cards and other multiple choice elements
     public ArrayList<Option> options;
+
+    // The main text to be translated
     public String srcText;
 
     public PromptData() {
@@ -23,12 +28,11 @@ public class PromptData {
 
     public static class Option {
         public Option(int idx, String text) {
-            //this.image = image;
             this.idx = idx;
             this.text = text;
         }
-        // audio
-        //public String image;
+        // will have audio field
+        // will have drawable field
         public int idx;
         public String text;
 

@@ -55,6 +55,7 @@ public class DebugActivity extends FragmentActivity {
 
     }
 
+    // Render thie given PromptData to the user
     private void loadPrompt(PromptData promptData) {
         Prompt prompt;
 
