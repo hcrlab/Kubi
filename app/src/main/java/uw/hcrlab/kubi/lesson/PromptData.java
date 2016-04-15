@@ -7,6 +7,10 @@ public class PromptData {
     public ArrayList<Option> options;
     public String srcText;
 
+    public PromptData() {
+        this.options = new ArrayList<Option>();
+    }
+
     public static class Option {
         public Option(int idx, String text) {
             //this.image = image;

@@ -6,28 +6,45 @@
     android:orientation="horizontal"
     android:background="#000000">
 
-    <fragment
-        android:name="uw.hcrlab.kubi.FlashCardFragment"
+    <FrameLayout
+        android:id="@+id/card1_container"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:id="@+id/card1"
-        tools:layout="@layout/fragment_flash_card" />
+        />
+    <FrameLayout
+        android:id="@+id/card2_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        />
+    <FrameLayout
+        android:id="@+id/card3_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        />
 
-    <fragment
-        android:name="uw.hcrlab.kubi.FlashCardFragment"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:id="@+id/card2"
-        tools:layout="@layout/fragment_flash_card" />
+    <!--fragments need to be added dynamically, can't nest statically -->
+    <!--<fragment-->
+        <!--android:name="uw.hcrlab.kubi.FlashCardFragment"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_weight="1"-->
+        <!--android:id="@+id/card1"-->
+        <!--tools:layout="@layout/fragment_flash_card" />-->
 
-    <fragment
-        android:name="uw.hcrlab.kubi.FlashCardFragment"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:id="@+id/card3"
-        tools:layout="@layout/fragment_flash_card" />
+    <!--<fragment-->
+        <!--android:name="uw.hcrlab.kubi.FlashCardFragment"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_weight="1"-->
+        <!--android:id="@+id/card2"-->
+        <!--tools:layout="@layout/fragment_flash_card" />-->
+
+    <!--<fragment-->
+        <!--android:name="uw.hcrlab.kubi.FlashCardFragment"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_weight="1"-->
+        <!--android:id="@+id/card3"-->
+        <!--tools:layout="@layout/fragment_flash_card" />-->
 
 </LinearLayout>

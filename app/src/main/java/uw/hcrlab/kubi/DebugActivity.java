@@ -3,12 +3,20 @@ package uw.hcrlab.kubi;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 
+import android.content.Context;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -27,10 +35,28 @@ public class DebugActivity extends FragmentActivity {
         WebView eye_area = (WebView) findViewById(R.id.webview_eyes);
         eye_area.loadUrl("file:///android_asset/eyes.html");
 
-        // load flash cards
-        Prompt prompt = new Prompt1Fragment();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.prompt_container, prompt).commit();
+        // do not show the virtual keyboard on the debug prompt
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        // focus on the debug prompt
+        final EditText debugPrompt = (EditText) findViewById(R.id.debug_prompt);
+
+        // set up the debug prompt
+        debugPrompt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                        && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    Log.i(TAG, "enter key pressed");
+                    interpretDebugPrompt(debugPrompt);
+                    handled = true;
+                }
+                return handled;
+            }
+        });
+        debugPrompt.requestFocus();
 
     }
 
@@ -48,26 +74,30 @@ public class DebugActivity extends FragmentActivity {
                         String.format("prompt type not found %d", promptData.type));
         }
 
-        prompt.update(promptData);
+        prompt.setData(promptData);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.prompt_container, prompt).commit();
     }
-/*
+
     private void interpretDebugPrompt(View view) {
+        Log.i(TAG, "interpret debug prompt");
         EditText editText = (EditText)findViewById(R.id.debug_prompt);
-        int input = 1;
+        String text = editText.getText().toString();
+        Log.i(TAG, String.format("edit text '%s'", text));
+        int input = 0;
         try {
-            input = Integer.parseInt(editText.getText().toString());
+            input = Integer.parseInt(text);
         } catch (NumberFormatException nfe) {
-            Log.i(TAG, "invalid debug prompt input");
+            Log.i(TAG, "could not be formatted as a number, using 1");
+            String toastText = String.format("invalid: %s", text);
+            Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
         }
-        editText.setText("");
+        editText.getText().clear();
         switch (input) {
             case (1):
                 PromptData pd = new PromptData();
                 pd.type = 1;
                 pd.srcText = "apple";
-                pd.options = new ArrayList<PromptData.Option>();
                 pd.options.add(new PromptData.Option(1, "apple"));
                 pd.options.add(new PromptData.Option(2, "banana"));
                 pd.options.add(new PromptData.Option(3, "girl"));
@@ -76,11 +106,11 @@ public class DebugActivity extends FragmentActivity {
             case (3):
             case (4):
             default:
-                throw new IllegalArgumentException(
-                        String.format("prompt type not implemented %d", input));
+                String msg = String.format("invalid: '%d'", input);
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                editText.getText().clear();
 
         }
     }
-    */
 }
 

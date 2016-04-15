@@ -6,7 +6,7 @@ import android.view.View;
 public class Prompt extends Fragment {
     protected PromptData data;
     private View view;
-    public void update(PromptData data) {
+    public void setData(PromptData data) {
         this.data = data;
     }
 }
