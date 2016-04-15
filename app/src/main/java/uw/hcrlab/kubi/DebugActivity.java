@@ -2,6 +2,7 @@ package uw.hcrlab.kubi;
 
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.Prompt1Fragment;
+import uw.hcrlab.kubi.lesson.Prompt3Fragment;
 import uw.hcrlab.kubi.lesson.PromptData;
 
 import android.os.Bundle;
@@ -65,6 +66,9 @@ public class DebugActivity extends FragmentActivity {
                 // load prompt fragment
                 prompt = new Prompt1Fragment();
                 break;
+            case (3):
+                prompt = new Prompt3Fragment();
+                break;
             default:
                 throw new IllegalArgumentException(
                         String.format("prompt type not found %d", promptData.type));
@@ -89,9 +93,9 @@ public class DebugActivity extends FragmentActivity {
             Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
         }
         editText.getText().clear();
+        PromptData pd = new PromptData();
         switch (input) {
             case (1):
-                PromptData pd = new PromptData();
                 pd.type = 1;
                 pd.srcText = "apple";
                 pd.options.add(new PromptData.Option(1, "apple"));
@@ -100,6 +104,10 @@ public class DebugActivity extends FragmentActivity {
                 loadPrompt(pd);
                 break;
             case (3):
+                pd.type = 3;
+                pd.srcText = "una manzana y un plátano";
+                loadPrompt(pd);
+                break;
             case (4):
             default:
                 String msg = String.format("Invalid debug input -- %d", input);
