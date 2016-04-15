@@ -1,24 +1,19 @@
 package uw.hcrlab.kubi;
 
 import uw.hcrlab.kubi.lesson.Prompt;
+import uw.hcrlab.kubi.lesson.Prompt1Fragment;
 import uw.hcrlab.kubi.lesson.PromptData;
 
-import android.content.Context;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.ArrayList;
 
 public class DebugActivity extends FragmentActivity {
     private static String TAG = DebugActivity.class.getSimpleName();

@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi;
+package uw.hcrlab.kubi.lesson;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,6 +15,9 @@ import android.widget.Button;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import uw.hcrlab.kubi.App;
+import uw.hcrlab.kubi.MainActivity;
+import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.robot.Action;
 import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;

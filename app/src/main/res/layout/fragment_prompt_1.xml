@@ -27,7 +27,7 @@
 
     <!--fragments need to be added dynamically, can't nest statically -->
     <!--<fragment-->
-        <!--android:name="uw.hcrlab.kubi.FlashCardFragment"-->
+        <!--android:name="uw.hcrlab.kubi.lesson.FlashCardFragment"-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="match_parent"-->
         <!--android:layout_weight="1"-->
@@ -35,7 +35,7 @@
         <!--tools:layout="@layout/fragment_flash_card" />-->
 
     <!--<fragment-->
-        <!--android:name="uw.hcrlab.kubi.FlashCardFragment"-->
+        <!--android:name="uw.hcrlab.kubi.lesson.FlashCardFragment"-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="match_parent"-->
         <!--android:layout_weight="1"-->
@@ -43,7 +43,7 @@
         <!--tools:layout="@layout/fragment_flash_card" />-->
 
     <!--<fragment-->
-        <!--android:name="uw.hcrlab.kubi.FlashCardFragment"-->
+        <!--android:name="uw.hcrlab.kubi.lesson.FlashCardFragment"-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="match_parent"-->
         <!--android:layout_weight="1"-->

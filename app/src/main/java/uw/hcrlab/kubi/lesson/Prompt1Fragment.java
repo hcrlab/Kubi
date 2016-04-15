@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi;
+package uw.hcrlab.kubi.lesson;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,8 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import uw.hcrlab.kubi.lesson.Prompt;
-import uw.hcrlab.kubi.lesson.PromptData;
+import uw.hcrlab.kubi.KubiLingoUtils;
+import uw.hcrlab.kubi.R;
 
 public class Prompt1Fragment extends Prompt {
     private static String TAG = Prompt1Fragment.class.getSimpleName();

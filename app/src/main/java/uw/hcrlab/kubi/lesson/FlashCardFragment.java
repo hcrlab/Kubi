@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi;
+package uw.hcrlab.kubi.lesson;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -10,7 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import uw.hcrlab.kubi.lesson.PromptData;
+import uw.hcrlab.kubi.KubiLingoUtils;
+import uw.hcrlab.kubi.R;
 
 public class FlashCardFragment extends Fragment {
     private static String TAG = FlashCardFragment.class.getSimpleName();
