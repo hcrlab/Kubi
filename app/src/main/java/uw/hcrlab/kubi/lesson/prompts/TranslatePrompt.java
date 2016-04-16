@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi.lesson;
+package uw.hcrlab.kubi.lesson.prompts;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -9,9 +9,10 @@ import android.widget.TextView;
 
 import uw.hcrlab.kubi.KubiLingoUtils;
 import uw.hcrlab.kubi.R;
+import uw.hcrlab.kubi.lesson.Prompt;
 
-public class Prompt3Fragment extends Prompt {
-    private static String TAG = Prompt3Fragment.class.getSimpleName();
+public class TranslatePrompt extends Prompt {
+    private static String TAG = TranslatePrompt.class.getSimpleName();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -25,10 +26,10 @@ public class Prompt3Fragment extends Prompt {
         }
 
         // set src text according to prompt data
-        TextView srcText = (TextView) KubiLingoUtils.getViewByIdString("l2_source_text", view, this);
+        TextView srcText = (TextView) getView().findViewById(R.id.l2_source_text); // KubiLingoUtils.getViewByIdString("l2_source_text", view, this);
         srcText.setText(this.data.srcText);
 
-        TextView resultText = (TextView) KubiLingoUtils.getViewByIdString("l1_result_text", view, this);
+        TextView resultText = (TextView) getView().findViewById(R.id.l1_result_text); // KubiLingoUtils.getViewByIdString("l1_result_text", view, this);
         resultText.requestFocus();
 
         return view;

@@ -35,7 +35,7 @@ public class App extends Application implements Firebase.AuthResultHandler {
         fb = new Firebase("https://hcrkubi.firebaseio.com");
         fb.authWithPassword("hcr@cs.uw.edu", "testpass", this);
 
-        deviceID = Build.MANUFACTURER + " " + Build.MODEL;;
+        deviceID = Build.MANUFACTURER + " " + Build.MODEL;
     }
 
     public static void FbConnect() {

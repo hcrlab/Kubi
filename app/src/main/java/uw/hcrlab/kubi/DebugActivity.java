@@ -1,9 +1,10 @@
 package uw.hcrlab.kubi;
 
 import uw.hcrlab.kubi.lesson.Prompt;
-import uw.hcrlab.kubi.lesson.Prompt1Fragment;
-import uw.hcrlab.kubi.lesson.Prompt3Fragment;
+import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
+import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.lesson.PromptData;
+import uw.hcrlab.kubi.lesson.PromptTypes;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -15,6 +16,8 @@ import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Locale;
 
 public class DebugActivity extends FragmentActivity {
     private static String TAG = DebugActivity.class.getSimpleName();
@@ -56,22 +59,22 @@ public class DebugActivity extends FragmentActivity {
 
     }
 
-    // Render thie given PromptData to the user
+    // Render the given PromptData to the user
     private void loadPrompt(PromptData promptData) {
         Prompt prompt;
 
         // switch on the type of prompt
         switch (promptData.type) {
-            case (1):
+            case SELECT:
                 // load prompt fragment
-                prompt = new Prompt1Fragment();
+                prompt = new SelectPrompt();
                 break;
-            case (3):
-                prompt = new Prompt3Fragment();
+            case TRANSLATE:
+                prompt = new TranslatePrompt();
                 break;
             default:
                 throw new IllegalArgumentException(
-                        String.format("prompt type not found %d", promptData.type));
+                        String.format(Locale.US, "Prompt type not implemented: %s", promptData.type));
         }
 
         prompt.setData(promptData);
@@ -96,7 +99,7 @@ public class DebugActivity extends FragmentActivity {
         PromptData pd = new PromptData();
         switch (input) {
             case (1):
-                pd.type = 1;
+                pd.type = PromptTypes.NAME;
                 pd.srcText = "apple";
                 pd.options.add(new PromptData.Option(1, "apple"));
                 pd.options.add(new PromptData.Option(2, "banana"));
@@ -104,13 +107,13 @@ public class DebugActivity extends FragmentActivity {
                 loadPrompt(pd);
                 break;
             case (3):
-                pd.type = 3;
+                pd.type = PromptTypes.TRANSLATE;
                 pd.srcText = "una manzana y un plátano";
                 loadPrompt(pd);
                 break;
             case (4):
             default:
-                String msg = String.format("Invalid debug input -- %d", input);
+                String msg = String.format(Locale.US, "Invalid debug input -- %d", input);
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                 editText.getText().clear();
 

@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi.lesson;
+package uw.hcrlab.kubi.lesson.prompts;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,9 +9,12 @@ import android.view.ViewGroup;
 
 import uw.hcrlab.kubi.KubiLingoUtils;
 import uw.hcrlab.kubi.R;
+import uw.hcrlab.kubi.lesson.FlashCardFragment;
+import uw.hcrlab.kubi.lesson.Prompt;
+import uw.hcrlab.kubi.lesson.PromptData;
 
-public class Prompt1Fragment extends Prompt {
-    private static String TAG = Prompt1Fragment.class.getSimpleName();
+public class SelectPrompt extends Prompt {
+    private static String TAG = SelectPrompt.class.getSimpleName();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

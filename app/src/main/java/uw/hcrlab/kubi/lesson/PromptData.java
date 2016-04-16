@@ -1,10 +1,11 @@
 package uw.hcrlab.kubi.lesson;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class PromptData {
     // Corresponds with question type numbers in the google doc slides
-    public int type;
+    public PromptTypes type;
 
     // For flash cards and other multiple choice elements
     public ArrayList<Option> options;
@@ -22,7 +23,7 @@ public class PromptData {
         for (Option option: this.options) {
             optionsString += option.toString() + ", ";
         }
-        return String.format("PromptData {type=%d, options={%s}, srcText=%s}",
+        return String.format(Locale.US, "PromptData {type=%s, options={%s}, srcText=%s}",
                 this.type, optionsString, this.srcText);
     }
 
@@ -38,7 +39,7 @@ public class PromptData {
 
         @Override
         public String toString() {
-            return String.format("Option {idx=%d, text=%s}", this.idx, this.text);
+            return String.format(Locale.US, "Option {idx=%d, text=%s}", this.idx, this.text);
         }
     }
     
