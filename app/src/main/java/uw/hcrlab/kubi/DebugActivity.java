@@ -59,6 +59,14 @@ public class DebugActivity extends FragmentActivity {
 
     }
 
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // TODO: send key event to proper fragment
+
+        // Returns true to stop propagation of the key event (i.e. signal the event was handled)
+        return true;
+    }
+
     // Render the given PromptData to the user
     private void loadPrompt(PromptData promptData) {
         Prompt prompt;
