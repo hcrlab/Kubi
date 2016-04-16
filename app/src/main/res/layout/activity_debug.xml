@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:stretchColumns="1"
+    android:background="#000000"
+    android:orientation="vertical"
+    >
+
+    <!-- top margin row -->
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="end"
+        >
+
+        <!-- top margin -->
+        <ImageView
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:id="@+id/top_margin"
+            android:src="#000000"
+            />
+
+        <!-- progress indicator -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/progress"
+            android:src="@drawable/kubi_progress" />
+
+    </LinearLayout>
+
+    <!-- main content row -->
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="8"
+        android:orientation="horizontal"
+        >
+
+        <!-- left margin -->
+        <ImageView
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/left_margin"
+            android:src="#000000"
+            />
+
+        <!-- main content -->
+        <LinearLayout android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="8"
+            >
+            <!-- main content row 1 -->
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="3"
+                android:orientation="horizontal"
+                >
+                <!-- hint -->
+                <ImageView
+                    android:layout_width="0px"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:id="@+id/hint"
+                    android:src="@drawable/kubi_hints" />
+
+                <!-- eyes -->
+                <WebView
+                    android:layout_width="0px"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:id="@+id/webview_eyes"
+                    />
+
+                <!-- placeholder to the right of eyes-->
+                <ImageView
+                    android:layout_width="0px"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:id="@+id/block_to_the_right_of_eyes"
+                    android:src="#000000"
+                    />
+            </LinearLayout>
+
+            <!-- main content row 2 -->
+            <!-- prompt container: this will contain a different fragment for each question type -->
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="4"
+                android:orientation="horizontal"
+                android:id="@+id/prompt_container"
+                />
+
+        </LinearLayout>
+
+        <!-- right margin -->
+        <ImageView
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/right_margin"
+            android:src="#000000"
+            />
+    </LinearLayout>
+
+    <!-- bottom margin -->
+    <!--<ImageView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0px"-->
+        <!--android:layout_weight="1"-->
+        <!--android:id="@+id/bottom_margin"-->
+        <!--android:src="#000000" />-->
+
+    <LinearLayout
+        android:id="@+id/bottom_bar_container"
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:orientation="horizontal"
+        android:layout_weight="1"
+        >
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/debug_prompt"
+            android:inputType="text"
+            />
+    </LinearLayout>
+
+</LinearLayout>

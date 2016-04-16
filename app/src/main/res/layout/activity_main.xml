@@ -21,13 +21,14 @@
             android:layout_gravity="top" />
 
         <Button
-            android:id="@+id/settingsButton"
+            android:id="@+id/menuButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="20dp"
             android:orientation="horizontal"
-            android:layout_gravity="right"
-            android:background="@drawable/settings_button"/>
+            android:layout_gravity="end"
+            android:background="@drawable/settings_button"
+        />
 
         <include layout="@layout/left_hand"/>
         <include layout="@layout/right_hand"/>
