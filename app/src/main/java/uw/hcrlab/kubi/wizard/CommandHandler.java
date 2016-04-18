@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import uw.hcrlab.kubi.R;
+import uw.hcrlab.kubi.lesson.PromptTypes;
 import uw.hcrlab.kubi.robot.Action;
 import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
@@ -43,70 +44,85 @@ public class CommandHandler extends WizardHandler {
 
     @Override
     public void onChildAdded(DataSnapshot snap, String s) {
-        if(!snap.child("handled").getValue(Boolean.class)) {
+        if(!snap.hasChild("handled") || !snap.child("handled").getValue(Boolean.class)) {
             Log.i(TAG, "received a new command");
-            for (DataSnapshot taskData : snap.child("tasks").getChildren()) {
-                Task res = taskData.getValue(Task.class);
 
-                if(robot == null) {
-                    robot = Robot.getInstance();
-                }
-
-                Speech sp = res.getSpeech();
-                if(sp != null && sp.getText() != null && !sp.getText().equalsIgnoreCase("")) {
-                    robot.say(sp.getText(), sp.getLanguage(), sp.getSpeed());
-                }
-
-                String emotion = res.getEmotion();
-                if(emotion != null && !emotion.equalsIgnoreCase("")) {
-                    Log.d(TAG, "Got emotion request: " + emotion);
-                    robot.act(FaceAction.valueOf(emotion));
-                }
-
-                String action = res.getAction();
-                if(action != null && !action.equalsIgnoreCase("")) {
-                    Log.d(TAG, "Got action request: " + action);
-                    robot.perform(Action.valueOf(action));
-                }
-
-                int imageCount = 0;
-
-                String left = res.getLeftImage();
-                if(left != null && !left.equalsIgnoreCase("")) {
-                    Log.d(TAG, "Displaying left hand image");
-
-                    String leftTxt = res.getLeftText();
-                    if(leftTxt == null) {
-                        leftTxt = "";
-                    }
-                    imageCount = 1;
-                    robot.showCard(Robot.Hand.Left, getDrawable(left), leftTxt);
-                }
-
-                String right = res.getRightImage();
-                if(right != null && !right.equalsIgnoreCase("")) {
-                    Log.d(TAG, "Displaying right hand image");
-
-                    String rightTxt = res.getRightText();
-                    if(rightTxt == null) {
-                        rightTxt = "";
-                    }
-                    imageCount = (imageCount == 0) ? 2 : 3;
-                    robot.showCard(Robot.Hand.Right, getDrawable(right), rightTxt);
-                }
-
-                switch(imageCount) {
-                    case 1: robot.act(FaceAction.LOOK_DOWN_LEFT); break;
-                    case 2: robot.act(FaceAction.LOOK_DOWN_RIGHT); break;
-                    case 3: robot.act(FaceAction.LOOK_DOWN); break;
-                    default: break;
-                }
-
-                String[] buttons = res.getButtons();
-                if(buttons != null) {
-                    Log.d(TAG, "You need to display buttons!");
-                }
+            if(!snap.hasChild("type")) {
+                // TODO: Throw an exception
             }
+
+            PromptTypes type = null;
+
+            try {
+                type = PromptTypes.valueOf(snap.child("type").getValue(String.class));
+            } catch (IllegalArgumentException|NullPointerException ex) {
+                // TODO: Handle the exception...
+            }
+
+
+
+//            for (DataSnapshot taskData : snap.child("tasks").getChildren()) {
+//                Task res = taskData.getValue(Task.class);
+//
+//                if(robot == null) {
+//                    robot = Robot.getInstance();
+//                }
+//
+//                Speech sp = res.getSpeech();
+//                if(sp != null && sp.getText() != null && !sp.getText().equalsIgnoreCase("")) {
+//                    robot.say(sp.getText(), sp.getLanguage(), sp.getSpeed());
+//                }
+//
+//                String emotion = res.getEmotion();
+//                if(emotion != null && !emotion.equalsIgnoreCase("")) {
+//                    Log.d(TAG, "Got emotion request: " + emotion);
+//                    robot.act(FaceAction.valueOf(emotion));
+//                }
+//
+//                String action = res.getAction();
+//                if(action != null && !action.equalsIgnoreCase("")) {
+//                    Log.d(TAG, "Got action request: " + action);
+//                    robot.perform(Action.valueOf(action));
+//                }
+//
+//                int imageCount = 0;
+//
+//                String left = res.getLeftImage();
+//                if(left != null && !left.equalsIgnoreCase("")) {
+//                    Log.d(TAG, "Displaying left hand image");
+//
+//                    String leftTxt = res.getLeftText();
+//                    if(leftTxt == null) {
+//                        leftTxt = "";
+//                    }
+//                    imageCount = 1;
+//                    robot.showCard(Robot.Hand.Left, getDrawable(left), leftTxt);
+//                }
+//
+//                String right = res.getRightImage();
+//                if(right != null && !right.equalsIgnoreCase("")) {
+//                    Log.d(TAG, "Displaying right hand image");
+//
+//                    String rightTxt = res.getRightText();
+//                    if(rightTxt == null) {
+//                        rightTxt = "";
+//                    }
+//                    imageCount = (imageCount == 0) ? 2 : 3;
+//                    robot.showCard(Robot.Hand.Right, getDrawable(right), rightTxt);
+//                }
+//
+//                switch(imageCount) {
+//                    case 1: robot.act(FaceAction.LOOK_DOWN_LEFT); break;
+//                    case 2: robot.act(FaceAction.LOOK_DOWN_RIGHT); break;
+//                    case 3: robot.act(FaceAction.LOOK_DOWN); break;
+//                    default: break;
+//                }
+//
+//                String[] buttons = res.getButtons();
+//                if(buttons != null) {
+//                    Log.d(TAG, "You need to display buttons!");
+//                }
+//            }
 
             snap.child("handled").getRef().setValue(true);
         }

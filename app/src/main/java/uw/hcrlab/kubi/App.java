@@ -33,7 +33,7 @@ public class App extends Application implements Firebase.AuthResultHandler {
         Firebase.setAndroidContext(this);
 
         fb = new Firebase("https://hcrkubi.firebaseio.com");
-        fb.authWithPassword("hcr@cs.uw.edu", "testpass", this);
+        fb.authWithPassword("hcrlab@cs.uw.edu", "motion6", this);
 
         deviceID = Build.MANUFACTURER + " " + Build.MODEL;
     }

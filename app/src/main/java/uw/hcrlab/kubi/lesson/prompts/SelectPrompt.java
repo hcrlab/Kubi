@@ -2,6 +2,7 @@ package uw.hcrlab.kubi.lesson.prompts;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,8 @@ public class SelectPrompt extends Prompt {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i(TAG, "Creating prompt 1 fragment from " + this.data);
+        Log.i(TAG, "Creating select prompt from " + this.data);
+
         View view = inflater.inflate(R.layout.fragment_prompt_1, container, false);
 
         if (savedInstanceState != null) {
@@ -27,17 +29,17 @@ public class SelectPrompt extends Prompt {
         }
 
         // add the card fragments
+        FragmentTransaction trans = getActivity().getSupportFragmentManager().beginTransaction();
+
         for (PromptData.Option option: this.data.options) {
             FlashCardFragment cardFragment = new FlashCardFragment();
             cardFragment.configure(option);
 
-            View cardContainer = KubiLingoUtils.getViewByIdString(
-                    String.format("card%d_container", option.idx), view, this);
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .add(cardContainer.getId(), (Fragment) cardFragment).commit();
-
+            trans.add(R.id.prompt_options, cardFragment, "option-" + Integer.toString(option.idx));
         }
+
+        trans.commit();
+
         return view;
     }
-
 }

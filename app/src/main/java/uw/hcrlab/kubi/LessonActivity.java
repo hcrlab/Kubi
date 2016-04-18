@@ -3,6 +3,7 @@ package uw.hcrlab.kubi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +22,7 @@ import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.screen.RobotFace;
 
 
-public class LessonActivity extends Activity {
+public class LessonActivity extends FragmentActivity {
     private String TAG = LessonActivity.class.getSimpleName();
 
     /* Activity's Properties */

@@ -1,27 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/prompt_options"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/prompt_content_margin"
     android:orientation="horizontal"
-    android:background="#000000">
-
-    <FrameLayout
-        android:id="@+id/card1_container"
-        android:layout_width="0px"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        />
-    <FrameLayout
-        android:id="@+id/card2_container"
-        android:layout_width="0px"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        />
-    <FrameLayout
-        android:id="@+id/card3_container"
-        android:layout_width="0px"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        />
-</LinearLayout>
+    android:gravity="center_horizontal"
+    android:background="@color/prompt_background"/>

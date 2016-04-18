@@ -26,21 +26,25 @@
             android:layout_height="40dp"
             android:layout_margin="20dp"
             android:orientation="horizontal"
-            android:layout_gravity="end"
+            android:layout_gravity="left"
             android:background="@drawable/settings_button"
         />
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="end"
+            android:layout_margin="10dp"
+            android:max="100"
+            android:progress="90"
+            android:progressDrawable="@drawable/progress_circle" />
+
+        <include layout="@layout/prompt_layout"/>
+
         <include layout="@layout/left_hand"/>
         <include layout="@layout/right_hand"/>
-
-        <!--<org.opencv.android.JavaCameraView-->
-            <!--android:id="@+id/camera_preview"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="fill_parent"-->
-            <!--android:visibility="gone"-->
-            <!--opencv:show_fps="false"-->
-            <!--android:layout_gravity="bottom"-->
-            <!--opencv:camera_id="front" />-->
 
     </FrameLayout>
 

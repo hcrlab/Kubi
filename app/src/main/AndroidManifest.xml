@@ -35,7 +35,7 @@
         android:theme="@style/AppTheme"
         android:name=".App">
         <activity
-            android:name=".DebugActivity"
+            android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="landscape">
             <intent-filter>

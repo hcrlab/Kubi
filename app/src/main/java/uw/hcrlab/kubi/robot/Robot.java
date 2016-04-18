@@ -1,16 +1,19 @@
 package uw.hcrlab.kubi.robot;
 
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.speech.RecognizerIntent;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AnticipateOvershootInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +23,7 @@ import com.revolverobotics.kubiapi.KubiManager;
 import com.revolverobotics.kubiapi.KubiSearchResult;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,6 +33,10 @@ import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.App;
 import uw.hcrlab.kubi.R;
+import uw.hcrlab.kubi.lesson.Prompt;
+import uw.hcrlab.kubi.lesson.PromptData;
+import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
+import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
 import uw.hcrlab.kubi.wizard.CommandHandler;
@@ -52,6 +60,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private View leftCard;
     private View rightCard;
+    private View mPromptContainer;
 
     private Boolean leftIsShowing = false;
     private Boolean rightIsShowing = false;
@@ -62,19 +71,15 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Bot bot;
     private TTS tts;
 
-    private Context currentCxt;
+    private FragmentActivity mActivity;
 
-    private CommandHandler responses;
-    private CommandHandler lessons;
     private CommandHandler questions;
-    private CommandHandler quizzes;
-    private CommandHandler practice;
 
     /**
      *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
      *  are updated when getInstance() is called.
      */
-    private Robot(RobotFace face, final Context context){
+    private Robot(RobotFace face, final FragmentActivity context){
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
         kubiManager.findAllKubis();
@@ -84,11 +89,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         setup(face, context);
 
         if(App.InWizardMode()) {
-            responses = new CommandHandler("response");
-            lessons = new CommandHandler("lesson");
-            questions = new CommandHandler("question");
-            quizzes = new CommandHandler("quiz");
-            practice = new CommandHandler("practice");
+            questions = new CommandHandler("questions");
         }
     }
 
@@ -104,7 +105,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
      * @param context The current activity
      * @return The Robot singleton
      */
-    public static Robot getInstance(RobotFace face, Context context) {
+    public static Robot getInstance(RobotFace face, FragmentActivity context) {
         if (robotInstance == null) {
             //Create the singleton instance
             robotInstance = new Robot(face, context);
@@ -137,14 +138,14 @@ public class Robot extends ASR implements IKubiManagerDelegate {
      * @param face The RobotFace view for the current Activity
      * @param context The current activity
      */
-    private void setup(RobotFace face, Context context) {
-        currentCxt = context;
+    private void setup(RobotFace face, FragmentActivity context) {
+        mActivity = context;
 
         robotFace = face;
         robotFace.setOnTouchListener(faceListener);
 
         tts = TTS.getInstance(context);
-        bot = new Bot((Activity)context, PANDORA_BOT_ID, tts);
+        bot = new Bot(context, PANDORA_BOT_ID, tts);
     }
 
     /**
@@ -160,11 +161,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         thread.start();
 
         if(App.InWizardMode()) {
-            responses.Listen();
-            lessons.Listen();
             questions.Listen();
-            quizzes.Listen();
-            practice.Listen();
         }
 
         resetTimers();
@@ -179,11 +176,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         while (true) {
             try {
                 if(App.InWizardMode()) {
-                    responses.Stop();
-                    lessons.Stop();
                     questions.Stop();
-                    quizzes.Stop();
-                    practice.Stop();
                 }
 
                 if(thread != null) {
@@ -227,7 +220,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         try {
             super.listen(RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH, 1);
         } catch (Exception ex) {
-            Toast.makeText(currentCxt, "ASR could not be started: invalid params", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mActivity, "ASR could not be started: invalid params", Toast.LENGTH_SHORT).show();
             Log.e(TAG, ex.getMessage());
         }
     }
@@ -492,7 +485,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     @Override
     public void processAsrReadyForSpeech() {
         Log.i(TAG, "Listening to user's speech.");
-        Toast.makeText(currentCxt, "I'm listening.", Toast.LENGTH_LONG).show();
+        Toast.makeText(mActivity, "I'm listening.", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -504,7 +497,89 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         // If there is an error, shows feedback to the user and writes it in the log
         Log.e(TAG, "Error: " + errorMessage);
-        Toast.makeText(currentCxt, errorMessage, Toast.LENGTH_LONG).show();
+        Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
+    }
+
+    public void setPromptContainer(View promptContainer) {
+        this.mPromptContainer = promptContainer;
+    }
+
+    // Render the given PromptData to the user
+    public void setPrompt(PromptData promptData) {
+        Prompt prompt;
+
+        // switch on the type of prompt
+        switch (promptData.type) {
+            case SELECT:
+                // load prompt fragment
+                prompt = new SelectPrompt();
+                break;
+            case TRANSLATE:
+                prompt = new TranslatePrompt();
+                break;
+            default:
+                throw new IllegalArgumentException(String.format(Locale.US, "Prompt type not implemented: %s", promptData.type));
+        }
+
+        prompt.setData(promptData);
+
+        this.mActivity.getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.prompt_container, prompt)
+                .commit();
+
+        // Animate the prompt onto the screen
+        final View promptView = this.mActivity.findViewById(R.id.prompt);
+        boolean isHidden = ((FrameLayout.LayoutParams)promptView.getLayoutParams()).bottomMargin < 0;
+
+        if(isHidden) {
+            ValueAnimator anim = ValueAnimator.ofInt(-promptView.getHeight() - 10, 20);
+            anim.setInterpolator(new AnticipateOvershootInterpolator());
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    int val = (Integer) valueAnimator.getAnimatedValue();
+
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) promptView.getLayoutParams();
+                    params.bottomMargin = val;
+                    promptView.setLayoutParams(params);
+                }
+            });
+            anim.setDuration(500);
+            anim.start();
+        }
+    }
+
+    public void hidePrompt() {
+        final View promptView = this.mActivity.findViewById(R.id.prompt);
+
+        ValueAnimator anim = ValueAnimator.ofInt(20, -promptView.getHeight() - 10);
+        anim.setInterpolator(new AnticipateOvershootInterpolator());
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                int val = (Integer) valueAnimator.getAnimatedValue();
+
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) promptView.getLayoutParams();
+                params.bottomMargin = val;
+                promptView.setLayoutParams(params);
+            }
+        });
+        anim.setDuration(500);
+        anim.start();
+
+        ProgressBar pb = (ProgressBar) this.mActivity.findViewById(R.id.progressBar);
+        int progress = pb.getProgress();
+
+        if(progress == 100) {
+            pb.setProgress(0);
+            progress = 0;
+        }
+
+        ObjectAnimator animation = ObjectAnimator.ofInt (pb, "progress", progress, progress + 20);
+        animation.setDuration (500);
+        animation.setInterpolator (new AccelerateDecelerateInterpolator());
+        animation.start ();
     }
 
     public void setCards(View left, View right) {
