@@ -35,4 +35,5 @@ dependencies {
     compile project(':libraries:VPALib')
     compile project(':libraries:ASRLib')
     compile 'com.firebase:firebase-client-android:2.2.3+'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 }

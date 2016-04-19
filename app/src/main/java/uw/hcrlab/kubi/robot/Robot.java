@@ -3,6 +3,7 @@ package uw.hcrlab.kubi.robot;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -35,6 +36,7 @@ import uw.hcrlab.kubi.App;
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
+import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.screen.RobotFace;
@@ -60,7 +62,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private View leftCard;
     private View rightCard;
+
+    private boolean mIsPromptOpen = false;
     private View mPromptContainer;
+    private String mCurrentPromptId;
+    private Prompt mCurrentPrompt;
 
     private Boolean leftIsShowing = false;
     private Boolean rightIsShowing = false;
@@ -156,6 +162,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             Log.i(TAG, "Robot already started ...");
             return;
         }
+
+        ProgressBar pb = (ProgressBar) this.mActivity.findViewById(R.id.progressBar);
+        pb.setProgress(0);
 
         thread = new FaceThread(robotFace, kubiManager);
         thread.start();
@@ -504,28 +513,36 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         this.mPromptContainer = promptContainer;
     }
 
-    // Render the given PromptData to the user
-    public void setPrompt(PromptData promptData) {
-        Prompt prompt;
+    public boolean isPromptOpen() {
+        return mIsPromptOpen;
+    }
 
-        // switch on the type of prompt
-        switch (promptData.type) {
-            case SELECT:
-                // load prompt fragment
-                prompt = new SelectPrompt();
-                break;
-            case TRANSLATE:
-                prompt = new TranslatePrompt();
-                break;
-            default:
-                throw new IllegalArgumentException(String.format(Locale.US, "Prompt type not implemented: %s", promptData.type));
+    public String getCurrentPromptId() {
+        return mCurrentPromptId;
+    }
+
+    // Render the given PromptData to the user
+    public void setPrompt(final Prompt prompt, final String promptId) {
+        if(mIsPromptOpen) {
+            hidePrompt();
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setPrompt(prompt, promptId);
+                }
+            }, 800);
+
+            return;
         }
 
-        prompt.setData(promptData);
+        mCurrentPromptId = promptId;
+        mCurrentPrompt = prompt;
 
         this.mActivity.getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.prompt_container, prompt)
+                .replace(R.id.prompt_container, prompt, mCurrentPromptId)
                 .commit();
 
         // Animate the prompt onto the screen
@@ -547,7 +564,13 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             });
             anim.setDuration(500);
             anim.start();
+
+            mIsPromptOpen = true;
         }
+    }
+
+    public void showResult(Result res) {
+        mCurrentPrompt.handleResults(res);
     }
 
     public void hidePrompt() {
@@ -572,6 +595,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         int progress = pb.getProgress();
 
         if(progress == 100) {
+            // TODO: Do something special since we have reached the end of the lesson...
             pb.setProgress(0);
             progress = 0;
         }
@@ -580,6 +604,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         animation.setDuration (500);
         animation.setInterpolator (new AccelerateDecelerateInterpolator());
         animation.start ();
+
+        mIsPromptOpen = false;
+        mCurrentPrompt = null;
     }
 
     public void setCards(View left, View right) {

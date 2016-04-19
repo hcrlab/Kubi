@@ -7,9 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.firebase.client.DataSnapshot;
+
 import uw.hcrlab.kubi.KubiLingoUtils;
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
+import uw.hcrlab.kubi.lesson.Result;
 
 public class TranslatePrompt extends Prompt {
     private static String TAG = TranslatePrompt.class.getSimpleName();
@@ -26,12 +29,16 @@ public class TranslatePrompt extends Prompt {
         }
 
         // set src text according to prompt data
-        TextView srcText = (TextView) getView().findViewById(R.id.l2_source_text); // KubiLingoUtils.getViewByIdString("l2_source_text", view, this);
+        TextView srcText = (TextView) view.findViewById(R.id.l2_source_text);
         srcText.setText(this.data.srcText);
 
-        TextView resultText = (TextView) getView().findViewById(R.id.l1_result_text); // KubiLingoUtils.getViewByIdString("l1_result_text", view, this);
+        TextView resultText = (TextView) view.findViewById(R.id.l1_result_text);
         resultText.requestFocus();
 
         return view;
+    }
+
+    public void handleResults(Result res) {
+
     }
 }

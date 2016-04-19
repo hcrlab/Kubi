@@ -1,5 +1,6 @@
 package uw.hcrlab.kubi.wizard;
 
+import android.net.ParseException;
 import android.util.Log;
 
 import com.firebase.client.DataSnapshot;
@@ -7,11 +8,18 @@ import com.firebase.client.FirebaseError;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.DataFormatException;
 
 import uw.hcrlab.kubi.R;
+import uw.hcrlab.kubi.lesson.Prompt;
+import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.PromptTypes;
+import uw.hcrlab.kubi.lesson.Result;
+import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
+import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.robot.Action;
 import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
@@ -42,24 +50,99 @@ public class CommandHandler extends WizardHandler {
         return drawables.get(command);
     }
 
+    private PromptTypes getType(DataSnapshot snap) {
+        if(!snap.hasChild("type")) {
+            throw new IllegalArgumentException("Data snapshot does not contain a property named `type`");
+        }
+
+        return PromptTypes.valueOf(snap.child("type").getValue(String.class).toUpperCase());
+    }
+
+    private boolean validateSelect(DataSnapshot snap) {
+        if(!snap.child("prompt").exists()) {
+            return false;
+        }
+
+        if(!snap.child("opts").exists()) {
+            return false;
+        }
+
+        for(DataSnapshot option : snap.child("opts").getChildren()) {
+            if(!option.child("image").exists()) {
+                return false;
+            }
+
+            if(!option.child("num").exists()) {
+                return false;
+            }
+
+            if(!option.child("title").exists()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public void onChildAdded(DataSnapshot snap, String s) {
         if(!snap.hasChild("handled") || !snap.child("handled").getValue(Boolean.class)) {
             Log.i(TAG, "received a new command");
 
-            if(!snap.hasChild("type")) {
-                // TODO: Throw an exception
+            if(robot == null) {
+                robot = Robot.getInstance();
             }
 
             PromptTypes type = null;
 
             try {
-                type = PromptTypes.valueOf(snap.child("type").getValue(String.class));
+                type = getType(snap);
             } catch (IllegalArgumentException|NullPointerException ex) {
                 // TODO: Handle the exception...
+                Log.e(TAG, "Unknown command type!");
+                return;
             }
 
+            Prompt prompt;
+            PromptData pd = new PromptData();
 
+            switch(type) {
+                case SELECT:
+                    if(!validateSelect(snap)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    pd.type = type;
+                    pd.srcText = snap.child("prompt").getValue(String.class);
+
+                    DataSnapshot options = snap.child("opts");
+                    for(DataSnapshot option : options.getChildren()) {
+                        int num = option.child("num").getValue(int.class);
+                        String title = option.child("title").getValue(String.class);
+                        String url = option.child("image").getValue(String.class);
+
+                        pd.options.add(new PromptData.Option(num, title).setURL(url));
+                    }
+
+                    prompt = new SelectPrompt();
+                    break;
+
+                case TRANSLATE:
+                    prompt = new TranslatePrompt();
+                    break;
+
+                default:
+                    // throw new IllegalArgumentException(String.format(Locale.US, "Prompt type not implemented: %s", promptData.type));
+
+                    // For the time being, ignore all other types of questions
+                    return;
+            }
+
+            prompt.setData(pd);
+            robot.setPrompt(prompt, s);
+
+            snap.child("handled").getRef().setValue(true);
 
 //            for (DataSnapshot taskData : snap.child("tasks").getChildren()) {
 //                Task res = taskData.getValue(Task.class);
@@ -123,14 +206,29 @@ public class CommandHandler extends WizardHandler {
 //                    Log.d(TAG, "You need to display buttons!");
 //                }
 //            }
-
-            snap.child("handled").getRef().setValue(true);
         }
     }
 
     @Override
-    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        //Ignore onChildChanged
+    public void onChildChanged(DataSnapshot snap, String s) {
+        if(snap.hasChild("result")) {
+            DataSnapshot res = snap.child("result");
+
+            if(robot == null) {
+                robot = Robot.getInstance();
+            }
+
+            if(!robot.getCurrentPromptId().equals(s)) {
+                Log.e(TAG, "Received a results update for a prompt that isn't currently showing!");
+                return;
+            }
+
+            Boolean isCorrect = res.child("correct").getValue(Boolean.class);
+            Integer correctIdx = res.child("solutions").child("0").getValue(Integer.class);
+            Integer usersIdx = res.child("response").getValue(Integer.class);
+
+            robot.showResult(new Result(isCorrect, usersIdx, correctIdx));
+        }
     }
 
     @Override

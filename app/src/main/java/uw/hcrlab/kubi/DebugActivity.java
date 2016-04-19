@@ -109,9 +109,9 @@ public class DebugActivity extends FragmentActivity {
             case (1):
                 pd.type = PromptTypes.NAME;
                 pd.srcText = "apple";
-                pd.options.add(new PromptData.Option(1, "apple"));
-                pd.options.add(new PromptData.Option(2, "banana"));
-                pd.options.add(new PromptData.Option(3, "girl"));
+                pd.options.add(new PromptData.Option(1, "apple").setDrawable("apple"));
+                pd.options.add(new PromptData.Option(2, "banana").setDrawable("banana"));
+                pd.options.add(new PromptData.Option(3, "girl").setDrawable(("girl")));
                 loadPrompt(pd);
                 break;
             case (3):

@@ -13,8 +13,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.PopupMenu;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
+import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.PromptTypes;
+import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.screen.RobotFace;
 
@@ -169,25 +174,24 @@ public class MainActivity extends FragmentActivity {
     /* Touch events */
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()) {
-            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_DOWN:
                 Log.i(TAG, "Screen touched ");
                 // TODO: log to Firebase?
 
-                if(!mIsOpen) {
+                if(!robot.isPromptOpen()) {
                     PromptData pd = new PromptData();
                     pd.type = PromptTypes.SELECT;
                     pd.srcText = "apple";
-                    pd.options.add(new PromptData.Option(1, "apple"));
-                    pd.options.add(new PromptData.Option(2, "banana"));
-                    pd.options.add(new PromptData.Option(3, "girl"));
+                    pd.options.add(new PromptData.Option(1, "apple").setDrawable("apple"));
+                    pd.options.add(new PromptData.Option(2, "banana").setDrawable("banana"));
+                    pd.options.add(new PromptData.Option(3, "girl").setDrawable("girl"));
 
-                    robot.setPrompt(pd);
+                    Prompt p = new SelectPrompt();
+                    p.setData(pd);
 
-                    mIsOpen = true;
+                    robot.setPrompt(p, "generic");
                 } else {
                     robot.hidePrompt();
-
-                    mIsOpen = false;
                 }
 
                 break;

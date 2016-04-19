@@ -2,6 +2,10 @@
 <resources>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
-    <color name="progress">#7a2875</color>
+    <color name="progress">#1CAFF6</color>
     <color name="prompt_background">#ffffff</color>
+    <color name="highlighted">#1CAFF6</color>
+    <color name="correct">#7EB530</color>
+    <color name="incorrect">#FFD4CC</color>
+    <color name="really_incorrect">#EC0B1B</color>
 </resources>

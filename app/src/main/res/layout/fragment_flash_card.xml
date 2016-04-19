@@ -5,6 +5,7 @@
     android:layout_weight="1">
 
     <FrameLayout
+        android:id="@+id/flash_card_border"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_gravity="center"
@@ -18,8 +19,7 @@
             android:maxHeight="@dimen/option_max_img_height"
             android:adjustViewBounds="true"
             android:layout_gravity="top|center_horizontal"
-            android:layout_marginTop="@dimen/option_img_top_margin"
-            android:src="@drawable/apple"/>
+            android:layout_marginTop="@dimen/option_img_top_margin"/>
 
         <TextView
             android:id="@+id/caption"
