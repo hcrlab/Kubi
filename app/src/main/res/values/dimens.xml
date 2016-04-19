@@ -22,6 +22,10 @@
     <dimen name="prompt_content_margin">10dp</dimen>
     <dimen name="prompt_hand_width">820dp</dimen>
 
+    <dimen name="thought_bubble_width">260dp</dimen>
+    <dimen name="thought_bubble_height">185dp</dimen>
+    <dimen name="thought_bubble_margin">20dp</dimen>
+
     <dimen name="card_margin">150dp</dimen>
     <dimen name="card_margin_btm_init">-310dp</dimen>
 

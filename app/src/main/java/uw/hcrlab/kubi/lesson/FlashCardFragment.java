@@ -15,7 +15,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import uw.hcrlab.kubi.KubiLingoUtils;
 import uw.hcrlab.kubi.R;
-import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 
 public class FlashCardFragment extends Fragment implements View.OnTouchListener {
     private static String TAG = FlashCardFragment.class.getSimpleName();
@@ -25,7 +24,7 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
     private boolean mSelected = false;
 
     public interface OnFlashCardSelectedListener {
-        public void onFlashCardSelected(String tag);
+        void onFlashCardSelected(String tag);
     }
 
     private OnFlashCardSelectedListener mParent;
