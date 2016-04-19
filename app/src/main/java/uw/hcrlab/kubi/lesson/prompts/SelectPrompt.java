@@ -19,6 +19,7 @@ import uw.hcrlab.kubi.lesson.FlashCardFragment;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
+import uw.hcrlab.kubi.lesson.results.SelectResult;
 
 public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCardSelectedListener {
     private static String TAG = SelectPrompt.class.getSimpleName();
@@ -70,11 +71,13 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
     }
 
     public void handleResults(Result res) {
-        FlashCardFragment flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(createOptionTag(res.getCorrectIndex()));
+        SelectResult sr = (SelectResult) res;
+
+        FlashCardFragment flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(createOptionTag(sr.getCorrectIndex()));
         flashCard.setCorrect();
 
         if(!res.isCorrect()) {
-            flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(createOptionTag(res.getUsersResponse()));
+            flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(createOptionTag(sr.getUsersResponse()));
             flashCard.setIncorrect();
         }
     }

@@ -20,6 +20,7 @@ import uw.hcrlab.kubi.lesson.PromptTypes;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
+import uw.hcrlab.kubi.lesson.results.SelectResult;
 import uw.hcrlab.kubi.robot.Action;
 import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
@@ -227,7 +228,7 @@ public class CommandHandler extends WizardHandler {
             Integer correctIdx = res.child("solutions").child("0").getValue(Integer.class);
             Integer usersIdx = res.child("response").getValue(Integer.class);
 
-            robot.showResult(new Result(isCorrect, usersIdx, correctIdx));
+            robot.showResult(new SelectResult(isCorrect, usersIdx, correctIdx));
         }
     }
 

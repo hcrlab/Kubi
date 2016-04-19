@@ -8,9 +8,11 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.PopupMenu;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -86,6 +88,11 @@ public class MainActivity extends FragmentActivity {
     protected void onResume() {
         Log.i(TAG, "Resuming Main Activity ...");
         super.onResume();
+
+        FrameLayout prompt = (FrameLayout) findViewById(R.id.prompt);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) prompt.getLayoutParams();
+        params.setMargins(0,0,0,getResources().getDimensionPixelSize(R.dimen.card_margin_btm_init));
+        prompt.setLayoutParams(params);
 
         final Button menuButton = (Button) findViewById(R.id.menuButton);
         menuButton.setOnClickListener(new View.OnClickListener() {
