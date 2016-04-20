@@ -4,9 +4,7 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk
-        android:minSdkVersion="19"
-        android:targetSdkVersion="19" />
+    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="19" />
 
     <!-- Bluetooth permissions -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -19,14 +17,9 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
-    <uses-permission
-        android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
 
     <application
         android:allowBackup="true"
