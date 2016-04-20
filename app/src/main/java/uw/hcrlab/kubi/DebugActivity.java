@@ -75,8 +75,10 @@ public class DebugActivity extends FragmentActivity {
         }
 
         prompt.setData(promptData);
+
+        // add the prompt fragment to the container (replacing last one, if applicable)
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.prompt_container, prompt).commit();
+                .replace(R.id.prompt_container, prompt).commit();
     }
 
     private void interpretDebugPrompt(View view) {
