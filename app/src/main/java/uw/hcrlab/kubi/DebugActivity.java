@@ -3,6 +3,7 @@ package uw.hcrlab.kubi;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.Prompt1Fragment;
 import uw.hcrlab.kubi.lesson.Prompt3Fragment;
+import uw.hcrlab.kubi.lesson.Prompt4Fragment;
 import uw.hcrlab.kubi.lesson.PromptData;
 
 import android.os.Bundle;
@@ -69,6 +70,9 @@ public class DebugActivity extends FragmentActivity {
             case (3):
                 prompt = new Prompt3Fragment();
                 break;
+            case (4):
+                prompt = new Prompt4Fragment();
+                break;
             default:
                 throw new IllegalArgumentException(
                         String.format("prompt type not found %d", promptData.type));
@@ -111,6 +115,10 @@ public class DebugActivity extends FragmentActivity {
                 loadPrompt(pd);
                 break;
             case (4):
+                pd.type = 4;
+                pd.srcText = "apple";
+                loadPrompt(pd);
+                break;
             default:
                 String msg = String.format("Invalid debug input -- %d", input);
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();

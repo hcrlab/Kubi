@@ -15,7 +15,7 @@ public class Prompt3Fragment extends Prompt {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
 
         Log.i(TAG, "Creating prompt 3 fragment from " + this.data);
         View view = inflater.inflate(R.layout.fragment_prompt_3, container, false);
@@ -26,6 +26,7 @@ public class Prompt3Fragment extends Prompt {
 
         // set src text according to prompt data
         TextView srcText = (TextView) KubiLingoUtils.getViewByIdString("l2_source_text", view, this);
+        //TextView srcText = (TextView) getActivity().findViewById(R.id.l2_source_text);
         srcText.setText(this.data.srcText);
 
         TextView resultText = (TextView) KubiLingoUtils.getViewByIdString("l1_result_text", view, this);
