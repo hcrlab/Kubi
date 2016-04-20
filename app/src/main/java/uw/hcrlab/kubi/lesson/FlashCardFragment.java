@@ -13,11 +13,18 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import uw.hcrlab.kubi.KubiLingoUtils;
+import java.util.HashMap;
+import java.util.Map;
+
 import uw.hcrlab.kubi.R;
+import uw.hcrlab.kubi.robot.FaceAction;
+import uw.hcrlab.kubi.robot.Robot;
+import uw.hcrlab.kubi.screen.RobotFace;
 
 public class FlashCardFragment extends Fragment implements View.OnTouchListener {
     private static String TAG = FlashCardFragment.class.getSimpleName();
+
+    private Robot robot;
 
     private PromptData.Option option;
 
@@ -28,6 +35,19 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
     }
 
     private OnFlashCardSelectedListener mParent;
+
+    // TODO: Remove this when we get rid of the use of drawables for image content (i.e. when not debugging any more)
+    private int getId(String command) {
+        Map<String, Integer> drawables = new HashMap<String, Integer>();
+
+        drawables.put("APPLE", R.drawable.apple);
+        drawables.put("BANANA", R.drawable.banana);
+        drawables.put("GIRL", R.drawable.girl);
+        drawables.put("BOY", R.drawable.boy);
+        drawables.put("FRANCE", R.drawable.france);
+
+        return drawables.get(command.toUpperCase());
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,17 +62,16 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
         caption.setText(this.option.title);
 
         // Set picture according to option
-        // Eventually option will contain a drawable. For now just name to find
-        // an existing drawable.
-
         ImageView picture = (ImageView) view.findViewById(R.id.picture);
 
         if(this.option.hasURL()) {
             ImageLoader.getInstance().displayImage(this.option.imageUrl, picture);
         } else {
-            Drawable drawable = KubiLingoUtils.getDrawableByString(this.option.title, this);
+            Drawable drawable = view.getResources().getDrawable(getId(this.option.title), getActivity().getTheme());
             picture.setImageDrawable(drawable);
         }
+
+        robot = Robot.getInstance();
 
         return view;
     }
@@ -103,6 +122,9 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
 
         frame.setBackgroundResource(R.drawable.card_border_correct);
         mSelected = false;
+
+        // TODO: Remove this. This just shows how the robot can be accessed and calls can be made to it.
+        robot.act(FaceAction.GIGGLE);
     }
 
     public void setIncorrect() {

@@ -13,25 +13,11 @@
         android:background="@color/black"
         android:orientation="horizontal" >
 
-
         <uw.hcrlab.kubi.screen.RobotFace
             android:id="@+id/face"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_gravity="top" />
-
-        <Button
-            android:id="@+id/menuButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="20dp"
-            android:orientation="horizontal"
-            android:layout_gravity="left"
-            android:background="@drawable/settings_button"
-            android:visibility="gone"
-        />
-
-        
 
         <include layout="@layout/thought_bubble_layout"/>
 

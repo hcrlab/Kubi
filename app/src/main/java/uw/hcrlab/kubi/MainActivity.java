@@ -83,33 +83,6 @@ public class MainActivity extends FragmentActivity {
         Log.i(TAG, "Resuming Main Activity ...");
         super.onResume();
 
-        final Button menuButton = (Button) findViewById(R.id.menuButton);
-        menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.i(MainActivity.TAG, "clicked settings button");
-                // show a menu
-                PopupMenu popup = new PopupMenu(MainActivity.this, menuButton);
-                popup.getMenuInflater()
-                        .inflate(R.menu.menu_mainactivity_options, popup.getMenu());
-                Log.i(MainActivity.TAG, "menu inflated");
-
-                // launch activity according to the item's intent
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
-                        Log.i(MainActivity.TAG, "menu item clicked");
-                        switch (item.getItemId()) {
-                            case R.id.startDebugActivity:
-                                startActivity(new Intent("uw.hcrlab.kubi.DebugActivity"));
-                                return true;
-                            default:
-                                return false;
-                        }
-                    }
-                });
-            }});
-
-
         left = findViewById(R.id.leftCard);
         right = findViewById(R.id.rightCard);
         robot.setCards(left, right);

@@ -7,9 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.firebase.client.DataSnapshot;
-
-import uw.hcrlab.kubi.KubiLingoUtils;
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.Result;

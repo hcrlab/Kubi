@@ -1,19 +1,14 @@
 package uw.hcrlab.kubi.lesson.prompts;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.firebase.client.DataSnapshot;
-
 import java.util.ArrayList;
 
-import uw.hcrlab.kubi.KubiLingoUtils;
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.FlashCardFragment;
 import uw.hcrlab.kubi.lesson.Prompt;
@@ -40,7 +35,6 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
         mFlashCards = new ArrayList<>();
 
         // add the card fragments
-        FragmentTransaction trans = getActivity().getSupportFragmentManager().beginTransaction();
 
         for (PromptData.Option option: this.data.options) {
             FlashCardFragment cardFragment = new FlashCardFragment();
@@ -49,10 +43,11 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
 
             String tag = createOptionTag(option.idx);
             mFlashCards.add(tag);
-            trans.add(R.id.prompt_options, cardFragment, tag);
+
+            FragmentTransaction trans = getActivity().getSupportFragmentManager().beginTransaction();
+            trans.add(R.id.prompt_options, cardFragment, tag).commit();
         }
 
-        trans.commit();
 
         return view;
     }
