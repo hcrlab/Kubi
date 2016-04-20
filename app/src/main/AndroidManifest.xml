@@ -36,7 +36,7 @@
         android:name=".App">
         <activity
             android:name=".DebugActivity"
-            android:label="@string/title_activity_main"
+            android:label="KubiLingo.Leah"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
