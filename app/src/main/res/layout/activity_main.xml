@@ -31,21 +31,15 @@
             android:visibility="gone"
         />
 
+        
+
         <include layout="@layout/thought_bubble_layout"/>
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="end"
-            android:layout_margin="10dp"
-            android:max="100"
-            android:progress="90"
-            android:progressDrawable="@drawable/progress_circle" />
+        <include layout="@layout/progress_display"/>
 
         <include layout="@layout/prompt_layout"/>
 
+        <!--We are currently not using the individual hands, but we will keep them here just in case-->
         <include layout="@layout/left_hand"/>
         <include layout="@layout/right_hand"/>
 
