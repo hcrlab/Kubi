@@ -4,6 +4,7 @@ buildscript {
         jcenter()
     }
     dependencies {
+        classpath 'org.ajoberstar:gradle-git:1.4.2'
         classpath 'com.android.tools.build:gradle:2.0.0'
     }
 }

@@ -1,22 +1,28 @@
 apply plugin: 'com.android.application'
 
-def buildsuffix = ".dev.alex"
-def myApplicationId = "uw.hcrlab.kubi"
+import org.ajoberstar.grgit.*
+
+def currentBranch = Grgit.open(dir: '.').branch.current.name
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        applicationId = myApplicationId + buildsuffix
+        applicationId "uw.hcrlab.kubi"
         minSdkVersion 23
         targetSdkVersion 23
+        manifestPlaceholders = [kubiAppLabel: "KubiLingo"]
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+        debug {
+            applicationIdSuffix currentBranch
+            manifestPlaceholders = [kubiAppLabel: "KubiLingo." + currentBranch]
         }
     }
 

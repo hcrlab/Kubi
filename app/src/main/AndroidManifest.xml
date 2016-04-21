@@ -4,8 +4,6 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="19" />
-
     <!-- Bluetooth permissions -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -29,7 +27,7 @@
         android:name=".App">
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main"
+            android:label="${kubiAppLabel}"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
