@@ -9,6 +9,10 @@ import android.widget.Toast;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 import java.util.UUID;
 
@@ -33,9 +37,16 @@ public class App extends Application implements Firebase.AuthResultHandler {
         Firebase.setAndroidContext(this);
 
         fb = new Firebase("https://hcrkubi.firebaseio.com");
-        fb.authWithPassword("hcr@cs.uw.edu", "testpass", this);
+        fb.authWithPassword("hcrlab@cs.uw.edu", "motion6", this);
 
-        deviceID = Build.MANUFACTURER + " " + Build.MODEL;;
+        deviceID = Build.MANUFACTURER + " " + Build.MODEL;
+
+        initImageLoader(getApplicationContext());
+    }
+
+    public static void initImageLoader(Context context) {
+        ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(context);
+        ImageLoader.getInstance().init(config);
     }
 
     public static void FbConnect() {

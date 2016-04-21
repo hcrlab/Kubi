@@ -1,7 +1,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:opencv="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
@@ -20,27 +19,15 @@
             android:layout_height="fill_parent"
             android:layout_gravity="top" />
 
-        <Button
-            android:id="@+id/menuButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="20dp"
-            android:orientation="horizontal"
-            android:layout_gravity="end"
-            android:background="@drawable/settings_button"
-        />
+        <include layout="@layout/thought_bubble_layout"/>
 
+        <include layout="@layout/progress_display"/>
+
+        <include layout="@layout/prompt_layout"/>
+
+        <!--We are currently not using the individual hands, but we will keep them here just in case-->
         <include layout="@layout/left_hand"/>
         <include layout="@layout/right_hand"/>
-
-        <!--<org.opencv.android.JavaCameraView-->
-            <!--android:id="@+id/camera_preview"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="fill_parent"-->
-            <!--android:visibility="gone"-->
-            <!--opencv:show_fps="false"-->
-            <!--android:layout_gravity="bottom"-->
-            <!--opencv:camera_id="front" />-->
 
     </FrameLayout>
 

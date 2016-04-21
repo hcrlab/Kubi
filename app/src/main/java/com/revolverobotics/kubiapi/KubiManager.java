@@ -534,9 +534,12 @@ import android.util.Log;
 			this.foundMACs.add(device.getAddress());
 			
 			// Only add devices that have the correct prefixes to the list
-			String prefix = device.getName().substring(0,4);
-			if (prefix.equals("kubi") || prefix.equals("Rev-"))
-				nearKubis.add(new KubiSearchResult(device,rssi));
+			String name = device.getName();
+			if(name != null) {
+				String prefix = name.substring(0, 4);
+				if (prefix.equals("kubi") || prefix.equals("Rev-"))
+					nearKubis.add(new KubiSearchResult(device, rssi));
+			}
 		}
 			
 		

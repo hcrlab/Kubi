@@ -1,22 +1,23 @@
 package uw.hcrlab.kubi;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.PopupMenu;
+import android.widget.FrameLayout;
 
+import uw.hcrlab.kubi.lesson.Prompt;
+import uw.hcrlab.kubi.lesson.PromptData;
+import uw.hcrlab.kubi.lesson.PromptTypes;
+import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.screen.RobotFace;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
     private static String TAG = MainActivity.class.getSimpleName();
 
     /* Activity's Properties */
@@ -67,6 +68,7 @@ public class MainActivity extends Activity {
 
     View left = null;
     View right = null;
+    View promptContainer = null;
 
     /*
     Called when the activity will start interacting with the user. At this point
@@ -78,36 +80,12 @@ public class MainActivity extends Activity {
         Log.i(TAG, "Resuming Main Activity ...");
         super.onResume();
 
-        final Button menuButton = (Button) findViewById(R.id.menuButton);
-        menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.i(MainActivity.TAG, "clicked settings button");
-                // show a menu
-                PopupMenu popup = new PopupMenu(MainActivity.this, menuButton);
-                popup.getMenuInflater()
-                        .inflate(R.menu.menu_mainactivity_options, popup.getMenu());
-                Log.i(MainActivity.TAG, "menu inflated");
-
-                // launch activity according to the item's intent
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
-                        Log.i(MainActivity.TAG, "menu item clicked");
-                        switch (item.getItemId()) {
-                            case R.id.startDebugActivity:
-                                startActivity(new Intent("uw.hcrlab.kubi.DebugActivity"));
-                                return true;
-                            default:
-                                return false;
-                        }
-                    }
-                });
-            }});
-
-
         left = findViewById(R.id.leftCard);
         right = findViewById(R.id.rightCard);
         robot.setCards(left, right);
+
+        promptContainer = findViewById(R.id.prompt_container);
+        robot.setPromptContainer(promptContainer);
 
         robot.startup();
         App.FbConnect();
@@ -157,12 +135,31 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
+    boolean mIsOpen = false;
+
     /* Touch events */
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()) {
-            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_DOWN:
                 Log.i(TAG, "Screen touched ");
                 // TODO: log to Firebase?
+
+                if(!robot.isPromptOpen()) {
+                    PromptData pd = new PromptData();
+                    pd.type = PromptTypes.SELECT;
+                    pd.srcText = "apple";
+                    pd.options.add(new PromptData.Option(1, "apple").setDrawable("apple"));
+                    pd.options.add(new PromptData.Option(2, "banana").setDrawable("banana"));
+                    pd.options.add(new PromptData.Option(3, "girl").setDrawable("girl"));
+
+                    Prompt p = new SelectPrompt();
+                    p.setData(pd);
+
+                    robot.setPrompt(p, "generic");
+                } else {
+                    robot.hidePrompt();
+                }
+
                 break;
             default:
                 break;

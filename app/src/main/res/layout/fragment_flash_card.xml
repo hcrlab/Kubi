@@ -1,38 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:padding="10sp"
-    android:background="#000000">
+    android:layout_weight="1">
 
-    <LinearLayout
-        android:layout_width="0px"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="7"
-        android:background="#999999"
-        android:padding="10sp"
-        >
+    <FrameLayout
+        android:id="@+id/flash_card_border"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:background="@drawable/card_border"
+        android:layout_margin="@dimen/option_margin">
 
         <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="0px"
-            android:layout_weight="10"
             android:id="@+id/picture"
-            android:src="@drawable/apple"
-            />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxHeight="@dimen/option_max_img_height"
+            android:adjustViewBounds="true"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="@dimen/option_img_top_margin"/>
+
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="0px"
-            android:layout_weight="2"
             android:id="@+id/caption"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="@dimen/card_text_top_margin"
             android:text="Apple"
-            android:gravity="center_horizontal"
-            android:textAlignment="center"
-            android:textSize="30sp"
-            />
+            android:gravity="bottom|center_horizontal"
+            android:textSize="@dimen/card_text_size"/>
 
-    </LinearLayout>
+    </FrameLayout>
 
-</LinearLayout>
+</FrameLayout>

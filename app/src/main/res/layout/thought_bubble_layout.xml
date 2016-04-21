@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    android:id="@+id/thought_bubble"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/thought_bubble_width"
+    android:layout_height="@dimen/thought_bubble_height"
+    android:layout_margin="@dimen/thought_bubble_margin"
+    android:layout_gravity="top|left"
+    android:background="@drawable/thought_bubble">
+
+    <TextView
+        android:id="@+id/thoughts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="This is a test of thought bubble content"
+        android:textSize="@dimen/card_text_size"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.4"/>
+
+</FrameLayout>
+
