@@ -19,7 +19,6 @@ import java.util.Map;
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
-import uw.hcrlab.kubi.screen.RobotFace;
 
 public class FlashCardFragment extends Fragment implements View.OnTouchListener {
     private static String TAG = FlashCardFragment.class.getSimpleName();
