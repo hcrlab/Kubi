@@ -27,18 +27,9 @@ public class Prompt4Fragment extends Prompt {
         }
 
         // set picture dynamically based on srctext
-        //ImageView image1 = (ImageView) getActivity().findViewById(R.id.picture1);  // null pointer exception -- why?
-        ImageView image1 = (ImageView) KubiLingoUtils.getViewByIdString("picture1", view, this);
+        ImageView image1 = (ImageView) view.findViewById(R.id.picture1);
         Drawable drawable = KubiLingoUtils.getDrawableByString(this.data.srcText, this);
         image1.setImageDrawable(drawable);
-
-
-        // set src text according to prompt data
-//        TextView srcText = (TextView) KubiLingoUtils.getViewByIdString("l2_source_text", view, this);
-//        srcText.setText(this.data.srcText);
-//
-//        TextView resultText = (TextView) KubiLingoUtils.getViewByIdString("l1_result_text", view, this);
-//        resultText.requestFocus();
 
         return view;
     }
