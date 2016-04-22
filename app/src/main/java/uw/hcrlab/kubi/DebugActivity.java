@@ -1,7 +1,7 @@
 package uw.hcrlab.kubi;
 
 import uw.hcrlab.kubi.lesson.Prompt;
-import uw.hcrlab.kubi.lesson.Prompt4Fragment;
+import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.lesson.PromptData;
@@ -82,7 +82,7 @@ public class DebugActivity extends FragmentActivity {
                 prompt = new TranslatePrompt();
                 break;
             case NAME:
-                prompt = new Prompt4Fragment();
+                prompt = new NamePrompt();
                 break;
             default:
                 throw new IllegalArgumentException(
@@ -113,7 +113,7 @@ public class DebugActivity extends FragmentActivity {
         PromptData pd = new PromptData();
         switch (input) {
             case (1):
-                pd.type = PromptTypes.NAME;
+                pd.type = PromptTypes.SELECT;
                 pd.srcText = "apple";
                 pd.options.add(new PromptData.Option(1, "apple").setDrawable("apple"));
                 pd.options.add(new PromptData.Option(2, "banana").setDrawable("banana"));
@@ -128,6 +128,9 @@ public class DebugActivity extends FragmentActivity {
             case (4):
                 pd.type = PromptTypes.NAME;
                 pd.srcText = "apple";
+                pd.images.add(new PromptData.Option(1, "").setDrawable("apple"));
+                pd.images.add(new PromptData.Option(2, "").setDrawable("banana"));
+                pd.images.add(new PromptData.Option(3, "").setDrawable("apple"));
                 loadPrompt(pd);
                 break;
             default:

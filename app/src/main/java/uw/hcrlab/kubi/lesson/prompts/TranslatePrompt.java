@@ -29,6 +29,7 @@ public class TranslatePrompt extends Prompt {
         TextView srcText = (TextView) view.findViewById(R.id.l2_source_text);
         srcText.setText(this.data.srcText);
 
+        // focus on the text input
         TextView resultText = (TextView) view.findViewById(R.id.l1_result_text);
         resultText.requestFocus();
 

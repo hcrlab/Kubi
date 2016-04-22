@@ -32,10 +32,8 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
             return view;
         }
 
-        mFlashCards = new ArrayList<>();
-
         // add the card fragments
-
+        mFlashCards = new ArrayList<>();
         for (PromptData.Option option: this.data.options) {
             FlashCardFragment cardFragment = new FlashCardFragment();
             cardFragment.configure(option);
@@ -47,7 +45,6 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
             FragmentTransaction trans = getActivity().getSupportFragmentManager().beginTransaction();
             trans.add(R.id.prompt_options, cardFragment, tag).commit();
         }
-
 
         return view;
     }
