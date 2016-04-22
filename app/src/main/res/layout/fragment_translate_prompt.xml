@@ -7,19 +7,18 @@
     android:background="@color/prompt_background"
     >
 
-    <!--android:layout_margin="10sp"-->
-    <TextView
+    <!-- filled dynamically with word buttons -->
+    <LinearLayout
         android:layout_height="0px"
         android:layout_width="match_parent"
         android:layout_weight="1"
+        android:orientation="horizontal"
         android:id="@+id/l2_source_text"
         android:background="#999999"
-        android:textSize="30sp"
         android:layout_margin="10sp"
         android:padding="10sp"
-        android:text="test test lorem ipsum dolor test test"
         />
-    <!--android:padding="10sp"-->
+
 
     <EditText
         android:layout_height="0px"
@@ -30,8 +29,6 @@
         android:gravity="top"
         android:inputType="textMultiLine"
         />
-    <!--android:background="#999999"-->
-    <!--android:padding="10sp"-->
 
 
     <!--<FrameLayout-->

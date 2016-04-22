@@ -17,13 +17,14 @@ public class PromptData {
     public String PromptText;
 
     // TODO: Replace srcText with an array of Word objects
-
     // The main text to be translated
     public String srcText;
+    public ArrayList<Word> words;
 
     public PromptData() {
         this.options = new ArrayList<>();
         this.images = new ArrayList<>();
+        this.words = new ArrayList<>();
     }
 
     @Override
@@ -36,8 +37,14 @@ public class PromptData {
         for (Option image: this.images) {
             imagesString += image.toString() + ", ";
         }
-        return String.format(Locale.US, "PromptData {type=%s, srcText=%s, options={%s}, images={%s}}",
-                this.type, this.srcText, optionsString, imagesString);
+        String wordString = "";
+        for (Word word: this.words) {
+            wordString += word.text + " ";
+        }
+
+        return String.format(Locale.US,
+                "PromptData {type=%s, srcText=%s, words=%s, options={%s}, images={%s}}",
+                this.type, this.srcText, wordString, optionsString, imagesString);
     }
 
     public static class Word {

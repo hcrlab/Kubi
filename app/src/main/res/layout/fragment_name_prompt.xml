@@ -6,7 +6,7 @@
     android:background="#000000"
     >
 
-    <!-- container filled dynamically with fragments -->
+    <!-- container filled dynamically with framed image fragments -->
     <LinearLayout
         android:layout_width="0px"
         android:layout_height="match_parent"
