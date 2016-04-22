@@ -31,6 +31,7 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
 
     public interface OnFlashCardSelectedListener {
         void onFlashCardSelected(String tag);
+        void onFlashCardConfirmed(String tag);
     }
 
     private OnFlashCardSelectedListener mParent;
@@ -86,8 +87,12 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
             View frame = v.findViewById(R.id.flash_card_border);
 
             if(mSelected) {
-                frame.setBackgroundResource(R.drawable.card_border);
-                mSelected = false;
+//                frame.setBackgroundResource(R.drawable.card_border);
+//                mSelected = false;
+
+                if(mParent != null) {
+                    mParent.onFlashCardConfirmed(this.getTag());
+                }
             } else {
                 frame.setBackgroundResource(R.drawable.card_border_selected);
                 mSelected = true;
@@ -101,6 +106,10 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
         }
 
         return false;
+    }
+
+    public PromptData.Option getOption() {
+        return this.option;
     }
 
     public void unselect() {

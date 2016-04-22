@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.revolverobotics.kubiapi.IKubiManagerDelegate;
 import com.revolverobotics.kubiapi.Kubi;
 import com.revolverobotics.kubiapi.KubiManager;
@@ -567,6 +568,12 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
             mIsPromptOpen = true;
         }
+    }
+
+    public void setPromptResponse(PromptData.Option option) {
+        // TODO: This currently only is implemented with respect to SELECT prompts. Implement a version aware of the other prompt types...
+        Firebase fb = App.getFirebase().child("questions").child(mCurrentPromptId).child("response");
+        fb.setValue(option.idx);
     }
 
     public void showResult(Result res) {

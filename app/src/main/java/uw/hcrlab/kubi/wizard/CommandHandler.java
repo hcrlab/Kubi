@@ -141,7 +141,7 @@ public class CommandHandler extends WizardHandler {
             }
 
             prompt.setData(pd);
-            robot.setPrompt(prompt, s);
+            robot.setPrompt(prompt, snap.getKey());
 
             snap.child("handled").getRef().setValue(true);
 
@@ -212,14 +212,17 @@ public class CommandHandler extends WizardHandler {
 
     @Override
     public void onChildChanged(DataSnapshot snap, String s) {
-        if(snap.hasChild("result")) {
+        if(snap.hasChild("result") && (!snap.child("result").hasChild("handled") || !snap.child("result").child("handled").getValue(Boolean.class))) {
             DataSnapshot res = snap.child("result");
 
             if(robot == null) {
                 robot = Robot.getInstance();
             }
 
-            if(!robot.getCurrentPromptId().equals(s)) {
+            Log.d(TAG, "Robot prompt id: " + robot.getCurrentPromptId());
+            Log.d(TAG, "Snapshot id: " + snap.getKey());
+
+            if(!robot.getCurrentPromptId().equals(snap.getKey())) {
                 Log.e(TAG, "Received a results update for a prompt that isn't currently showing!");
                 return;
             }
@@ -229,6 +232,8 @@ public class CommandHandler extends WizardHandler {
             Integer usersIdx = res.child("response").getValue(Integer.class);
 
             robot.showResult(new SelectResult(isCorrect, usersIdx, correctIdx));
+
+            snap.child("result").child("handled").getRef().setValue(true);
         }
     }
 

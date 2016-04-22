@@ -15,11 +15,14 @@ import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.results.SelectResult;
+import uw.hcrlab.kubi.robot.Robot;
 
 public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCardSelectedListener {
     private static String TAG = SelectPrompt.class.getSimpleName();
 
     private ArrayList<String> mFlashCards;
+
+    private Robot robot;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,6 +51,7 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
             trans.add(R.id.prompt_options, cardFragment, tag).commit();
         }
 
+        robot = Robot.getInstance();
 
         return view;
     }
@@ -63,6 +67,11 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
                 flashCard.unselect();
             }
         }
+    }
+
+    public void onFlashCardConfirmed(String tag) {
+        FlashCardFragment flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(tag);
+        robot.setPromptResponse(flashCard.getOption());
     }
 
     public void handleResults(Result res) {
