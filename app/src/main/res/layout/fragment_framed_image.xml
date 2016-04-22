@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:background="@drawable/card_border"
+    android:layout_margin="@dimen/option_margin"
+    >
+
+    <ImageView
+        android:id="@+id/picture"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:maxHeight="@dimen/option_max_img_height"
+        android:adjustViewBounds="true"
+        android:layout_margin="@dimen/option_margin"
+        />
+    <!--android:layout_gravity="top|center_horizontal"-->
+    <!--android:layout_marginTop="@dimen/option_img_top_margin"-->
+
+</LinearLayout>

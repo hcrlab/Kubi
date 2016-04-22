@@ -26,7 +26,7 @@
         android:theme="@style/AppTheme"
         android:name=".App">
         <activity
-            android:name=".MainActivity"
+            android:name=".DebugActivity"
             android:label="${kubiAppLabel}"
             android:screenOrientation="landscape">
             <intent-filter>
