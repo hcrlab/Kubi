@@ -24,9 +24,7 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
     private static String TAG = FlashCardFragment.class.getSimpleName();
 
     private Robot robot;
-
     private PromptData.Option option;
-
     private boolean mSelected = false;
 
     public interface OnFlashCardSelectedListener {
@@ -35,17 +33,10 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
 
     private OnFlashCardSelectedListener mParent;
 
-    // TODO: Remove this when we get rid of the use of drawables for image content (i.e. when not debugging any more)
-    private int getId(String command) {
-        Map<String, Integer> drawables = new HashMap<String, Integer>();
-
-        drawables.put("APPLE", R.drawable.apple);
-        drawables.put("BANANA", R.drawable.banana);
-        drawables.put("GIRL", R.drawable.girl);
-        drawables.put("BOY", R.drawable.boy);
-        drawables.put("FRANCE", R.drawable.france);
-
-        return drawables.get(command.toUpperCase());
+    /* Should be called before onCreateView(). Not using setArguments because
+     * it only allows strings. */
+    public void configure(PromptData.Option option) {
+        this.option = option;
     }
 
     @Override
@@ -53,7 +44,6 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
         Log.i(TAG, "Creating flash card fragment from " + this.option);
 
         View view = inflater.inflate(R.layout.fragment_flash_card, container, false);
-
         view.setOnTouchListener(this);
 
         // set title according to option
@@ -66,7 +56,9 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
         if(this.option.hasURL()) {
             ImageLoader.getInstance().displayImage(this.option.imageUrl, picture);
         } else {
-            Drawable drawable = view.getResources().getDrawable(getId(this.option.title), getActivity().getTheme());
+            // debug case, until we start passing image URLs through from  duolingo
+            Drawable drawable = view.getResources().getDrawable(
+                    DrawableHelper.getIdFromString(this.option.drawable), getActivity().getTheme());
             picture.setImageDrawable(drawable);
         }
 
@@ -153,9 +145,4 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
         }
     }
 
-    /* Should be called before onCreateView(). Not using setArguments because
-     * it only allows strings. */
-    public void configure(PromptData.Option option) {
-        this.option = option;
-    }
 }

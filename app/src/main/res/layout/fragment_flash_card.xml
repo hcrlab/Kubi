@@ -2,34 +2,40 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="0dp"
     android:layout_height="match_parent"
-    android:layout_weight="1">
+    android:layout_weight="1"
+    >
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/flash_card_border"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_gravity="center"
         android:background="@drawable/card_border"
-        android:layout_margin="@dimen/option_margin">
+        android:layout_margin="@dimen/option_margin"
+        android:orientation="vertical"
+        >
 
         <ImageView
             android:id="@+id/picture"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0px"
+            android:layout_weight="1"
             android:maxHeight="@dimen/option_max_img_height"
             android:adjustViewBounds="true"
             android:layout_gravity="top|center_horizontal"
-            android:layout_marginTop="@dimen/option_img_top_margin"/>
+            android:layout_marginTop="@dimen/option_img_top_margin"
+            />
 
         <TextView
             android:id="@+id/caption"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/card_text_top_margin"
             android:text="Apple"
             android:gravity="bottom|center_horizontal"
-            android:textSize="@dimen/card_text_size"/>
+            android:textSize="@dimen/card_text_size"
+            />
 
-    </FrameLayout>
+    </LinearLayout>
 
 </FrameLayout>

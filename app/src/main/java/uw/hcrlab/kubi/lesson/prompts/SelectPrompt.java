@@ -29,16 +29,14 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
                              Bundle savedInstanceState) {
         Log.i(TAG, "Creating select prompt from " + this.data);
 
-        View view = inflater.inflate(R.layout.fragment_prompt_1, container, false);
+        View view = inflater.inflate(R.layout.fragment_select_prompt, container, false);
 
         if (savedInstanceState != null) {
             return view;
         }
 
-        mFlashCards = new ArrayList<>();
-
         // add the card fragments
-
+        mFlashCards = new ArrayList<>();
         for (PromptData.Option option: this.data.options) {
             FlashCardFragment cardFragment = new FlashCardFragment();
             cardFragment.configure(option);
