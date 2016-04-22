@@ -61,16 +61,18 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
     }
 
     public void onFlashCardSelected(String tag) {
+        FlashCardFragment flashCard;
+
+        // Unselect all other cards
         for(String card : mFlashCards) {
             if(!card.equals(tag)) {
-                FlashCardFragment flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(card);
+                flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(card);
                 flashCard.unselect();
             }
         }
-    }
 
-    public void onFlashCardConfirmed(String tag) {
-        FlashCardFragment flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(tag);
+        // Notify the wizard that this card was selected
+        flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(tag);
         robot.setPromptResponse(flashCard.getOption());
     }
 

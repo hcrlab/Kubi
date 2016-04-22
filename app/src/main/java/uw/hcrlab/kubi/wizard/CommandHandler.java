@@ -219,9 +219,6 @@ public class CommandHandler extends WizardHandler {
                 robot = Robot.getInstance();
             }
 
-            Log.d(TAG, "Robot prompt id: " + robot.getCurrentPromptId());
-            Log.d(TAG, "Snapshot id: " + snap.getKey());
-
             if(!robot.getCurrentPromptId().equals(snap.getKey())) {
                 Log.e(TAG, "Received a results update for a prompt that isn't currently showing!");
                 return;
