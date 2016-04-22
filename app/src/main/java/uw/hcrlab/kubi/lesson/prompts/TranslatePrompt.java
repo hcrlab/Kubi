@@ -19,7 +19,7 @@ public class TranslatePrompt extends Prompt {
                              Bundle savedInstanceState) {
 
         Log.i(TAG, "Creating prompt 3 fragment from " + this.data);
-        View view = inflater.inflate(R.layout.fragment_prompt_3, container, false);
+        View view = inflater.inflate(R.layout.fragment_translate_prompt, container, false);
 
         if (savedInstanceState != null) {
             return view;
