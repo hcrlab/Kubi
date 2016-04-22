@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="5dp"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:background="@color/prompt_background"
     >
 
     <!--android:layout_margin="10sp"-->
     <TextView
-        android:layout_width="0px"
-        android:layout_height="match_parent"
+        android:layout_height="0px"
+        android:layout_width="match_parent"
         android:layout_weight="1"
         android:id="@+id/l2_source_text"
         android:background="#999999"
@@ -22,8 +22,8 @@
     <!--android:padding="10sp"-->
 
     <EditText
-        android:layout_width="0px"
-        android:layout_height="match_parent"
+        android:layout_height="0px"
+        android:layout_width="match_parent"
         android:layout_weight="1"
         android:id="@+id/l1_result_text"
         android:layout_margin="10sp"
