@@ -3,6 +3,8 @@ package uw.hcrlab.kubi;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -28,6 +30,7 @@ public class App extends Application implements Firebase.AuthResultHandler {
     private static Boolean mIsWizardMode = true;
     private static Firebase fb;
     private static String deviceID;
+    private static String deviceName;
 
     @Override
     public void onCreate() {
@@ -39,7 +42,8 @@ public class App extends Application implements Firebase.AuthResultHandler {
         fb = new Firebase("https://hcrkubi.firebaseio.com");
         fb.authWithPassword("hcrlab@cs.uw.edu", "motion6", this);
 
-        deviceID = Build.MANUFACTURER + " " + Build.MODEL;
+        deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        deviceName = Build.MANUFACTURER + " " + Build.MODEL;
 
         initImageLoader(getApplicationContext());
     }
@@ -50,11 +54,12 @@ public class App extends Application implements Firebase.AuthResultHandler {
     }
 
     public static void FbConnect() {
-        fb.child(deviceID).child("connected").setValue(true);
+        fb.child("devices").child(deviceID).child("connected").setValue(true);
+        fb.child("devices").child(deviceID).child("name").setValue(deviceName);
     }
 
     public static void FbDisconnect() {
-        fb.child(deviceID).child("connected").setValue(false);
+        fb.child("devices").child(deviceID).child("connected").setValue(false);
     }
 
     public static Context getContext(){
@@ -66,7 +71,7 @@ public class App extends Application implements Firebase.AuthResultHandler {
     }
 
     public static Firebase getFirebase() {
-        return fb.child(deviceID.toString());
+        return fb.child("devices").child(deviceID.toString());
     }
 
     @Override
