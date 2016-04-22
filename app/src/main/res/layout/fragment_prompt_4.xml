@@ -6,45 +6,20 @@
     android:background="#000000"
     >
 
+    <!-- container filled dynamically with fragments -->
     <LinearLayout
         android:layout_width="0px"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="3"
         android:orientation="horizontal"
         android:layout_margin="10sp"
-        >
-
-        <ImageView
-            android:layout_width="0px"
-            android:layout_height="match_parent"
-            android:layout_weight="10"
-            android:id="@+id/picture1"
-            android:src="@drawable/apple"
-            />
-
-        <!--<ImageView-->
-            <!--android:layout_width="0px"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_weight="10"-->
-            <!--android:id="@+id/picture2"-->
-            <!--android:src="@drawable/apple"-->
-            <!--/>-->
-
-        <!--<ImageView-->
-            <!--android:layout_width="0px"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_weight="10"-->
-            <!--android:id="@+id/picture3"-->
-            <!--android:src="@drawable/apple"-->
-            <!--/>-->
-
-    </LinearLayout>
-
+        android:id="@+id/images"
+        />
 
     <EditText
         android:layout_width="0px"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:id="@+id/l1_result_text"
         android:layout_margin="10sp"
         android:gravity="top"
