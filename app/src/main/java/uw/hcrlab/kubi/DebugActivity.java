@@ -127,7 +127,6 @@ public class DebugActivity extends FragmentActivity {
                 pd.words.add(new PromptData.Word("y"));
                 pd.words.add(new PromptData.Word("un"));
                 pd.words.add(new PromptData.Word("plátano"));
-                //pd.srcText = "una manzana y un plátano";
                 loadPrompt(pd);
                 break;
             case (4):

@@ -2,6 +2,7 @@ package uw.hcrlab.kubi.lesson.prompts;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,27 +36,16 @@ public class TranslatePrompt extends Prompt {
 
         // make buttons for the src text words
         int idx = 0;
-        ViewGroup textFrame = (ViewGroup) view.findViewById(R.id.l2_source_text);
         for (PromptData.Word word: this.data.words) {
-            Context context = getActivity().getApplicationContext();
-            Button wordButton = new Button(context);
+            WordButtonFragment wordButton = new WordButtonFragment();
             wordButton.setText(word.text);
-            //wordButton.setLayoutParams(new ViewGroup.LayoutParams(WRAP_CONTENT, MATCH_PARENT));
             String buttonTag = word.text + "-" + idx;
-            wordButton.setTag(buttonTag);
-            idx += 1;
-            wordButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
-                    Button button = (Button) view;
-                    // TODO: show the button's hint
-                    Toast toast = Toast.makeText(getActivity().getApplicationContext(),
-                            "clicked word button " + button.getText().toString(),
-                            Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-            });
+
             Log.i(TAG, "Adding button " + buttonTag);
-            textFrame.addView(wordButton);
+            FragmentTransaction transaction = getActivity()
+                    .getSupportFragmentManager().beginTransaction();
+            transaction.add(R.id.l2_source_text, wordButton, buttonTag).commit();
+            idx += 1;
         }
 
         // focus on the text input
