@@ -71,7 +71,7 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
 
         // Notify the wizard that this card was selected
         flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(tag);
-        robot.setPromptResponse(flashCard.getOption());
+        robot.setPromptResponse(flashCard.getOption().idx);
     }
 
     public void handleResults(Result res) {

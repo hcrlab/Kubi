@@ -85,6 +85,24 @@ public class CommandHandler extends WizardHandler {
         return true;
     }
 
+    private boolean validateTranslate(DataSnapshot snap) {
+        if(!snap.child("prompt").exists()) {
+            return false;
+        }
+
+        if(!snap.child("words").exists()) {
+            return false;
+        }
+
+        for(DataSnapshot option : snap.child("words").getChildren()) {
+            if(!option.child("text").exists()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public void onChildAdded(DataSnapshot snap, String s) {
         if(!snap.hasChild("handled") || !snap.child("handled").getValue(Boolean.class)) {
@@ -106,6 +124,7 @@ public class CommandHandler extends WizardHandler {
 
             Prompt prompt;
             PromptData pd = new PromptData();
+            pd.type = type;
 
             switch(type) {
                 case SELECT:
@@ -114,8 +133,7 @@ public class CommandHandler extends WizardHandler {
                         return;
                     }
 
-                    pd.type = type;
-                    pd.srcText = snap.child("prompt").getValue(String.class);
+                    pd.srcText = (String) snap.child("prompt").getValue();
 
                     DataSnapshot options = snap.child("opts");
                     for(DataSnapshot option : options.getChildren()) {
@@ -130,6 +148,31 @@ public class CommandHandler extends WizardHandler {
                     break;
 
                 case TRANSLATE:
+                    if(!validateTranslate(snap)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    pd.srcText = (String) snap.child("prompt").getValue();
+
+                    DataSnapshot words = snap.child("words");
+                    for(DataSnapshot word : words.getChildren()) {
+                        // TODO: Decide if this is the right place to start ignoring space tokens
+                        if(word.child("idx").exists()) {
+                            int idx = word.child("idx").getValue(int.class);
+                            String text = (String) word.child("text").getValue();
+                            PromptData.Word w = new PromptData.Word(idx, text);
+
+                            if(word.child("hints").exists()) {
+                                for(DataSnapshot hint : word.child("hints").getChildren()) {
+                                    w.addHint((String) hint.getValue());
+                                }
+                            }
+
+                            pd.words.add(w);
+                        }
+                    }
+
                     prompt = new TranslatePrompt();
                     break;
 
@@ -212,6 +255,7 @@ public class CommandHandler extends WizardHandler {
 
     @Override
     public void onChildChanged(DataSnapshot snap, String s) {
+        // TODO: This currently only displays the results from SELECT prompts - add the other prompts
         if(snap.hasChild("result") && (!snap.child("result").hasChild("handled") || !snap.child("result").child("handled").getValue(Boolean.class))) {
             DataSnapshot res = snap.child("result");
 

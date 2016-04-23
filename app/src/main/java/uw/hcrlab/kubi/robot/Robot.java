@@ -570,10 +570,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }
     }
 
-    public void setPromptResponse(PromptData.Option option) {
-        // TODO: This currently only is implemented with respect to SELECT prompts. Implement a version aware of the other prompt types...
+    public void setPromptResponse(Object response) {
         Firebase fb = App.getFirebase().child("questions").child(mCurrentPromptId).child("response");
-        fb.setValue(option.idx);
+        fb.setValue(response);
     }
 
     public void showResult(Result res) {

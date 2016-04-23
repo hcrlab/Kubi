@@ -3,11 +3,15 @@ package uw.hcrlab.kubi.lesson.prompts;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,12 +20,15 @@ import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
+import uw.hcrlab.kubi.robot.Robot;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class TranslatePrompt extends Prompt {
     private static String TAG = TranslatePrompt.class.getSimpleName();
+
+    private Robot robot;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,9 +55,28 @@ public class TranslatePrompt extends Prompt {
             idx += 1;
         }
 
+        robot = Robot.getInstance();
+
         // focus on the text input
-        TextView resultText = (TextView) view.findViewById(R.id.l1_result_text);
+        EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
         resultText.requestFocus();
+        resultText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d(TAG, "Text changed: " + s.toString());
+                robot.setPromptResponse(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         return view;
     }

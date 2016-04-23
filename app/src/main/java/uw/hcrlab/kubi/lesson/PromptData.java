@@ -48,10 +48,12 @@ public class PromptData {
     }
 
     public static class Word {
+        public int index;
         public String text;
         public ArrayList<String> hints;
 
-        public Word(String text) {
+        public Word(int index, String text) {
+            this.index = index;
             this.text = text;
             this.hints = new ArrayList<>();
         }
