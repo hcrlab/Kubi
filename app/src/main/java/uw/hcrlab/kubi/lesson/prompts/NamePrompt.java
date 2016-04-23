@@ -21,23 +21,24 @@ public class NamePrompt extends Prompt {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.i(TAG, "Creating prompt 4 fragment from " + this.data);
+        Log.i(TAG, "Creating NAME prompt fragment from " + this.data);
+
         View view = inflater.inflate(R.layout.fragment_name_prompt, container, false);
 
         if (savedInstanceState != null) {
             return view;
         }
 
-        for (PromptData.Option image: this.data.images) {
+
+        for (PromptData.Image image: this.data.images) {
             FramedImageFragment imageFragment = new FramedImageFragment();
             imageFragment.configure(image);
 
-            String fragmentTag = createImageFragmentTag(image.idx);
-            Log.i(TAG, "making image with tag " + fragmentTag);
+            Log.i(TAG, "making image " + image.toString());
 
             FragmentTransaction transaction = getActivity()
                     .getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.images, imageFragment, fragmentTag).commit();
+            transaction.add(R.id.images, imageFragment).commit();
         }
 
         // focus on the text input
@@ -45,10 +46,6 @@ public class NamePrompt extends Prompt {
         resultText.requestFocus();
 
         return view;
-    }
-
-    private String createImageFragmentTag(int idx) {
-        return "image-" + idx;
     }
 
     public void handleResults(Result res) {

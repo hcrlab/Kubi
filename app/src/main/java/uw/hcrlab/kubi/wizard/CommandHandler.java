@@ -18,6 +18,7 @@ import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.PromptTypes;
 import uw.hcrlab.kubi.lesson.Result;
+import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.lesson.results.SelectResult;
@@ -103,6 +104,18 @@ public class CommandHandler extends WizardHandler {
         return true;
     }
 
+    private boolean validateName(DataSnapshot snap) {
+        if(!snap.child("prompt").exists()) {
+            return false;
+        }
+
+        if(!snap.child("images").exists() || !snap.child("images").hasChildren()) {
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     public void onChildAdded(DataSnapshot snap, String s) {
         if(!snap.hasChild("handled") || !snap.child("handled").getValue(Boolean.class)) {
@@ -112,7 +125,7 @@ public class CommandHandler extends WizardHandler {
                 robot = Robot.getInstance();
             }
 
-            PromptTypes type = null;
+            PromptTypes type;
 
             try {
                 type = getType(snap);
@@ -133,7 +146,7 @@ public class CommandHandler extends WizardHandler {
                         return;
                     }
 
-                    pd.srcText = (String) snap.child("prompt").getValue();
+                    pd.PromptText = (String) snap.child("prompt").getValue();
 
                     DataSnapshot options = snap.child("opts");
                     for(DataSnapshot option : options.getChildren()) {
@@ -153,7 +166,7 @@ public class CommandHandler extends WizardHandler {
                         return;
                     }
 
-                    pd.srcText = (String) snap.child("prompt").getValue();
+                    pd.PromptText = (String) snap.child("prompt").getValue();
 
                     DataSnapshot words = snap.child("words");
                     for(DataSnapshot word : words.getChildren()) {
@@ -174,6 +187,22 @@ public class CommandHandler extends WizardHandler {
                     }
 
                     prompt = new TranslatePrompt();
+                    break;
+
+                case NAME:
+                    if(!validateName(snap)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    pd.PromptText = (String) snap.child("prompt").getValue();
+
+                    DataSnapshot images = snap.child("images");
+                    for(DataSnapshot image : images.getChildren()) {
+                        pd.images.add(new PromptData.Image((String) image.getValue(), true));
+                    }
+
+                    prompt = new NamePrompt();
                     break;
 
                 default:

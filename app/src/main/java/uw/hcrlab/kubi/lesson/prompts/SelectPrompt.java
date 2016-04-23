@@ -27,7 +27,7 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i(TAG, "Creating select prompt from " + this.data);
+        Log.i(TAG, "Creating SELECT prompt from " + this.data);
 
         View view = inflater.inflate(R.layout.fragment_select_prompt, container, false);
 
@@ -52,6 +52,13 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
         robot = Robot.getInstance();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        robot.say(this.data.PromptText, "en");
     }
 
     private String createOptionTag(int index) {

@@ -114,7 +114,7 @@ public class DebugActivity extends FragmentActivity {
         switch (input) {
             case (1):
                 pd.type = PromptTypes.SELECT;
-                pd.srcText = "apple";
+                pd.PromptText = "apple";
                 pd.options.add(new PromptData.Option(1, "apple").setDrawable("apple"));
                 pd.options.add(new PromptData.Option(2, "banana").setDrawable("banana"));
                 pd.options.add(new PromptData.Option(3, "girl").setDrawable(("girl")));
@@ -131,10 +131,10 @@ public class DebugActivity extends FragmentActivity {
                 break;
             case (4):
                 pd.type = PromptTypes.NAME;
-                pd.srcText = "apple";
-                pd.images.add(new PromptData.Option(1, "").setDrawable("apple"));
-                pd.images.add(new PromptData.Option(2, "").setDrawable("banana"));
-                pd.images.add(new PromptData.Option(3, "").setDrawable("apple"));
+                pd.PromptText = "apple";
+                pd.images.add(new PromptData.Image("apple", false));
+                pd.images.add(new PromptData.Image("banana", false));
+                pd.images.add(new PromptData.Image("apple", false));
                 loadPrompt(pd);
                 break;
             default:
