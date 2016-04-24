@@ -8,6 +8,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.danikula.videocache.HttpProxyCacheServer;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -46,6 +47,17 @@ public class App extends Application implements Firebase.AuthResultHandler {
         deviceName = Build.MANUFACTURER + " " + Build.MODEL;
 
         initImageLoader(getApplicationContext());
+    }
+
+    private HttpProxyCacheServer proxy;
+
+    public static HttpProxyCacheServer getProxy(Context context) {
+        App app = (App) context.getApplicationContext();
+        return app.proxy == null ? (app.proxy = app.newProxy()) : app.proxy;
+    }
+
+    private HttpProxyCacheServer newProxy() {
+        return new HttpProxyCacheServer(this);
     }
 
     public static void initImageLoader(Context context) {
