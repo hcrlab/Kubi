@@ -65,6 +65,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private View rightCard;
 
     private boolean mIsPromptOpen = false;
+    private boolean mIsHintOpen = false;
     private View mPromptContainer;
     private String mCurrentPromptId;
     private Prompt mCurrentPrompt;
@@ -509,6 +510,71 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         // If there is an error, shows feedback to the user and writes it in the log
         Log.e(TAG, "Error: " + errorMessage);
         Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
+    }
+
+    // Render the given PromptData to the user
+    public void showHint(final String hint) {
+        if(mIsHintOpen) {
+            hideHint();
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showHint(hint);
+                }
+            }, 800);
+
+            return;
+        }
+
+        // Animate the prompt onto the screen
+        final View hintView = this.mActivity.findViewById(R.id.thought_bubble);
+        boolean isHidden = ((FrameLayout.LayoutParams)hintView.getLayoutParams()).topMargin < 0;
+
+        if(isHidden) {
+            ValueAnimator anim = ValueAnimator.ofInt(-hintView.getHeight() - 10, 20);
+            anim.setInterpolator(new AnticipateOvershootInterpolator());
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    int val = (Integer) valueAnimator.getAnimatedValue();
+
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) hintView.getLayoutParams();
+                    params.topMargin = val;
+                    hintView.setLayoutParams(params);
+                }
+            });
+            anim.setDuration(500);
+            anim.start();
+
+            mIsHintOpen = true;
+        }
+    }
+
+    public boolean isHintOpen() {
+        return mIsHintOpen;
+    }
+
+    public void hideHint() {
+        final View hintView = this.mActivity.findViewById(R.id.thought_bubble);
+
+        ValueAnimator anim = ValueAnimator.ofInt(20, -hintView.getHeight() - 10);
+        anim.setInterpolator(new AnticipateOvershootInterpolator());
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                int val = (Integer) valueAnimator.getAnimatedValue();
+
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) hintView.getLayoutParams();
+                params.topMargin = val;
+                hintView.setLayoutParams(params);
+            }
+        });
+        anim.setDuration(500);
+        anim.start();
+
+        mIsHintOpen = false;
     }
 
     public void setPromptContainer(View promptContainer) {

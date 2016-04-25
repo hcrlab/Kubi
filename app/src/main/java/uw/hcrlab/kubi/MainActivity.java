@@ -148,20 +148,10 @@ public class MainActivity extends FragmentActivity {
                 Log.i(TAG, "Screen touched ");
                 // TODO: log to Firebase?
 
-                if(!robot.isPromptOpen()) {
-                    PromptData pd = new PromptData();
-                    pd.type = PromptTypes.SELECT;
-                    pd.PromptText = "Select the translation of \"ett äpple\"";
-                    pd.options.add(new PromptData.Option(1, "apple").setDrawable("apple"));
-                    pd.options.add(new PromptData.Option(2, "banana").setDrawable("banana"));
-                    pd.options.add(new PromptData.Option(3, "girl").setDrawable("girl"));
-
-                    Prompt p = new SelectPrompt();
-                    p.setData(pd);
-
-                    robot.setPrompt(p, "generic");
+                if(robot.isHintOpen()) {
+                    robot.hideHint();
                 } else {
-                    robot.hidePrompt();
+                    robot.showHint("Some hint text");
                 }
 
                 break;

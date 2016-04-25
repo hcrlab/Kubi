@@ -25,6 +25,7 @@
     <dimen name="thought_bubble_width">260dp</dimen>
     <dimen name="thought_bubble_height">185dp</dimen>
     <dimen name="thought_bubble_margin">20dp</dimen>
+    <dimen name="thought_bubble_top_margin">-215dp</dimen>
 
     <dimen name="translate_input_margin">20dp</dimen>
     <dimen name="word_margin_left">15dp</dimen>

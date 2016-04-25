@@ -6,7 +6,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/thought_bubble_width"
     android:layout_height="@dimen/thought_bubble_height"
-    android:layout_margin="@dimen/thought_bubble_margin"
+    android:layout_marginLeft="@dimen/thought_bubble_margin"
+    android:layout_marginTop="@dimen/thought_bubble_top_margin"
+    tools:layout_marginTop="20dp"
     android:layout_gravity="top|left"
     android:background="@drawable/thought_bubble">
 
