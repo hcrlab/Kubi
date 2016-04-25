@@ -58,6 +58,10 @@ public class PromptData {
             this.hints = new ArrayList<>();
         }
 
+        public boolean hasHints() {
+            return this.hints.size() > 0;
+        }
+
         public void addHint(String hint) {
             this.hints.add(hint);
         }

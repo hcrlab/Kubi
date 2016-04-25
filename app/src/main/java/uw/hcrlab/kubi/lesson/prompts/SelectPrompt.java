@@ -33,9 +33,6 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
 
     private ArrayList<String> mFlashCards;
 
-    private Robot robot;
-
-    private HttpProxyCacheServer mProxy;
     private HashMap<String, MediaPlayer> mPronunciations;
 
     @Override
@@ -49,7 +46,6 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
             return view;
         }
 
-        mProxy = App.getProxy(getActivity());
 
         // add the card fragments
         mFlashCards = new ArrayList<>();
@@ -65,8 +61,6 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
             FragmentTransaction trans = getActivity().getSupportFragmentManager().beginTransaction();
             trans.add(R.id.prompt_options, cardFragment, tag).commit();
         }
-
-        robot = Robot.getInstance();
 
         return view;
     }
@@ -89,13 +83,6 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
             }
         }
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        robot.say(this.data.PromptText, "en");
     }
 
     @Override

@@ -21,7 +21,9 @@ import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
+import uw.hcrlab.kubi.lesson.results.NameResult;
 import uw.hcrlab.kubi.lesson.results.SelectResult;
+import uw.hcrlab.kubi.lesson.results.TranslateResult;
 import uw.hcrlab.kubi.robot.Action;
 import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
@@ -86,6 +88,10 @@ public class CommandHandler extends WizardHandler {
         return true;
     }
 
+    private boolean validateSelectResult(DataSnapshot res) {
+        return true;
+    }
+
     private boolean validateTranslate(DataSnapshot snap) {
         if(!snap.child("prompt").exists()) {
             return false;
@@ -104,6 +110,10 @@ public class CommandHandler extends WizardHandler {
         return true;
     }
 
+    private boolean validateTranslateResult(DataSnapshot res) {
+        return true;
+    }
+
     private boolean validateName(DataSnapshot snap) {
         if(!snap.child("prompt").exists()) {
             return false;
@@ -113,6 +123,10 @@ public class CommandHandler extends WizardHandler {
             return false;
         }
 
+        return true;
+    }
+
+    private boolean validateNameResult(DataSnapshot res) {
         return true;
     }
 
@@ -197,6 +211,7 @@ public class CommandHandler extends WizardHandler {
 
                     pd.PromptText = (String) snap.child("prompt").getValue();
 
+                    // TODO: when articles are added to the FB data structure, parse them here...
                     DataSnapshot images = snap.child("images");
                     for(DataSnapshot image : images.getChildren()) {
                         pd.images.add(new PromptData.Image((String) image.getValue(), true));
@@ -216,78 +231,14 @@ public class CommandHandler extends WizardHandler {
             robot.setPrompt(prompt, snap.getKey());
 
             snap.child("handled").getRef().setValue(true);
-
-//            for (DataSnapshot taskData : snap.child("tasks").getChildren()) {
-//                Task res = taskData.getValue(Task.class);
-//
-//                if(robot == null) {
-//                    robot = Robot.getInstance();
-//                }
-//
-//                Speech sp = res.getSpeech();
-//                if(sp != null && sp.getText() != null && !sp.getText().equalsIgnoreCase("")) {
-//                    robot.say(sp.getText(), sp.getLanguage(), sp.getSpeed());
-//                }
-//
-//                String emotion = res.getEmotion();
-//                if(emotion != null && !emotion.equalsIgnoreCase("")) {
-//                    Log.d(TAG, "Got emotion request: " + emotion);
-//                    robot.act(FaceAction.valueOf(emotion));
-//                }
-//
-//                String action = res.getAction();
-//                if(action != null && !action.equalsIgnoreCase("")) {
-//                    Log.d(TAG, "Got action request: " + action);
-//                    robot.perform(Action.valueOf(action));
-//                }
-//
-//                int imageCount = 0;
-//
-//                String left = res.getLeftImage();
-//                if(left != null && !left.equalsIgnoreCase("")) {
-//                    Log.d(TAG, "Displaying left hand image");
-//
-//                    String leftTxt = res.getLeftText();
-//                    if(leftTxt == null) {
-//                        leftTxt = "";
-//                    }
-//                    imageCount = 1;
-//                    robot.showCard(Robot.Hand.Left, getDrawable(left), leftTxt);
-//                }
-//
-//                String right = res.getRightImage();
-//                if(right != null && !right.equalsIgnoreCase("")) {
-//                    Log.d(TAG, "Displaying right hand image");
-//
-//                    String rightTxt = res.getRightText();
-//                    if(rightTxt == null) {
-//                        rightTxt = "";
-//                    }
-//                    imageCount = (imageCount == 0) ? 2 : 3;
-//                    robot.showCard(Robot.Hand.Right, getDrawable(right), rightTxt);
-//                }
-//
-//                switch(imageCount) {
-//                    case 1: robot.act(FaceAction.LOOK_DOWN_LEFT); break;
-//                    case 2: robot.act(FaceAction.LOOK_DOWN_RIGHT); break;
-//                    case 3: robot.act(FaceAction.LOOK_DOWN); break;
-//                    default: break;
-//                }
-//
-//                String[] buttons = res.getButtons();
-//                if(buttons != null) {
-//                    Log.d(TAG, "You need to display buttons!");
-//                }
-//            }
         }
     }
 
     @Override
     public void onChildChanged(DataSnapshot snap, String s) {
-        // TODO: This currently only displays the results from SELECT prompts - add the other prompts
-        if(snap.hasChild("result") && (!snap.child("result").hasChild("handled") || !snap.child("result").child("handled").getValue(Boolean.class))) {
-            DataSnapshot res = snap.child("result");
+        DataSnapshot res = snap.child("result");
 
+        if(res.exists() && (!res.hasChild("handled") || !res.child("handled").getValue(Boolean.class))) {
             if(robot == null) {
                 robot = Robot.getInstance();
             }
@@ -297,13 +248,67 @@ public class CommandHandler extends WizardHandler {
                 return;
             }
 
-            Boolean isCorrect = res.child("correct").getValue(Boolean.class);
-            Integer correctIdx = res.child("solutions").child("0").getValue(Integer.class);
-            Integer usersIdx = res.child("response").getValue(Integer.class);
+            Log.i(TAG, "Received a new result!");
 
-            robot.showResult(new SelectResult(isCorrect, usersIdx, correctIdx));
+            PromptTypes type;
 
-            snap.child("result").child("handled").getRef().setValue(true);
+            try {
+                type = getType(snap);
+            } catch (IllegalArgumentException|NullPointerException ex) {
+                // TODO: Handle the exception...
+                Log.e(TAG, "Unknown command type!");
+                return;
+            }
+
+            Result result;
+
+            switch(type) {
+                case SELECT:
+                    if(!validateSelectResult(res)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    Boolean isCorrect = res.child("correct").getValue(Boolean.class);
+                    Integer correctIdx = res.child("solutions").child("0").getValue(Integer.class);
+                    Integer usersIdx = res.child("response").getValue(Integer.class);
+
+                    result = new SelectResult(isCorrect, usersIdx, correctIdx);
+
+                    break;
+
+                case TRANSLATE:
+                    if(!validateTranslateResult(res)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    // TODO: Update with actual result...
+                    result = new TranslateResult(false);
+
+                    break;
+
+                case NAME:
+                    if(!validateNameResult(res)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    // TODO: Update with actual result...
+                    result = new NameResult(false);
+
+                    break;
+
+                default:
+                    // throw new IllegalArgumentException(String.format(Locale.US, "Prompt type not implemented: %s", promptData.type));
+
+                    // For the time being, ignore all other types of questions
+                    return;
+            }
+
+            robot.showResult(result);
+
+            res.child("handled").getRef().setValue(true);
         }
     }
 

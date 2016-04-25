@@ -25,10 +25,8 @@ import uw.hcrlab.kubi.robot.Robot;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-public class TranslatePrompt extends Prompt {
+public class TranslatePrompt extends Prompt implements TextWatcher {
     private static String TAG = TranslatePrompt.class.getSimpleName();
-
-    private Robot robot;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,7 +43,7 @@ public class TranslatePrompt extends Prompt {
         int idx = 0;
         for (PromptData.Word word: this.data.words) {
             WordButtonFragment wordButton = new WordButtonFragment();
-            wordButton.setText(word.text);
+            wordButton.setWord(word);
             String buttonTag = word.text + "-" + idx;
 
             Log.i(TAG, "Adding button " + buttonTag);
@@ -55,30 +53,28 @@ public class TranslatePrompt extends Prompt {
             idx += 1;
         }
 
-        robot = Robot.getInstance();
-
-        // focus on the text input
+        // Setup the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
+        resultText.setShowSoftInputOnFocus(false); // Make sure the on-screen keyboard never shows. Forces the use of the bluetooth keyboard
         resultText.requestFocus();
-        resultText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d(TAG, "Text changed: " + s.toString());
-                robot.setPromptResponse(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+        resultText.addTextChangedListener(this);
 
         return view;
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        robot.setPromptResponse(s.toString());
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 
     public void handleResults(Result res) {
