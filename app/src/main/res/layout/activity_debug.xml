@@ -62,13 +62,14 @@
                 android:layout_weight="3"
                 android:orientation="horizontal"
                 >
-                <!-- hint -->
-                <ImageView
+                <!-- hint (filled dynamically with fragment) -->
+                <LinearLayout
                     android:layout_width="0px"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:id="@+id/hint"
-                    android:src="@drawable/kubi_hints" />
+                    android:orientation="horizontal"
+                    android:id="@+id/hint_container"
+                    />
 
                 <!-- eyes -->
                 <WebView
@@ -90,7 +91,8 @@
 
             <!-- main content row 2 -->
             <!-- prompt container: this will contain a different fragment for each question type -->
-            <LinearLayout android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="0px"
                 android:layout_weight="4"
                 android:orientation="horizontal"

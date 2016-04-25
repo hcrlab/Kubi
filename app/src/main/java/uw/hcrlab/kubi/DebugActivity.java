@@ -1,5 +1,7 @@
 package uw.hcrlab.kubi;
 
+import uw.hcrlab.kubi.lesson.HintFragment;
+import uw.hcrlab.kubi.lesson.HintData;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
@@ -8,6 +10,7 @@ import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.PromptTypes;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -96,6 +99,15 @@ public class DebugActivity extends FragmentActivity {
                 .replace(R.id.prompt_container, prompt).commit();
     }
 
+    // Render the given HintData to the user
+    private void loadHint(HintData hintData) {
+        Fragment hint = new HintFragment().setHintData(hintData);
+
+        // add the hint fragment to the container (replacing last one, if applicable)
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.hint_container, hint).commit();
+    }
+
     private void interpretDebugPrompt(View view) {
         Log.i(TAG, "interpret debug prompt");
         EditText editText = (EditText)findViewById(R.id.debug_prompt);
@@ -111,14 +123,21 @@ public class DebugActivity extends FragmentActivity {
         }
         editText.getText().clear();
         PromptData pd = new PromptData();
+        HintData hd = new HintData();
         switch (input) {
             case (1):
                 pd.type = PromptTypes.SELECT;
                 pd.srcText = "apple";
-                pd.options.add(new PromptData.Option(1, "apple").setDrawable("apple"));
-                pd.options.add(new PromptData.Option(2, "banana").setDrawable("banana"));
-                pd.options.add(new PromptData.Option(3, "girl").setDrawable(("girl")));
+                pd.options.add(new PromptData.Option(1, "manzana").setDrawable("apple"));
+                pd.options.add(new PromptData.Option(2, "plátano").setDrawable("banana"));
+                pd.options.add(new PromptData.Option(3, "niña").setDrawable(("girl")));
                 loadPrompt(pd);
+
+                hd.details.add(new HintData.HintDetail().setText("apple"));
+                hd.details.add(new HintData.HintDetail().setText("test line 2"));
+                hd.details.add(new HintData.HintDetail().setText("test line 3"));
+                loadHint(hd);
+
                 break;
             case (3):
                 pd.type = PromptTypes.TRANSLATE;
