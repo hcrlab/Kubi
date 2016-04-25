@@ -20,6 +20,8 @@ import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
+import uw.hcrlab.kubi.lesson.results.TranslateResult;
+import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -78,6 +80,17 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
     }
 
     public void handleResults(Result res) {
+        TranslateResult result = (TranslateResult) res;
 
+        if(result.hasBlame()) {
+            Toast toast = Toast.makeText(getActivity().getApplicationContext(), result.getBlame(), Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
+        if(result.isCorrect()) {
+            robot.act(FaceAction.GIGGLE);
+        } else {
+            robot.act(FaceAction.LOOK_DOWN);
+        }
     }
 }

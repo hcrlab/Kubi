@@ -8,13 +8,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.FramedImageFragment;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
+import uw.hcrlab.kubi.lesson.results.NameResult;
+import uw.hcrlab.kubi.lesson.results.TranslateResult;
+import uw.hcrlab.kubi.robot.FaceAction;
 
 public class NamePrompt extends Prompt implements TextWatcher {
     private static String TAG = NamePrompt.class.getSimpleName();
@@ -44,7 +49,7 @@ public class NamePrompt extends Prompt implements TextWatcher {
         }
 
         // focus on the text input
-        TextView resultText = (TextView) view.findViewById(R.id.l1_result_text);
+        EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
         resultText.setShowSoftInputOnFocus(false); // Make sure the on-screen keyboard never shows. Forces the use of the bluetooth keyboard
         resultText.requestFocus();
         resultText.addTextChangedListener(this);
@@ -68,6 +73,17 @@ public class NamePrompt extends Prompt implements TextWatcher {
     }
 
     public void handleResults(Result res) {
+        NameResult result = (NameResult) res;
 
+        if(result.hasBlame()) {
+            Toast toast = Toast.makeText(getActivity().getApplicationContext(), result.getBlame(), Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
+        if(result.isCorrect()) {
+            robot.act(FaceAction.GIGGLE);
+        } else {
+            robot.act(FaceAction.LOOK_DOWN);
+        }
     }
 }

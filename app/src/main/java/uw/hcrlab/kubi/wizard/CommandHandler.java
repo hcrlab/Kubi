@@ -89,6 +89,14 @@ public class CommandHandler extends WizardHandler {
     }
 
     private boolean validateSelectResult(DataSnapshot res) {
+        if(!res.child("correct").exists()) {
+            return false;
+        }
+
+        if(!res.child("solutions").exists()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -111,6 +119,14 @@ public class CommandHandler extends WizardHandler {
     }
 
     private boolean validateTranslateResult(DataSnapshot res) {
+        if(!res.child("correct").exists()) {
+            return false;
+        }
+
+        if(!res.child("solutions").exists()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -127,6 +143,14 @@ public class CommandHandler extends WizardHandler {
     }
 
     private boolean validateNameResult(DataSnapshot res) {
+        if(!res.child("correct").exists()) {
+            return false;
+        }
+
+        if(!res.child("solutions").exists()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -269,12 +293,11 @@ public class CommandHandler extends WizardHandler {
                         return;
                     }
 
-                    Boolean isCorrect = res.child("correct").getValue(Boolean.class);
-                    Integer correctIdx = res.child("solutions").child("0").getValue(Integer.class);
-                    Integer usersIdx = res.child("response").getValue(Integer.class);
+                    SelectResult sr = new SelectResult(res.child("correct").getValue(Boolean.class));
 
-                    result = new SelectResult(isCorrect, usersIdx, correctIdx);
+                    sr.setCorrectIdx(res.child("solutions").child("0").getValue(Integer.class));
 
+                    result = sr;
                     break;
 
                 case TRANSLATE:
@@ -283,9 +306,17 @@ public class CommandHandler extends WizardHandler {
                         return;
                     }
 
-                    // TODO: Update with actual result...
-                    result = new TranslateResult(false);
+                    TranslateResult tr = new TranslateResult(res.child("correct").getValue(Boolean.class));
 
+                    if(res.hasChild("blame")) {
+                        tr.setBlame(res.child("blame").getValue(String.class));
+                    }
+
+                    for(DataSnapshot sol : res.child("solutions").getChildren()) {
+                        tr.addSolution(sol.getValue(String.class));
+                    }
+
+                    result = tr;
                     break;
 
                 case NAME:
@@ -294,9 +325,17 @@ public class CommandHandler extends WizardHandler {
                         return;
                     }
 
-                    // TODO: Update with actual result...
-                    result = new NameResult(false);
+                    NameResult nr = new NameResult(res.child("correct").getValue(Boolean.class));
 
+                    if(res.hasChild("blame")) {
+                        nr.setBlame(res.child("blame").getValue(String.class));
+                    }
+
+                    for(DataSnapshot sol : res.child("solutions").getChildren()) {
+                        nr.addSolution(sol.getValue(String.class));
+                    }
+
+                    result = nr;
                     break;
 
                 default:

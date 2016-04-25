@@ -13,25 +13,20 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import uw.hcrlab.kubi.R;
-import uw.hcrlab.kubi.robot.FaceAction;
-import uw.hcrlab.kubi.robot.Robot;
 
 public class FlashCardFragment extends Fragment implements View.OnTouchListener {
     private static String TAG = FlashCardFragment.class.getSimpleName();
-
-    private Robot robot;
-    private PromptData.Option option;
-    private boolean mSelected = false;
 
     public interface OnFlashCardSelectedListener {
         void onFlashCardSelected(String tag);
     }
 
-    private OnFlashCardSelectedListener mParent;
+    private PromptData.Option option;
+
+    private boolean selected = false;
+
+    private OnFlashCardSelectedListener parent;
 
     /* Should be called before onCreateView(). Not using setArguments because
      * it only allows strings. */
@@ -62,13 +57,11 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
             picture.setImageDrawable(drawable);
         }
 
-        robot = Robot.getInstance();
-
         return view;
     }
 
     public void setOnFlashCardSelectedListener(OnFlashCardSelectedListener listener) {
-        mParent = listener;
+        parent = listener;
     }
 
     public boolean onTouch(View v, MotionEvent event) {
@@ -77,15 +70,15 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
         if(event.getAction() == MotionEvent.ACTION_DOWN){
             View frame = v.findViewById(R.id.flash_card_border);
 
-            if(mSelected) {
+            if(selected) {
                 frame.setBackgroundResource(R.drawable.card_border);
-                mSelected = false;
+                selected = false;
             } else {
                 frame.setBackgroundResource(R.drawable.card_border_selected);
-                mSelected = true;
+                selected = true;
 
-                if(mParent != null) {
-                    mParent.onFlashCardSelected(this.getTag());
+                if(parent != null) {
+                    parent.onFlashCardSelected(this.getTag());
                 }
             }
 
@@ -105,15 +98,15 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
         if(view != null) {
             View frame = view.findViewById(R.id.flash_card_border);
 
-            if (frame != null && mSelected) {
+            if (frame != null && selected) {
                 frame.setBackgroundResource(R.drawable.card_border);
-                mSelected = false;
+                selected = false;
             }
         }
     }
 
     public boolean isSelected() {
-        return mSelected;
+        return selected;
     }
 
     public void setCorrect() {
@@ -124,10 +117,7 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
 
             if (frame != null) {
                 frame.setBackgroundResource(R.drawable.card_border_correct);
-                mSelected = false;
-
-                // TODO: Remove this. This just shows how the robot can be accessed and calls can be made to it.
-                robot.act(FaceAction.GIGGLE);
+                selected = false;
             }
         }
     }
@@ -140,7 +130,7 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
 
             if (frame != null) {
                 frame.setBackgroundResource(R.drawable.card_border_incorrect);
-                mSelected = false;
+                selected = false;
             }
         }
     }

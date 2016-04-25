@@ -26,6 +26,7 @@ import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.results.SelectResult;
+import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
 
 public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCardSelectedListener {
@@ -34,6 +35,8 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
     private ArrayList<String> mFlashCards;
 
     private HashMap<String, MediaPlayer> mPronunciations;
+
+    private int currentSelection = -1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -123,19 +126,26 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
         }
 
         // Notify the wizard that this card was selected
-        robot.setPromptResponse(flashCard.getOption().idx);
+        currentSelection = flashCard.getOption().idx;
+        robot.setPromptResponse(currentSelection);
     }
 
 
     public void handleResults(Result res) {
-        SelectResult sr = (SelectResult) res;
+        SelectResult result = (SelectResult) res;
 
-        FlashCardFragment flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(createOptionTag(sr.getCorrectIndex()));
+        FlashCardFragment flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(createOptionTag(result.getCorrectIndex()));
         flashCard.setCorrect();
 
         if(!res.isCorrect()) {
-            flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(createOptionTag(sr.getUsersResponse()));
+            flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(createOptionTag(currentSelection));
             flashCard.setIncorrect();
+        }
+
+        if(result.isCorrect()) {
+            robot.act(FaceAction.GIGGLE);
+        } else {
+            robot.act(FaceAction.LOOK_DOWN);
         }
     }
 }
