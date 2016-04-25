@@ -151,7 +151,7 @@ public class MainActivity extends FragmentActivity {
                 if(!robot.isPromptOpen()) {
                     PromptData pd = new PromptData();
                     pd.type = PromptTypes.SELECT;
-                    pd.PromptText = "apple";
+                    pd.PromptText = "Select the translation of \"ett äpple\"";
                     pd.options.add(new PromptData.Option(1, "apple").setDrawable("apple"));
                     pd.options.add(new PromptData.Option(2, "banana").setDrawable("banana"));
                     pd.options.add(new PromptData.Option(3, "girl").setDrawable("girl"));

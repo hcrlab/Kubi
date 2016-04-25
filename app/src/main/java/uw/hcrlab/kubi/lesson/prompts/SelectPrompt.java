@@ -49,9 +49,7 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
             return view;
         }
 
-        Activity myActivity = getActivity();
-        mProxy = App.getProxy(myActivity);
-        mPronunciations = new HashMap<>();
+        mProxy = App.getProxy(getActivity());
 
         // add the card fragments
         mFlashCards = new ArrayList<>();
@@ -66,9 +64,6 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
 
             FragmentTransaction trans = getActivity().getSupportFragmentManager().beginTransaction();
             trans.add(R.id.prompt_options, cardFragment, tag).commit();
-
-            String audioUrl = mProxy.getProxyUrl("https://d7mj4aqfscim2.cloudfront.net/tts/sv/astrid/sentence/766e40e8ed1af4303c022f3e6cec7f02");
-            mPronunciations.put(tag, MediaPlayer.create(myActivity, Uri.parse(audioUrl)));
         }
 
         robot = Robot.getInstance();
@@ -77,26 +72,43 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
 
-        //robot.say(this.data.PromptText, "en");
+        // Load the audio resources
+        Activity activity = getActivity();
+
+        mPronunciations = new HashMap<>();
+
+        for(PromptData.Option option: this.data.options) {
+            String url = App.getAudioURL(option.title);
+
+            if(url != null) {
+                String audioUrl = mProxy.getProxyUrl(url);
+                mPronunciations.put(createOptionTag(option.idx), MediaPlayer.create(activity, Uri.parse(audioUrl)));
+            }
+        }
+
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onResume() {
+        super.onResume();
 
-        Iterator it = mPronunciations.entrySet().iterator();
-        while(it.hasNext()) {
-            Map.Entry kvp = (Map.Entry) it.next();
+        robot.say(this.data.PromptText, "en");
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // Release the audio resources
+        for (Map.Entry kvp : mPronunciations.entrySet()) {
             MediaPlayer mp = (MediaPlayer) kvp.getValue();
             mp.release();
-            mp = null;
-
-            it.remove();
         }
+
+        mPronunciations.clear();
     }
 
     private String createOptionTag(int index) {
@@ -104,8 +116,6 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
     }
 
     public void onFlashCardSelected(String tag) {
-        mPronunciations.get(tag).start();
-
         FlashCardFragment flashCard;
 
         // Unselect all other cards
@@ -116,10 +126,19 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
             }
         }
 
-        // Notify the wizard that this card was selected
         flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(tag);
+
+        // Play the pronunciation for this option
+        if(mPronunciations.containsKey(tag)) {
+            mPronunciations.get(tag).start();
+        } else {
+            robot.say(flashCard.getOption().title, "en");
+        }
+
+        // Notify the wizard that this card was selected
         robot.setPromptResponse(flashCard.getOption().idx);
     }
+
 
     public void handleResults(Result res) {
         SelectResult sr = (SelectResult) res;

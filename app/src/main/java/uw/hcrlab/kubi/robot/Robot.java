@@ -175,6 +175,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }
 
         resetTimers();
+
     }
 
     /**
