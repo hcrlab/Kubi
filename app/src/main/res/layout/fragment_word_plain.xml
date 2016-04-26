@@ -3,15 +3,10 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     >
-    <Button
-        android:id="@+id/button"
-        android:textAllCaps="false"
+    <TextView
+        android:id="@+id/word_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minWidth="20dp"
         android:textSize="@dimen/card_text_size"
-        android:background="@drawable/word_button"
-        android:padding="0dp"
-        android:layout_marginStart="@dimen/word_margin_left"
-        style="?android:attr/borderlessButtonStyle"/>
+        android:layout_marginStart="@dimen/word_margin_left"/>
 </FrameLayout>

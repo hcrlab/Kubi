@@ -19,29 +19,29 @@ import uw.hcrlab.kubi.R;
 public class FramedImageFragment extends Fragment {
     private static String TAG = FramedImageFragment.class.getSimpleName();
 
-    private PromptData.Option option;
+    private PromptData.Image image;
 
     /* Should be called before onCreateView(). Not using setArguments because
      * it only allows strings. */
-    public void configure(PromptData.Option option) {
-        this.option = option;
+    public void configure(PromptData.Image img) {
+        this.image = img;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.i(TAG, "Creating framed image fragment from " + this.option);
+        Log.i(TAG, "Creating framed image fragment from " + this.image);
 
         View view = inflater.inflate(R.layout.fragment_framed_image, container, false);
 
-        // Set picture according to option
+        // Set picture according to image
         ImageView picture = (ImageView) view.findViewById(R.id.picture);
 
-        if(this.option.hasURL()) {
-            ImageLoader.getInstance().displayImage(this.option.imageUrl, picture);
+        if(this.image.hasURL()) {
+            ImageLoader.getInstance().displayImage(this.image.imageUrl, picture);
         } else {
             // debug case, until we start passing image URLs through from  duolingo
             Drawable drawable = view.getResources().getDrawable(
-                    DrawableHelper.getIdFromString(this.option.drawable), getActivity().getTheme());
+                    DrawableHelper.getIdFromString(this.image.drawable), getActivity().getTheme());
             picture.setImageDrawable(drawable);
         }
 

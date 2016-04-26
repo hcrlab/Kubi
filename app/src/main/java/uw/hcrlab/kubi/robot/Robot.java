@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.revolverobotics.kubiapi.IKubiManagerDelegate;
 import com.revolverobotics.kubiapi.Kubi;
 import com.revolverobotics.kubiapi.KubiManager;
@@ -174,6 +175,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }
 
         resetTimers();
+
     }
 
     /**
@@ -567,6 +569,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
             mIsPromptOpen = true;
         }
+    }
+
+    public void setPromptResponse(Object response) {
+        Firebase fb = App.getFirebase().child("questions").child(mCurrentPromptId).child("response");
+        fb.setValue(response);
     }
 
     public void showResult(Result res) {

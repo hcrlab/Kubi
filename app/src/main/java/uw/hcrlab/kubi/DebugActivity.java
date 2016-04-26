@@ -127,7 +127,7 @@ public class DebugActivity extends FragmentActivity {
         switch (input) {
             case (1):
                 pd.type = PromptTypes.SELECT;
-                pd.srcText = "apple";
+                pd.PromptText = "apple";
                 pd.options.add(new PromptData.Option(1, "manzana").setDrawable("apple"));
                 pd.options.add(new PromptData.Option(2, "plátano").setDrawable("banana"));
                 pd.options.add(new PromptData.Option(3, "niña").setDrawable(("girl")));
@@ -141,19 +141,19 @@ public class DebugActivity extends FragmentActivity {
                 break;
             case (3):
                 pd.type = PromptTypes.TRANSLATE;
-                pd.words.add(new PromptData.Word("una"));
-                pd.words.add(new PromptData.Word("manzana"));
-                pd.words.add(new PromptData.Word("y"));
-                pd.words.add(new PromptData.Word("un"));
-                pd.words.add(new PromptData.Word("plátano"));
+                pd.words.add(new PromptData.Word(0,"una"));
+                pd.words.add(new PromptData.Word(1, "manzana"));
+                pd.words.add(new PromptData.Word(2, "y"));
+                pd.words.add(new PromptData.Word(3, "un"));
+                pd.words.add(new PromptData.Word(4, "plátano"));
                 loadPrompt(pd);
                 break;
             case (4):
                 pd.type = PromptTypes.NAME;
-                pd.srcText = "apple";
-                pd.images.add(new PromptData.Option(1, "").setDrawable("apple"));
-                pd.images.add(new PromptData.Option(2, "").setDrawable("banana"));
-                pd.images.add(new PromptData.Option(3, "").setDrawable("apple"));
+                pd.PromptText = "apple";
+                pd.images.add(new PromptData.Image("apple", false));
+                pd.images.add(new PromptData.Image("banana", false));
+                pd.images.add(new PromptData.Image("apple", false));
                 loadPrompt(pd);
                 break;
             default:

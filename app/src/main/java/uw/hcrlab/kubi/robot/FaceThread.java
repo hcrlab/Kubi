@@ -61,15 +61,13 @@ public class FaceThread extends Thread {
 
                     if(!isAsleep || faceAction == FaceAction.WAKE) {
                         if (faceAction != null) {
-                            Log.d(TAG, faceAction.toString() + " at " + System.currentTimeMillis());
-
+                            // Carry out FaceAction
                             isAsleep = (faceAction == FaceAction.SLEEP);
 
                             RobotFaceUtils.showAction(robotFace, faceAction);
                             nextBlinkTime = getNextBlinkTime();
                         } else if (nextBlinkTime - System.currentTimeMillis() < EPSILON) {
-                            Log.i(TAG, "Blink at " + System.currentTimeMillis());
-
+                            // Blink
                             RobotFaceUtils.showAction(robotFace, FaceAction.BLINK);
                             nextBlinkTime = getNextBlinkTime();
                         }
@@ -78,7 +76,9 @@ public class FaceThread extends Thread {
                     Thread.sleep(250, 0);
                 }
 
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                // TODO: Implment this catch block...
+            }
         }
     }
 

@@ -11,15 +11,13 @@ public class PromptData {
     public ArrayList<Option> options;
 
     // For multi-image display (e.g. NamePrompt)
-    public ArrayList<Option> images;
+    public ArrayList<Image> images;
+
+    // For prompts that display words with hints
+    public ArrayList<Word> words;
 
     // The prompt displayed/spoken to the learner
     public String PromptText;
-
-    // TODO: Replace srcText with an array of Word objects
-    // The main text to be translated
-    public String srcText;
-    public ArrayList<Word> words;
 
     public PromptData() {
         this.options = new ArrayList<>();
@@ -33,31 +31,62 @@ public class PromptData {
         for (Option option: this.options) {
             optionsString += option.toString() + ", ";
         }
+
         String imagesString = "";
-        for (Option image: this.images) {
+        for (Image image: this.images) {
             imagesString += image.toString() + ", ";
         }
+
         String wordString = "";
         for (Word word: this.words) {
             wordString += word.text + " ";
         }
 
         return String.format(Locale.US,
-                "PromptData {type=%s, srcText=%s, words=%s, options={%s}, images={%s}}",
-                this.type, this.srcText, wordString, optionsString, imagesString);
+                "PromptData {type=%s, prompt=%s, words=%s, options={%s}, images={%s}}",
+                this.type, this.PromptText, wordString, optionsString, imagesString);
     }
 
     public static class Word {
+        public int index;
         public String text;
         public ArrayList<String> hints;
 
-        public Word(String text) {
+        public Word(int index, String text) {
+            this.index = index;
             this.text = text;
             this.hints = new ArrayList<>();
         }
 
+        public boolean hasHints() {
+            return this.hints.size() > 0;
+        }
+
         public void addHint(String hint) {
             this.hints.add(hint);
+        }
+    }
+
+    public static class Image {
+        public String imageUrl;
+        public String drawable;
+
+        public Image(String res, boolean isURL) {
+            if(isURL) {
+                imageUrl = res;
+            } else {
+                drawable = res;
+            }
+        }
+
+        public boolean hasURL() {
+            return this.imageUrl != null && !this.imageUrl.isEmpty();
+        }
+
+        @Override
+        public String toString() {
+            return String.format(Locale.US, "Image {url=%s, drawable=%s}",
+                    this.imageUrl, this.drawable);
         }
     }
 

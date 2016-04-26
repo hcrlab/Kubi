@@ -1,13 +1,19 @@
 package uw.hcrlab.kubi;
 
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
+
+import com.danikula.videocache.HttpProxyCacheServer;
+
+import java.util.List;
 
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
@@ -22,8 +28,6 @@ public class MainActivity extends FragmentActivity {
 
     /* Activity's Properties */
     private Robot robot;
-
-    /* Activity's methods */
 
     /*
     Called when the activity is first created.
@@ -147,7 +151,7 @@ public class MainActivity extends FragmentActivity {
                 if(!robot.isPromptOpen()) {
                     PromptData pd = new PromptData();
                     pd.type = PromptTypes.SELECT;
-                    pd.srcText = "apple";
+                    pd.PromptText = "Select the translation of \"ett äpple\"";
                     pd.options.add(new PromptData.Option(1, "apple").setDrawable("apple"));
                     pd.options.add(new PromptData.Option(2, "banana").setDrawable("banana"));
                     pd.options.add(new PromptData.Option(3, "girl").setDrawable("girl"));

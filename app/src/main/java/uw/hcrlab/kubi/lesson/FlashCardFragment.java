@@ -19,7 +19,6 @@ import java.util.Map;
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
-import uw.hcrlab.kubi.screen.RobotFace;
 
 public class FlashCardFragment extends Fragment implements View.OnTouchListener {
     private static String TAG = FlashCardFragment.class.getSimpleName();
@@ -96,12 +95,20 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
         return false;
     }
 
-    public void unselect() {
-        View frame = getView().findViewById(R.id.flash_card_border);
+    public PromptData.Option getOption() {
+        return this.option;
+    }
 
-        if(mSelected) {
-            frame.setBackgroundResource(R.drawable.card_border);
-            mSelected = false;
+    public void unselect() {
+        View view = getView();
+
+        if(view != null) {
+            View frame = view.findViewById(R.id.flash_card_border);
+
+            if (frame != null && mSelected) {
+                frame.setBackgroundResource(R.drawable.card_border);
+                mSelected = false;
+            }
         }
     }
 
@@ -110,20 +117,32 @@ public class FlashCardFragment extends Fragment implements View.OnTouchListener 
     }
 
     public void setCorrect() {
-        View frame = getView().findViewById(R.id.flash_card_border);
+        View view = getView();
 
-        frame.setBackgroundResource(R.drawable.card_border_correct);
-        mSelected = false;
+        if(view != null) {
+            View frame = view.findViewById(R.id.flash_card_border);
 
-        // TODO: Remove this. This just shows how the robot can be accessed and calls can be made to it.
-        robot.act(FaceAction.GIGGLE);
+            if (frame != null) {
+                frame.setBackgroundResource(R.drawable.card_border_correct);
+                mSelected = false;
+
+                // TODO: Remove this. This just shows how the robot can be accessed and calls can be made to it.
+                robot.act(FaceAction.GIGGLE);
+            }
+        }
     }
 
     public void setIncorrect() {
-        View frame = getView().findViewById(R.id.flash_card_border);
+        View view = getView();
 
-        frame.setBackgroundResource(R.drawable.card_border_incorrect);
-        mSelected = false;
+        if(view != null) {
+            View frame = view.findViewById(R.id.flash_card_border);
+
+            if (frame != null) {
+                frame.setBackgroundResource(R.drawable.card_border_incorrect);
+                mSelected = false;
+            }
+        }
     }
 
 }
