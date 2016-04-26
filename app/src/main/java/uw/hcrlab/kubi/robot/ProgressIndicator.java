@@ -5,18 +5,14 @@ import android.app.Activity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -28,18 +24,17 @@ import uw.hcrlab.kubi.R;
 /**
  * Created by Alexander on 4/25/2016.
  */
-public class LessonProgress {
-    private static String TAG = LessonProgress.class.getSimpleName();
+public class ProgressIndicator implements ValueEventListener {
+    private static String TAG = ProgressIndicator.class.getSimpleName();
 
     private ProgressBar pb;
     private TextSwitcher ts;
 
     private Integer taskCount = 1;
 
-    private Firebase pref;
-    private Firebase tref;
+    private Firebase ref;
 
-    public LessonProgress(final Activity activity, final int pbResId, int switcherResId) {
+    public ProgressIndicator(final Activity activity, final int pbResId, int switcherResId) {
         this.pb = (ProgressBar) activity.findViewById(pbResId);
         this.ts = (TextSwitcher) activity.findViewById(switcherResId);
 
@@ -63,37 +58,12 @@ public class LessonProgress {
 
         this.ts.setText(taskCount.toString());
 
-        this.pref = App.getFirebase().child("progress");
-        this.pref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snap) {
-                if(snap.exists()) {
-                    setProgress(snap.getValue(Integer.class));
-                }
-            }
+        this.ref = App.getFirebase().child("state");
+        this.ref.addValueEventListener(this);
+    }
 
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                Log.e(TAG, "The following Firebase error occurred when getting the device's progress:");
-                Log.e(TAG, firebaseError.toString());
-            }
-        });
-
-        this.tref = App.getFirebase().child("tasks");
-        this.tref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snap) {
-                if(snap.exists()) {
-                    ts.setText(snap.getValue(Integer.class).toString());
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                Log.e(TAG, "The following Firebase error occurred when getting the device's current task count:");
-                Log.e(TAG, firebaseError.toString());
-            }
-        });
+    public void cleanup() {
+        this.ref.removeEventListener(this);
     }
 
     private void setProgress(int val) {
@@ -119,7 +89,7 @@ public class LessonProgress {
     public void reset() {
         pb.setProgress(0);
 
-        taskCount = 1;
+        taskCount = 0;
         ts.setText(taskCount.toString());
     }
 
@@ -129,5 +99,29 @@ public class LessonProgress {
 
     public int getProgress() {
         return pb.getProgress();
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot snap) {
+        if(snap.exists()) {
+            int p = snap.child("percent").getValue(Integer.class);
+
+            if(p != pb.getProgress()) {
+                setProgress(p);
+            }
+
+            Integer tasks = snap.child("tasks").getValue(Integer.class);
+
+            if(!tasks.equals(taskCount)) {
+                taskCount = tasks;
+                ts.setText(tasks.toString());
+            }
+        }
+    }
+
+    @Override
+    public void onCancelled(FirebaseError firebaseError) {
+        Log.e(TAG, "The following Firebase error occurred when getting the device's current progress state:");
+        Log.e(TAG, firebaseError.toString());
     }
 }

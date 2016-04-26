@@ -1,8 +1,6 @@
 package uw.hcrlab.kubi.robot;
 
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.FragmentActivity;
@@ -11,10 +9,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AnticipateOvershootInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +21,6 @@ import com.revolverobotics.kubiapi.KubiManager;
 import com.revolverobotics.kubiapi.KubiSearchResult;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,10 +31,7 @@ import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.App;
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
-import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
-import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
-import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
 import uw.hcrlab.kubi.wizard.CommandHandler;
@@ -79,7 +71,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Bot bot;
     private TTS tts;
 
-    private LessonProgress progress;
+    private ProgressIndicator progress;
 
     private FragmentActivity mActivity;
 
@@ -167,7 +159,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             return;
         }
 
-        progress = new LessonProgress(this.mActivity, R.id.progressBar, R.id.progressText);
+        progress = new ProgressIndicator(this.mActivity, R.id.progressBar, R.id.progressText);
 
         thread = new FaceThread(robotFace, kubiManager);
         thread.start();
@@ -185,6 +177,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
      */
     public void shutdown() {
         Log.i(TAG, "Shutting down Main Thread ...");
+
+        progress.cleanup();
 
         while (true) {
             try {
