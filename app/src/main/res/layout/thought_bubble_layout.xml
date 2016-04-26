@@ -12,14 +12,9 @@
     android:layout_gravity="top|left"
     android:background="@drawable/thought_bubble">
 
-    <TextView
-        android:id="@+id/thoughts"
+    <ListView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="This is a test of thought bubble content"
-        android:textSize="@dimen/card_text_size"
-        android:gravity="center"
-        android:lineSpacingMultiplier="1.4"/>
+        android:layout_height="match_parent"/>
 
 </FrameLayout>
 

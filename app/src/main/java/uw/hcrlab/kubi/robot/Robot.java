@@ -79,6 +79,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Bot bot;
     private TTS tts;
 
+    private LessonProgress progress;
+
     private FragmentActivity mActivity;
 
     private CommandHandler questions;
@@ -165,8 +167,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             return;
         }
 
-        ProgressBar pb = (ProgressBar) this.mActivity.findViewById(R.id.progressBar);
-        pb.setProgress(0);
+        progress = new LessonProgress(this.mActivity, R.id.progressBar, R.id.progressText);
 
         thread = new FaceThread(robotFace, kubiManager);
         thread.start();
@@ -663,20 +664,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         });
         anim.setDuration(500);
         anim.start();
-
-        ProgressBar pb = (ProgressBar) this.mActivity.findViewById(R.id.progressBar);
-        int progress = pb.getProgress();
-
-        if(progress == 100) {
-            // TODO: Do something special since we have reached the end of the lesson...
-            pb.setProgress(0);
-            progress = 0;
-        }
-
-        ObjectAnimator animation = ObjectAnimator.ofInt (pb, "progress", progress, progress + 20);
-        animation.setDuration (500);
-        animation.setInterpolator (new AccelerateDecelerateInterpolator());
-        animation.start ();
 
         mIsPromptOpen = false;
         mCurrentPrompt = null;
