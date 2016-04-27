@@ -4,8 +4,12 @@
     <color name="black">#000000</color>
     <color name="progress">#1CAFF6</color>
     <color name="prompt_background">#ffffff</color>
-    <color name="highlighted">#1CAFF6</color>
-    <color name="correct">#7EB530</color>
-    <color name="incorrect">#FFD4CC</color>
+    <color name="selected">#73C2EF</color>
+    <color name="correct">#90CD94</color>
+    <color name="incorrect">#D17F7F</color>
     <color name="really_incorrect">#EC0B1B</color>
+    <color name="hand">#73C2EF</color>
+    <color name="hand_border">#7B6E76</color>
+    <color name="hint_underline">#73C2EF</color>
+    <color name="card_border">#D9D9D9</color>
 </resources>

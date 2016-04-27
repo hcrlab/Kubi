@@ -27,4 +27,7 @@
     <!-- Main activity options menu -->
     <string name="debug_activity">DebugActivity</string>
 
+    <!-- DuoLingo Prompts -->
+    <string name="prompt_text_input_hint">Translate to Swedish</string>
+
 </resources>

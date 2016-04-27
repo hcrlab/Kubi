@@ -16,7 +16,7 @@
         <shape
             android:shape="rectangle">
             <stroke android:width="3dp"
-                android:color="@color/highlighted"
+                android:color="@color/hint_underline"
                 android:dashWidth="10px"
                 android:dashGap="10px"/>
             <solid android:color="@null" />

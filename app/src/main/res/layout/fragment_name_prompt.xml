@@ -2,28 +2,57 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/prompt_content_margin"
     android:orientation="horizontal"
-    android:background="#000000"
-    >
+    android:gravity="center_horizontal"
+    android:background="@color/prompt_background">
 
     <!-- container filled dynamically with framed image fragments -->
     <LinearLayout
-        android:layout_width="0px"
+        android:layout_width="@dimen/name_imgs_width"
         android:layout_height="match_parent"
         android:layout_weight="3"
         android:orientation="horizontal"
+        android:gravity="center"
         android:layout_margin="10sp"
-        android:id="@+id/images"
-        />
+        android:id="@+id/name_images"
+        android:clipChildren="false">
+
+        <ImageView
+            android:id="@+id/name_picture_1"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/name_img_height"
+            android:adjustViewBounds="true"
+            android:background="@drawable/name_img_frame"/>
+
+        <ImageView
+            android:id="@+id/name_picture_2"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/name_img_height"
+            android:adjustViewBounds="true"
+            android:layout_marginTop="-20dp"
+            android:layout_marginStart="-20dp"
+            android:rotation="-2"
+            android:background="@drawable/name_img_frame" />
+
+        <ImageView
+            android:id="@+id/name_picture_3"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/name_img_height"
+            android:adjustViewBounds="true"
+            android:layout_marginStart="-10dp"
+            android:background="@drawable/name_img_frame"
+            android:rotation="3"/>
+
+    </LinearLayout>
 
     <EditText
-        android:layout_width="0px"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
         android:id="@+id/l1_result_text"
-        android:layout_margin="10sp"
-        android:gravity="top"
-        android:inputType="textMultiLine"
-        />
+        android:layout_width="0px"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:layout_gravity="center"
+        android:textSize="@dimen/card_text_size"
+        android:hint="@string/prompt_text_input_hint" />
 
 </LinearLayout>

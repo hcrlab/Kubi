@@ -1,5 +1,6 @@
 package uw.hcrlab.kubi.lesson.prompts;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
@@ -9,10 +10,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
+import java.util.ArrayList;
+
 import uw.hcrlab.kubi.R;
+import uw.hcrlab.kubi.lesson.DrawableHelper;
 import uw.hcrlab.kubi.lesson.FramedImageFragment;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
@@ -36,16 +43,23 @@ public class NamePrompt extends Prompt implements TextWatcher {
             return view;
         }
 
+        ArrayList<ImageView> imgs = new ArrayList<>();
+        imgs.add((ImageView) view.findViewById(R.id.name_picture_1));
+        imgs.add((ImageView) view.findViewById(R.id.name_picture_2));
+        imgs.add((ImageView) view.findViewById(R.id.name_picture_3));
 
-        for (PromptData.Image image: this.data.images) {
-            FramedImageFragment imageFragment = new FramedImageFragment();
-            imageFragment.configure(image);
+        for(int i = 0; i < this.data.images.size(); ++i) {
+            PromptData.Image img = this.data.images.get(i);
+            ImageView imgView = imgs.get(i);
 
-            Log.i(TAG, "making image " + image.toString());
-
-            FragmentTransaction transaction = getActivity()
-                    .getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.images, imageFragment).commit();
+            if(img.hasURL()) {
+                ImageLoader.getInstance().displayImage(img.imageUrl, imgView);
+            } else {
+                // debug case, until we start passing image URLs through from  duolingo
+                Drawable drawable = view.getResources().getDrawable(
+                        DrawableHelper.getIdFromString(img.drawable), getActivity().getTheme());
+                imgView.setImageDrawable(drawable);
+            }
         }
 
         // focus on the text input

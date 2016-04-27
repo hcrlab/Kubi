@@ -1,7 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#FFFFFF"/>
-    <stroke android:width="6dip" android:color="@color/really_incorrect" />
-    <corners android:radius="10dip"/>
-    <padding android:left="0dip" android:top="0dip" android:right="0dip" android:bottom="0dip" />
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="@dimen/card_border_width"
+        android:height="@dimen/card_border_height">
+        <shape>
+            <solid android:color="@color/incorrect"/>
+            <corners android:radius="10dip"/>
+            <padding android:left="0dip" android:top="0dip" android:right="0dip" android:bottom="0dip" />
+        </shape>
+    </item>
+    <item
+        android:height="@dimen/card_tick_height"
+        android:width="@dimen/card_tick_width"
+        android:gravity="bottom"
+        android:left="@dimen/card_tick_left_offset"
+        android:bottom="@dimen/card_tick_bottom_offset">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+            <stroke
+                android:width="1dp"
+                android:color="@color/white"/>
+        </shape>
+    </item>
+    <item
+        android:height="@dimen/card_tick_dot_height"
+        android:width="@dimen/card_tick_dot_width"
+        android:gravity="bottom"
+        android:left="@dimen/card_tick_dot_left_offset"
+        android:bottom="@dimen/card_tick_dot_bottom_offset">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+            <solid android:color="@color/white"/>
+        </shape>
+    </item>
+</layer-list>

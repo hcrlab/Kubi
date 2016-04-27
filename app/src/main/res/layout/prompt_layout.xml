@@ -5,9 +5,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/prompt_hand_width"
-    android:layout_height="@dimen/card_height"
+    android:layout_height="@dimen/prompt_height"
     android:layout_gravity="bottom|center"
-    android:layout_marginBottom="@dimen/card_margin_btm_init"
+    android:layout_marginBottom="@dimen/prompt_margin_btm_init"
     tools:layout_marginBottom="20dp">
     <!-- Add the following line to the FrameLayout above when testing on the a real device! -->
     <!--android:layout_marginBottom="@dimen/card_margin_btm_init"-->
@@ -18,7 +18,7 @@
         android:layout_width="@dimen/prompt_width"
         android:layout_height="@dimen/prompt_height"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/card_border" />
+        android:background="@drawable/prompt_border" />
 
     <!-- Left Hand -->
     <LinearLayout
