@@ -13,5 +13,6 @@
         android:background="@drawable/word_button"
         android:padding="0dp"
         android:layout_marginStart="@dimen/word_margin_left"
-        style="?android:attr/borderlessButtonStyle"/>
+        style="?android:attr/borderlessButtonStyle"
+        />
 </FrameLayout>

@@ -33,7 +33,9 @@ public abstract class Prompt extends Fragment {
     public void onResume() {
         super.onResume();
 
-        robot.say(this.data.PromptText, "en");
+        if (robot != null && this.data != null && this.data.PromptText != null) {
+            robot.say(this.data.PromptText, "en");
+        }
     }
 
     public void setData(PromptData data) {

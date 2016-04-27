@@ -62,8 +62,9 @@ public class PromptData {
             return this.hints.size() > 0;
         }
 
-        public void addHint(String hint) {
+        public Word addHint(String hint) {
             this.hints.add(hint);
+            return this;
         }
     }
 

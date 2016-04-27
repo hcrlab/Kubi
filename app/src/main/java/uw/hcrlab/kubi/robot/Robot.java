@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -35,6 +36,8 @@ import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.App;
 import uw.hcrlab.kubi.R;
+import uw.hcrlab.kubi.lesson.HintData;
+import uw.hcrlab.kubi.lesson.HintFragment;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
@@ -65,7 +68,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private View rightCard;
 
     private boolean mIsPromptOpen = false;
-    private View mPromptContainer;
+    private int promptContainer;
     private String mCurrentPromptId;
     private Prompt mCurrentPrompt;
 
@@ -511,8 +514,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
     }
 
-    public void setPromptContainer(View promptContainer) {
-        this.mPromptContainer = promptContainer;
+    /** Takes in an integer referring to a view component, e.g. R.id.prompt_container */
+    public void setPromptContainer(int promptContainer) {
+        this.promptContainer = promptContainer;
     }
 
     public boolean isPromptOpen() {
@@ -544,7 +548,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         this.mActivity.getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.prompt_container, prompt, mCurrentPromptId)
+                .replace(this.promptContainer, prompt, mCurrentPromptId)
                 .commit();
 
         // Animate the prompt onto the screen
@@ -572,8 +576,12 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void setPromptResponse(Object response) {
-        Firebase fb = App.getFirebase().child("questions").child(mCurrentPromptId).child("response");
-        fb.setValue(response);
+        if (mCurrentPromptId != null) {
+            Firebase fb = App.getFirebase().child("questions").child(mCurrentPromptId).child("response");
+            fb.setValue(response);
+        } else {
+            Log.e(TAG, "null mCurrentPromptId, not setting firebase value");
+        }
     }
 
     public void showResult(Result res) {
@@ -607,13 +615,27 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             progress = 0;
         }
 
-        ObjectAnimator animation = ObjectAnimator.ofInt (pb, "progress", progress, progress + 20);
-        animation.setDuration (500);
-        animation.setInterpolator (new AccelerateDecelerateInterpolator());
-        animation.start ();
+        ObjectAnimator animation = ObjectAnimator.ofInt(pb, "progress", progress, progress + 20);
+        animation.setDuration(500);
+        animation.setInterpolator(new AccelerateDecelerateInterpolator());
+        animation.start();
 
         mIsPromptOpen = false;
         mCurrentPrompt = null;
+    }
+
+    private int hintContainer;
+
+    private void setHintContainer(int hintContainer) {
+        this.hintContainer = hintContainer;
+    }
+
+    private void showHint(HintData hintData) {
+        Fragment hint = new HintFragment().setHintData(hintData);
+
+        // add the hint fragment to the container (replacing last one, if applicable)
+        this.mActivity.getSupportFragmentManager().beginTransaction()
+                .replace(this.hintContainer, hint).commit();
     }
 
     public void setCards(View left, View right) {

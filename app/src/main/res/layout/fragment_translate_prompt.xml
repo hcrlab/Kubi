@@ -16,7 +16,8 @@
         android:id="@+id/l2_source_text"
         android:layout_margin="10sp"
         android:padding="10sp"
-        android:gravity="center"/>
+        android:gravity="center"
+        />
 
 
     <EditText

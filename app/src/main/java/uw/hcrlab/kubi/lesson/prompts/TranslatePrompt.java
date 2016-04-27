@@ -16,6 +16,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
@@ -25,8 +27,10 @@ import uw.hcrlab.kubi.robot.Robot;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-public class TranslatePrompt extends Prompt implements TextWatcher {
+public class TranslatePrompt extends Prompt implements TextWatcher, View.OnClickListener {
     private static String TAG = TranslatePrompt.class.getSimpleName();
+
+    private ArrayList<WordButtonFragment> wordButtons;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,11 +44,14 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
         }
 
         // make buttons for the src text words
+        this.wordButtons = new ArrayList<>();
         int idx = 0;
         for (PromptData.Word word: this.data.words) {
             WordButtonFragment wordButton = new WordButtonFragment();
             wordButton.setWord(word);
-            String buttonTag = word.text + "-" + idx;
+            wordButton.setOnClickListener(this);
+            String buttonTag = generateButtonTag(word.text, idx);
+            this.wordButtons.add(wordButton);
 
             Log.i(TAG, "Adding button " + buttonTag);
             FragmentTransaction transaction = getActivity()
@@ -60,6 +67,32 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
         resultText.addTextChangedListener(this);
 
         return view;
+    }
+
+//            wordButton.setOnClickListener(new View.OnClickListener() {
+//                public void onClick(View view) {
+//                    Button button = (Button) view;
+//                    // TODO: show the button's hint (using robot's hint-showing capability)
+//                    // might have to implement onClickListener in parent fragment or in activity to do this?
+//                    Toast toast = Toast.makeText(getActivity().getApplicationContext(),
+//                            "clicked word button " + button.getText().toString(),
+//                            Toast.LENGTH_SHORT);
+//                    toast.show();
+//                }
+//            });
+
+    private String generateButtonTag(String text, int idx) {
+        return text + "-" + idx;
+    }
+
+    @Override
+    public void onClick(View v) {
+        Log.i(TAG, "onClick");
+        TextView button = (TextView) v;
+        Toast toast = Toast.makeText(getActivity().getApplicationContext(),
+                "clicked word button " + button.getText().toString(),
+                Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     @Override
