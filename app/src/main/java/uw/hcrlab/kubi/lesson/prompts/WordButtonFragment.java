@@ -7,10 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.PromptData;
@@ -22,15 +19,26 @@ public class WordButtonFragment extends Fragment {
     private static String TAG = TranslatePrompt.class.getSimpleName();
 
     private PromptData.Word word;
+    private int id;
+    private View.OnClickListener onClickListener;
 
     /* Should be called before onCreateView */
     public void setWord(PromptData.Word word) {
         this.word = word;
     }
 
+    public void setOnClickListener(View.OnClickListener listener) {
+        Log.i(TAG, "setting on click onClickListener to " + listener);
+        this.onClickListener = listener;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if(word.hasHints()) {
+        if(word.hasHint()) {
             Log.i(TAG, "Creating word button fragment fragment from " + this.word.text);
             View view = inflater.inflate(R.layout.fragment_word_button, container, false);
 
@@ -40,18 +48,8 @@ public class WordButtonFragment extends Fragment {
 
             Button wordButton = (Button) view.findViewById(R.id.button);
             wordButton.setText(word.text);
-
-            wordButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
-                    Button button = (Button) view;
-                    // TODO: show the button's hint (using robot's hint-showing capability)
-                    // might have to implement onClickListener in parent fragment or in activity to do this?
-                    Toast toast = Toast.makeText(getActivity().getApplicationContext(),
-                            "clicked word button " + button.getText().toString(),
-                            Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-            });
+            wordButton.setId(this.id);  // TODO: is this safe? (http://tinyurl.com/lzeu2at suggests it is)
+            wordButton.setOnClickListener(this.onClickListener);
 
             return view;
         } else {

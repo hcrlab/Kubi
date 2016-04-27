@@ -12,6 +12,16 @@
     android:layout_gravity="start|left"
     android:background="@drawable/thought_bubble">
 
+    <!--This is a temp solution to merge in Leah's hint code-->
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:id="@+id/hint_container"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:gravity="center"-->
+        <!--/>-->
+
     <TextView
         android:id="@+id/thought_text"
         android:layout_width="match_parent"

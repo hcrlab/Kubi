@@ -1,13 +1,18 @@
 package uw.hcrlab.kubi;
 
+import uw.hcrlab.kubi.lesson.HintFragment;
+import uw.hcrlab.kubi.lesson.HintData;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.PromptTypes;
+import uw.hcrlab.kubi.robot.Robot;
+import uw.hcrlab.kubi.screen.RobotFace;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -22,6 +27,7 @@ import java.util.Locale;
 
 public class DebugActivity extends FragmentActivity {
     private static String TAG = DebugActivity.class.getSimpleName();
+    private Robot robot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +41,18 @@ public class DebugActivity extends FragmentActivity {
         WebView eye_area = (WebView) findViewById(R.id.webview_eyes);
         eye_area.loadUrl("file:///android_asset/eyes.html");
 
+        // load robot face into layout
+        robot = Robot.getInstance((RobotFace)findViewById(R.id.robot_face_view), this);
+        robot.setPromptContainer(R.id.prompt_container);
+        robot.setHintContainer(R.id.hint_container);
+
         // do not show the virtual keyboard on the debug prompt
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         // focus on the debug prompt
         final EditText debugPrompt = (EditText) findViewById(R.id.debug_prompt);
+        debugPrompt.setShowSoftInputOnFocus(false);
 
         // set up the debug prompt
         debugPrompt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -96,6 +108,15 @@ public class DebugActivity extends FragmentActivity {
                 .replace(R.id.prompt_container, prompt).commit();
     }
 
+    // Render the given HintData to the user
+    private void loadHint(HintData hintData) {
+        Fragment hint = new HintFragment().setHintData(hintData);
+
+        // add the hint fragment to the container (replacing last one, if applicable)
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.hint_container, hint).commit();
+    }
+
     private void interpretDebugPrompt(View view) {
         Log.i(TAG, "interpret debug prompt");
         EditText editText = (EditText)findViewById(R.id.debug_prompt);
@@ -111,22 +132,27 @@ public class DebugActivity extends FragmentActivity {
         }
         editText.getText().clear();
         PromptData pd = new PromptData();
+        HintData hd = new HintData();
         switch (input) {
             case (1):
                 pd.type = PromptTypes.SELECT;
                 pd.PromptText = "apple";
-                pd.options.add(new PromptData.Option(1, "apple").setDrawable("apple"));
-                pd.options.add(new PromptData.Option(2, "banana").setDrawable("banana"));
-                pd.options.add(new PromptData.Option(3, "girl").setDrawable(("girl")));
+                pd.options.add(new PromptData.Option(1, "manzana").setDrawable("apple"));
+                pd.options.add(new PromptData.Option(2, "plátano").setDrawable("banana"));
+                pd.options.add(new PromptData.Option(3, "niña").setDrawable(("girl")));
                 loadPrompt(pd);
+
+                hd.details.add(new HintData.HintDetail().setText("apple"));
+                loadHint(hd);
+
                 break;
             case (3):
                 pd.type = PromptTypes.TRANSLATE;
-                pd.words.add(new PromptData.Word(0,"una"));
-                pd.words.add(new PromptData.Word(1, "manzana"));
-                pd.words.add(new PromptData.Word(2, "y"));
-                pd.words.add(new PromptData.Word(3, "un"));
-                pd.words.add(new PromptData.Word(4, "plátano"));
+                pd.words.add(new PromptData.Word(0,"una").addHint("a").addHint("an"));
+                pd.words.add(new PromptData.Word(1, "manzana").addHint("apple"));
+                pd.words.add(new PromptData.Word(2, "y").addHint("and"));
+                pd.words.add(new PromptData.Word(3, "un").addHint("a").addHint("an"));
+                pd.words.add(new PromptData.Word(4, "plátano").addHint("banana"));
                 loadPrompt(pd);
                 break;
             case (4):

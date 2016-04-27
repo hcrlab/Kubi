@@ -16,7 +16,11 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import uw.hcrlab.kubi.R;
+import uw.hcrlab.kubi.lesson.HintData;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
@@ -27,8 +31,11 @@ import uw.hcrlab.kubi.robot.Robot;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-public class TranslatePrompt extends Prompt implements TextWatcher {
+public class TranslatePrompt extends Prompt implements TextWatcher, View.OnClickListener {
     private static String TAG = TranslatePrompt.class.getSimpleName();
+
+    private ArrayList<WordButtonFragment> wordButtons;
+    private HashMap<Integer, PromptData.Word> wordsById;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,26 +49,46 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
         }
 
         // make buttons for the src text words
+        this.wordButtons = new ArrayList<>();
+        this.wordsById = new HashMap<>();
         int idx = 0;
         for (PromptData.Word word: this.data.words) {
-            WordButtonFragment wordButton = new WordButtonFragment();
-            wordButton.setWord(word);
-            String buttonTag = word.text + "-" + idx;
+            WordButtonFragment wordButtonFragment = new WordButtonFragment();
+            wordButtonFragment.setId(idx);
+            wordButtonFragment.setWord(word);
+            wordButtonFragment.setOnClickListener(this);
+            String buttonTag = generateButtonTag(word.text, idx);
+
+            this.wordButtons.add(wordButtonFragment);
+            this.wordsById.put(idx, word);
 
             Log.i(TAG, "Adding button " + buttonTag);
             FragmentTransaction transaction = getActivity()
                     .getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.l2_source_text, wordButton, buttonTag).commit();
+            transaction.add(R.id.l2_source_text, wordButtonFragment, buttonTag).commit();
             idx += 1;
         }
 
         // Setup the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
-        resultText.setShowSoftInputOnFocus(false); // Make sure the on-screen keyboard never shows. Forces the use of the bluetooth keyboard
+        resultText.setShowSoftInputOnFocus(false); // Never show soft keyboard. Forces use of bluetooth keyboard
         resultText.requestFocus();
         resultText.addTextChangedListener(this);
 
         return view;
+    }
+
+    private String generateButtonTag(String text, int idx) {
+        return text + "-" + idx;
+    }
+
+    @Override
+    public void onClick(View v) {
+        Log.i(TAG, "clicked " + wordsById.get(v.getId()));
+        TextView button = (TextView) v;
+        PromptData.Word word = wordsById.get(v.getId());
+        // can safely assume the word has hints; it if didn't it would not be clickable
+        robot.showHint(word.hints);
     }
 
     @Override

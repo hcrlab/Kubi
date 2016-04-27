@@ -47,6 +47,9 @@ public class MainActivity extends FragmentActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         robot = Robot.getInstance((RobotFace)findViewById(R.id.face), this);
+
+        robot.setPromptContainer(R.id.prompt_container);
+        robot.setHintContainer(R.id.hint_container);
     }
 
     /*
@@ -72,7 +75,7 @@ public class MainActivity extends FragmentActivity {
 
     View left = null;
     View right = null;
-    View promptContainer = null;
+    int promptContainer;
 
     /*
     Called when the activity will start interacting with the user. At this point
@@ -88,7 +91,7 @@ public class MainActivity extends FragmentActivity {
         right = findViewById(R.id.rightCard);
         robot.setCards(left, right);
 
-        promptContainer = findViewById(R.id.prompt_container);
+        promptContainer = R.id.prompt_container;
         robot.setPromptContainer(promptContainer);
 
         robot.startup();

@@ -24,6 +24,13 @@
             android:src="#000000"
             />
 
+        <uw.hcrlab.kubi.screen.RobotFace
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:id="@+id/robot_face_view"
+            />
+
         <!-- progress indicator -->
         <ImageView
             android:layout_width="wrap_content"
@@ -62,13 +69,14 @@
                 android:layout_weight="3"
                 android:orientation="horizontal"
                 >
-                <!-- hint -->
-                <ImageView
+                <!-- hint (filled dynamically with fragment) -->
+                <LinearLayout
                     android:layout_width="0px"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:id="@+id/hint"
-                    android:src="@drawable/kubi_hints" />
+                    android:orientation="horizontal"
+                    android:id="@+id/hint_container"
+                    />
 
                 <!-- eyes -->
                 <WebView
@@ -77,6 +85,12 @@
                     android:layout_weight="3"
                     android:id="@+id/webview_eyes"
                     />
+                <!--<uw.hcrlab.kubi.screen.RobotFace-->
+                    <!--android:layout_width="0px"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_weight="3"-->
+                    <!--android:id="@+id/robot_face_view"-->
+                    <!--/>-->
 
                 <!-- placeholder to the right of eyes-->
                 <ImageView
@@ -90,7 +104,8 @@
 
             <!-- main content row 2 -->
             <!-- prompt container: this will contain a different fragment for each question type -->
-            <LinearLayout android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="0px"
                 android:layout_weight="4"
                 android:orientation="horizontal"
@@ -129,6 +144,7 @@
             android:layout_height="match_parent"
             android:id="@+id/debug_prompt"
             android:inputType="text"
+            android:background="#ffffff"
             />
     </LinearLayout>
 
