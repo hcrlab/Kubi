@@ -43,6 +43,8 @@ public class DebugActivity extends FragmentActivity {
 
         // load robot face into layout
         robot = Robot.getInstance((RobotFace)findViewById(R.id.robot_face_view), this);
+        robot.setPromptContainer(R.id.prompt_container);
+        robot.setHintContainer(R.id.hint_container);
 
         // do not show the virtual keyboard on the debug prompt
         getWindow().setSoftInputMode(
@@ -141,17 +143,15 @@ public class DebugActivity extends FragmentActivity {
                 loadPrompt(pd);
 
                 hd.details.add(new HintData.HintDetail().setText("apple"));
-                //hd.details.add(new HintData.HintDetail().setText("test line 2"));
-                //hd.details.add(new HintData.HintDetail().setText("test line 3"));
                 loadHint(hd);
 
                 break;
             case (3):
                 pd.type = PromptTypes.TRANSLATE;
-                pd.words.add(new PromptData.Word(0,"una").addHint("a, an"));
+                pd.words.add(new PromptData.Word(0,"una").addHint("a").addHint("an"));
                 pd.words.add(new PromptData.Word(1, "manzana").addHint("apple"));
                 pd.words.add(new PromptData.Word(2, "y").addHint("and"));
-                pd.words.add(new PromptData.Word(3, "un").addHint("a, an"));
+                pd.words.add(new PromptData.Word(3, "un").addHint("a").addHint("an"));
                 pd.words.add(new PromptData.Word(4, "plátano").addHint("banana"));
                 loadPrompt(pd);
                 break;

@@ -529,6 +529,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     // Render the given PromptData to the user
     public void setPrompt(final Prompt prompt, final String promptId) {
+        if (promptContainer == 0) {
+            Log.i(TAG, "promptContainer 0, probably forgot to setHintContainer");
+        }
+
         if(mIsPromptOpen) {
             hidePrompt();
 
@@ -626,11 +630,16 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private int hintContainer;
 
-    private void setHintContainer(int hintContainer) {
+    public void setHintContainer(int hintContainer) {
         this.hintContainer = hintContainer;
     }
 
-    private void showHint(HintData hintData) {
+    /** Show a HintData, which can contain multiple hints */
+    public void showHint(HintData hintData) {
+        if (hintContainer == 0) {
+            Log.i(TAG, "hintContainer 0, probably forgot to setHintContainer");
+        }
+
         Fragment hint = new HintFragment().setHintData(hintData);
 
         // add the hint fragment to the container (replacing last one, if applicable)

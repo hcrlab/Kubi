@@ -19,6 +19,7 @@ public class WordButtonFragment extends Fragment {
     private static String TAG = TranslatePrompt.class.getSimpleName();
 
     private PromptData.Word word;
+    private int id;
     private View.OnClickListener onClickListener;
 
     /* Should be called before onCreateView */
@@ -31,9 +32,13 @@ public class WordButtonFragment extends Fragment {
         this.onClickListener = listener;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if(word.hasHints()) {
+        if(word.hasHint()) {
             Log.i(TAG, "Creating word button fragment fragment from " + this.word.text);
             View view = inflater.inflate(R.layout.fragment_word_button, container, false);
 
@@ -43,6 +48,7 @@ public class WordButtonFragment extends Fragment {
 
             Button wordButton = (Button) view.findViewById(R.id.button);
             wordButton.setText(word.text);
+            wordButton.setId(this.id);  // TODO: is this safe? (http://tinyurl.com/lzeu2at suggests it is)
             wordButton.setOnClickListener(this.onClickListener);
 
             return view;

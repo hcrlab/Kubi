@@ -1,17 +1,12 @@
 package uw.hcrlab.kubi.wizard;
 
-import android.net.ParseException;
 import android.util.Log;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.zip.DataFormatException;
 
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
@@ -24,11 +19,7 @@ import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.lesson.results.NameResult;
 import uw.hcrlab.kubi.lesson.results.SelectResult;
 import uw.hcrlab.kubi.lesson.results.TranslateResult;
-import uw.hcrlab.kubi.robot.Action;
-import uw.hcrlab.kubi.robot.FaceAction;
 import uw.hcrlab.kubi.robot.Robot;
-import uw.hcrlab.kubi.wizard.model.Speech;
-import uw.hcrlab.kubi.wizard.model.Task;
 
 /**
  * Created by Alexander on 4/16/2015.

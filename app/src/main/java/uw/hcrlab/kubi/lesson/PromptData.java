@@ -50,20 +50,20 @@ public class PromptData {
     public static class Word {
         public int index;
         public String text;
-        public ArrayList<String> hints;
+        public HintData hints;
 
         public Word(int index, String text) {
             this.index = index;
             this.text = text;
-            this.hints = new ArrayList<>();
+            this.hints = new HintData();
         }
 
-        public boolean hasHints() {
-            return this.hints.size() > 0;
+        public boolean hasHint() {
+            return !this.hints.isEmpty();
         }
 
         public Word addHint(String hint) {
-            this.hints.add(hint);
+            this.hints.details.add(new HintData.HintDetail().setText(hint));
             return this;
         }
     }
