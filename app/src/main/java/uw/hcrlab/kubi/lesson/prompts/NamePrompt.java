@@ -2,6 +2,7 @@ package uw.hcrlab.kubi.lesson.prompts;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -69,6 +70,30 @@ public class NamePrompt extends Prompt implements TextWatcher {
         resultText.addTextChangedListener(this);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        final String[] parts = this.data.PromptText.split("[“”]");
+
+        if(parts.length > 1) {
+            Handler h = new Handler();
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    robot.act(FaceAction.LOOK_LEFT);
+                    robot.showHint("\"" + parts[1] + "\"");
+                }
+            }, 1000);
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    robot.hideHint();
+                }
+            }, 7000);
+        }
     }
 
     @Override

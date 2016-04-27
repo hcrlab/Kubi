@@ -109,7 +109,7 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
                 @Override
                 public void run() {
                     robot.act(FaceAction.LOOK_LEFT);
-                    robot.showHint(parts[1]);
+                    robot.showHint("\"" + parts[1] + "\"");
                 }
             }, 1000);
             h.postDelayed(new Runnable() {
