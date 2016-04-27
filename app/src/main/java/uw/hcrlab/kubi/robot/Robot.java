@@ -525,6 +525,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         // Animate the prompt onto the screen
         final View hintView = this.mActivity.findViewById(R.id.thought_bubble);
+        final TextView tv = (TextView) hintView.findViewById(R.id.thought_text);
+        tv.setText(hint);
+
         boolean isHidden = ((FrameLayout.LayoutParams)hintView.getLayoutParams()).topMargin < 0;
 
         if(isHidden) {
@@ -638,6 +641,12 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void showResult(Result res) {
+        if(res.isCorrect()) {
+            this.say("Yay! You got it!", "en");
+        } else {
+            this.say("Oops! That\'s not the correct answer.", "en");
+        }
+
         mCurrentPrompt.handleResults(res);
     }
 

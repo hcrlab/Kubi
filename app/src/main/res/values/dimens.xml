@@ -15,6 +15,12 @@
     <dimen name="card_width">210dp</dimen>
     <dimen name="card_height">280dp</dimen>
 
+    <!-- Progress Display -->
+    <dimen name="progress_text_size">16sp</dimen>
+
+    <!-- Instructions Display -->
+    <dimen name="hint_text_size">36sp</dimen>
+
     <!-- Prompt Dimensions -->
     <dimen name="prompt_margin_btm_init">-310dp</dimen>
     <dimen name="prompt_width">700dp</dimen>
@@ -36,9 +42,11 @@
     <dimen name="card_tick_dot_left_offset">14dp</dimen>
     <dimen name="card_tick_dot_bottom_offset">19dp</dimen>
 
+    <!-- TRANSLATE Prompt -->
     <dimen name="translate_btn_container_height">75dp</dimen>
     <dimen name="translate_btn_container_btm_margin">10dp</dimen>
 
+    <!-- NAME Prompt -->
     <dimen name="name_img_height">150dp</dimen>
     <dimen name="name_imgs_width">250px</dimen>
 

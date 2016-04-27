@@ -47,6 +47,7 @@ public class ProgressIndicator implements ValueEventListener {
 
                 tv.setGravity(Gravity.CENTER);
                 tv.setTextColor(activity.getResources().getColor(R.color.white, null));
+                tv.setTextSize(activity.getResources().getDimensionPixelSize(R.dimen.progress_text_size));
 
                 FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
                 lp.gravity = Gravity.CENTER;

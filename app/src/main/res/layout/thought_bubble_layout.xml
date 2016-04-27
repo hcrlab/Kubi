@@ -9,12 +9,16 @@
     android:layout_marginLeft="@dimen/thought_bubble_margin"
     android:layout_marginTop="@dimen/thought_bubble_top_margin"
     tools:layout_marginTop="20dp"
-    android:layout_gravity="top|left"
+    android:layout_gravity="start|left"
     android:background="@drawable/thought_bubble">
 
-    <ListView
+    <TextView
+        android:id="@+id/thought_text"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:textSize="@dimen/hint_text_size"
+        android:gravity="center"
+        tools:text="Test Text"/>
 
 </FrameLayout>
 

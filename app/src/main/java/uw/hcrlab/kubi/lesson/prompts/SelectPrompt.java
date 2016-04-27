@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +39,14 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
     private HashMap<String, MediaPlayer> mPronunciations;
 
     private int currentSelection = -1;
+
+    private Handler handler = new Handler();
+    private Runnable confirm = new Runnable() {
+        @Override
+        public void run() {
+            robot.say("Is that your final answer?", "en");
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,7 +95,30 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
                 mPronunciations.put(createOptionTag(option.idx), MediaPlayer.create(activity, Uri.parse(audioUrl)));
             }
         }
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        final String[] parts = this.data.PromptText.split("[“”]");
+
+        if(parts.length > 1) {
+            Handler h = new Handler();
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    robot.act(FaceAction.LOOK_LEFT);
+                    robot.showHint(parts[1]);
+                }
+            }, 1000);
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    robot.hideHint();
+                }
+            }, 7000);
+        }
     }
 
     @Override
@@ -128,8 +161,10 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
         // Notify the wizard that this card was selected
         currentSelection = flashCard.getOption().idx;
         robot.setPromptResponse(currentSelection);
-    }
 
+        handler.removeCallbacks(confirm);
+        handler.postDelayed(confirm, 3000);
+    }
 
     public void handleResults(Result res) {
         SelectResult result = (SelectResult) res;
