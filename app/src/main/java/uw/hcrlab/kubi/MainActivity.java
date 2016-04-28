@@ -40,14 +40,8 @@ public class MainActivity extends FragmentActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
-        RobotFace face = (RobotFace) findViewById(R.id.face);
-        View promptContainer = findViewById(R.id.prompt_container);
-        View hintContainer = findViewById(R.id.hint_container);
-        View leftCard = findViewById(R.id.leftCard);
-        View rightCard = findViewById(R.id.rightCard);
-
         // Initialize robot with UI components
-        robot = Robot.getInstance(this, face, promptContainer, hintContainer, leftCard, rightCard);
+        robot = Robot.Factory.create(this, R.id.face, R.id.prompt_container, R.id.thought_bubble, R.id.leftCard, R.id.rightCard);
     }
 
     @Override

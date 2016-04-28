@@ -42,9 +42,7 @@ public class DebugActivity extends FragmentActivity {
         eye_area.loadUrl("file:///android_asset/eyes.html");
 
         // load robot face into layout
-        robot = Robot.getInstance((RobotFace)findViewById(R.id.robot_face_view), this);
-        robot.setPromptContainer(R.id.prompt_container);
-        robot.setHintContainer(R.id.hint_container);
+        robot = Robot.Factory.create(this, R.id.robot_face_view, R.id.prompt_container, R.id.hint_container);
 
         // do not show the virtual keyboard on the debug prompt
         getWindow().setSoftInputMode(
@@ -101,6 +99,7 @@ public class DebugActivity extends FragmentActivity {
                         String.format(Locale.US, "Prompt type not implemented: %s", promptData.type));
         }
 
+        prompt.setUid("testID-notUnique");
         prompt.setData(promptData);
 
         // add the prompt fragment to the container (replacing last one, if applicable)

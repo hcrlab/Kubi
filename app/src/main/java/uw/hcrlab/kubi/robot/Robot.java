@@ -71,7 +71,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private KubiManager kubiManager;
 
-    private String PANDORA_BOT_ID = "b9581e5f6e343f72";
     private Bot bot;
     private TTS tts;
 
@@ -86,7 +85,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Boolean leftIsShowing = false;
     private Boolean rightIsShowing = false;
 
-    private String promptId;
     private Prompt prompt;
 
     /**
@@ -99,18 +97,61 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         kubiManager.findAllKubis();
 
         createRecognizer(App.getContext());
-
-        if(App.InWizardMode()) {
-            questions = new CommandHandler("questions");
-        }
     }
 
+    /**
+     * Cleans up resources which exist regardless of whether a robot has been setup or not.
+     */
     public void cleanup() {
         kubiManager.disconnect();
     }
 
+    /**
+     * A factory class for creating robot objects.
+     */
     public static class Factory {
+        /**
+         * Creates a robot instance given resource IDs for important UI components. Creates a robot
+         * without individual flash cards (left and right hands)
+         *
+         * @param context A reference to the Activity the robot belongs to
+         * @param faceRes Resource ID for the RobotFace view
+         * @param promptRes Resource ID for the prompt container view
+         * @param thoughtRes Resource ID for the though bubble container view
+         * @return The created instance of the Robot class
+         */
+        public static Robot create(FragmentActivity context, int faceRes, int promptRes, int thoughtRes) {
+            preSetup();
+            setup(context, faceRes, promptRes, thoughtRes);
+            postSetup();
+
+            return instance;
+        }
+
+        /**
+         * Creates a robot instance given resource IDs for important UI components
+         *
+         * @param context A reference to the Activity the robot belongs to
+         * @param faceRes Resource ID for the RobotFace view
+         * @param promptRes Resource ID for the prompt container view
+         * @param thoughtRes Resource ID for the though bubble container view
+         * @param leftRes Resource ID for the left card view (the robot's right hand)
+         * @param rightRes Resource ID for the right card view (the robot's left hand)
+         * @return The created instance of the Robot class
+         */
         public static Robot create(FragmentActivity context, int faceRes, int promptRes, int thoughtRes, int leftRes, int rightRes) {
+            preSetup();
+            setup(context, faceRes, promptRes, thoughtRes, leftRes, rightRes);
+            postSetup();
+
+            return instance;
+        }
+
+        /**
+         * Creates a bare robot object which has not yet been initialized. If a robot instance
+         * already exists, this will shutdown the robot and prepare the robot to be re-initialized.
+         */
+        private static void preSetup() {
             if(instance == null) {
                 instance = new Robot();
             } else {
@@ -118,11 +159,58 @@ public class Robot extends ASR implements IKubiManagerDelegate {
                 instance.shutdown();
                 instance.tts.shutdown();
             }
+        }
 
-            // Setup UI components
-            instance.setup(context, faceRes, promptRes, thoughtRes, leftRes, rightRes);
+        /**
+         * Handles the setup actions which must occur every time a new face is passed in.
+         *
+         * @param faceRes Resource ID for the RobotFace view
+         * @param promptRes Resource ID for the prompt container view
+         * @param bubbleRes Resource ID for the though bubble container view
+         * @param context The current activity
+         */
+        private static void setup(FragmentActivity context, int faceRes, int promptRes, int bubbleRes) {
+            instance.mActivity = context;
 
-            return instance;
+            instance.faceResId = faceRes;
+            instance.promptResId = promptRes;
+            instance.thoughtResId = bubbleRes;
+
+            postSetup();
+        }
+
+        /**
+         * Handles the setup actions which must occur every time a new face is passed in.
+         *
+         * @param faceRes Resource ID for the RobotFace view
+         * @param promptRes Resource ID for the prompt container view
+         * @param bubbleRes Resource ID for the though bubble container view
+         * @param leftRes Resource ID for the left card view (the robot's right hand)
+         * @param rightRes Resource ID for the right card view (the robot's left hand)
+         * @param context The current activity
+         */
+        private static void setup(FragmentActivity context, int faceRes, int promptRes, int bubbleRes, int leftRes, int rightRes) {
+            instance.mActivity = context;
+
+            instance.faceResId = faceRes;
+            instance.promptResId = promptRes;
+            instance.thoughtResId = bubbleRes;
+            instance.leftCardResId = leftRes;
+            instance.rightCardResId = rightRes;
+
+            postSetup();
+        }
+
+        /**
+         * Post-setup actions that are taken for all versions of the create function
+         */
+        private static void postSetup() {
+            instance.tts = TTS.getInstance(instance.mActivity);
+            instance.bot = new Bot(instance.mActivity, "b9581e5f6e343f72", instance.tts);
+
+            if(App.InWizardMode()) {
+                instance.questions = new CommandHandler("questions");
+            }
         }
     }
 
@@ -139,29 +227,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }
 
         return instance;
-    }
-
-    /**
-     * Handles the setup actions which must occur every time a new face is passed in.
-     *
-     * @param faceRes The RobotFace view for the current Activity
-     * @param promptRes
-     * @param bubbleRes
-     * @param leftRes
-     * @param rightRes
-     * @param context The current activity
-     */
-    private void setup(FragmentActivity context, int faceRes, int promptRes, int bubbleRes, int leftRes, int rightRes) {
-        mActivity = context;
-
-        faceResId = faceRes;
-        promptResId = promptRes;
-        thoughtResId = bubbleRes;
-        leftCardResId = leftRes;
-        rightCardResId = rightRes;
-
-        tts = TTS.getInstance(context);
-        bot = new Bot(context, PANDORA_BOT_ID, tts);
     }
 
     /**
@@ -276,6 +341,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         } catch (Exception e) {
             Log.e(TAG, language + " not available for TTS, default language used instead");
         }
+    }
+
+    public void shutup() {
+        tts.stop();
     }
 
     public void listen() {
@@ -645,12 +714,12 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         return mIsPromptOpen;
     }
 
-    public String getCurrentPromptId() {
-        return promptId;
+    public Prompt getPrompt() {
+        return prompt;
     }
 
     // Render the given PromptData to the user
-    public void setPrompt(final Prompt prompt, final String promptId) {
+    public void setPrompt(final Prompt prompt) {
         if(mIsPromptOpen) {
             hidePrompt();
 
@@ -658,19 +727,18 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    setPrompt(prompt, promptId);
+                    setPrompt(prompt);
                 }
             }, 800);
 
             return;
         }
 
-        this.promptId = promptId;
         this.prompt = prompt;
 
         this.mActivity.getSupportFragmentManager()
                 .beginTransaction()
-                .replace(promptResId, prompt, this.promptId)
+                .replace(promptResId, prompt, prompt.getUid())
                 .commit();
 
         // Animate the prompt onto the screen
@@ -698,8 +766,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void setPromptResponse(Object response) {
-        if (promptId != null) {
-            Firebase fb = App.getFirebase().child("questions").child(promptId).child("response");
+        if (prompt != null && prompt.getUid() != null) {
+            Firebase fb = App.getFirebase().child("questions").child(prompt.getUid()).child("response");
             fb.setValue(response);
         } else {
             Log.e(TAG, "null promptId, not setting firebase value");

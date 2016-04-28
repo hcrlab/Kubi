@@ -33,18 +33,6 @@ public class CommandHandler extends WizardHandler {
         super(ref);
     }
 
-    private int getDrawable(String command) {
-        Map<String, Integer> drawables = new HashMap<String, Integer>();
-
-        drawables.put("APPLE", R.drawable.apple);
-        drawables.put("BANANA", R.drawable.banana);
-        drawables.put("GIRL", R.drawable.girl);
-        drawables.put("BOY", R.drawable.boy);
-        drawables.put("FRANCE", R.drawable.france);
-
-        return drawables.get(command);
-    }
-
     private PromptTypes getType(DataSnapshot snap) {
         if(!snap.hasChild("type")) {
             throw new IllegalArgumentException("Data snapshot does not contain a property named `type`");
@@ -148,11 +136,7 @@ public class CommandHandler extends WizardHandler {
     @Override
     public void onChildAdded(DataSnapshot snap, String s) {
         if(!snap.hasChild("handled") || !snap.child("handled").getValue(Boolean.class)) {
-            Log.i(TAG, "received a new command");
-
-            if(robot == null) {
-                robot = Robot.getInstance();
-            }
+            Log.i(TAG, "received a new command: " + snap.getKey());
 
             PromptTypes type;
 
@@ -242,8 +226,10 @@ public class CommandHandler extends WizardHandler {
                     return;
             }
 
+            prompt.setUid(snap.getKey());
             prompt.setData(pd);
-            robot.setPrompt(prompt, snap.getKey());
+
+            robot.setPrompt(prompt);
 
             snap.child("handled").getRef().setValue(true);
         }
@@ -253,17 +239,15 @@ public class CommandHandler extends WizardHandler {
     public void onChildChanged(DataSnapshot snap, String s) {
         DataSnapshot res = snap.child("result");
 
-        if(res.exists() && (!res.hasChild("handled") || !res.child("handled").getValue(Boolean.class))) {
-            if(robot == null) {
-                robot = Robot.getInstance();
-            }
+        Prompt prompt = robot.getPrompt();
 
-            if(!robot.getCurrentPromptId().equals(snap.getKey())) {
+        if(prompt != null && res.exists() && (!res.hasChild("handled") || !res.child("handled").getValue(Boolean.class))) {
+            if(!prompt.getUid().equals(snap.getKey())) {
                 Log.e(TAG, "Received a results update for a prompt that isn't currently showing!");
                 return;
             }
 
-            Log.i(TAG, "Received a new result!");
+            Log.i(TAG, "Received a result: " + prompt.getUid());
 
             PromptTypes type;
 

@@ -5,20 +5,14 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.danikula.videocache.HttpProxyCacheServer;
-
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import uw.hcrlab.kubi.App;
@@ -29,7 +23,6 @@ import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.results.SelectResult;
 import uw.hcrlab.kubi.robot.FaceAction;
-import uw.hcrlab.kubi.robot.Robot;
 
 public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCardSelectedListener {
     private static String TAG = SelectPrompt.class.getSimpleName();
@@ -91,7 +84,7 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
             String url = App.getAudioURL(option.title);
 
             if(url != null) {
-                String audioUrl = mProxy.getProxyUrl(url);
+                String audioUrl = proxy.getProxyUrl(url);
                 mPronunciations.put(createOptionTag(option.idx), MediaPlayer.create(activity, Uri.parse(audioUrl)));
             }
         }
@@ -151,10 +144,19 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
 
         flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(tag);
 
+        // Only let one pronunciation play at any given time
+        for(MediaPlayer mp : mPronunciations.values()) {
+            if(mp.isPlaying()) {
+                mp.pause();
+                mp.seekTo(0);
+            }
+        }
+
         // Play the pronunciation for this option
         if(mPronunciations.containsKey(tag)) {
             mPronunciations.get(tag).start();
         } else {
+            // Fallback if we don't have audio for this text
             robot.say(flashCard.getOption().title, "en");
         }
 
@@ -162,6 +164,7 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
         currentSelection = flashCard.getOption().idx;
         robot.setPromptResponse(currentSelection);
 
+        robot.shutup();
         handler.removeCallbacks(confirm);
         handler.postDelayed(confirm, 3000);
     }
