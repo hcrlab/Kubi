@@ -56,6 +56,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private boolean isAsleep = false;
     private boolean isBored = false;
 
+    public enum Hand {
+        Left,
+        Right
+    }
+
     private View leftCard;
     private View rightCard;
 
@@ -63,7 +68,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private boolean mIsHintOpen = false;
     private View mPromptContainer;
-    private int promptContainer;
+    private View mThoughtBubble;
 
     private String mCurrentPromptId;
     private Prompt mCurrentPrompt;
@@ -71,15 +76,23 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Boolean leftIsShowing = false;
     private Boolean rightIsShowing = false;
 
+
+    // RobotFace timers and timeout values
+    private final long BORING_TIME = 1 * 60 * 1000;
+    private final long SLEEP_TIME = 5 * 60 * 1000;
+    private Random random = new Random();
+    private Timer bored;
+    private Timer sleep;
+
     // The ID of the bot to use for the chatbot, can be changed
     // you can also make a new bot by creating an account in pandorabots.com and making a new chatbot robot
     private String PANDORA_BOT_ID = "b9581e5f6e343f72";
     private Bot bot;
     private TTS tts;
 
-    private ProgressIndicator progress;
-
     private FragmentActivity mActivity;
+
+    private ProgressIndicator progress;
 
     private CommandHandler questions;
 
@@ -87,14 +100,14 @@ public class Robot extends ASR implements IKubiManagerDelegate {
      *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
      *  are updated when getInstance() is called.
      */
-    private Robot(RobotFace face, final FragmentActivity context){
+    private Robot(final FragmentActivity context, RobotFace face, View prompt, View bubble, View left, View right){
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
         kubiManager.findAllKubis();
 
         createRecognizer(App.getContext());
 
-        setup(face, context);
+        setup(context, face, prompt, bubble, left, right);
 
         if(App.InWizardMode()) {
             questions = new CommandHandler("questions");
@@ -113,10 +126,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
      * @param context The current activity
      * @return The Robot singleton
      */
-    public static Robot getInstance(RobotFace face, FragmentActivity context) {
+    public static Robot getInstance(FragmentActivity context, RobotFace face, View prompt, View bubble, View left, View right) {
         if (robotInstance == null) {
             //Create the singleton instance
-            robotInstance = new Robot(face, context);
+            robotInstance = new Robot(context, face, prompt, bubble, left, right);
 
         } else {
             //Shutdown resources tied to the previous robot face to allow them to be recreated
@@ -124,7 +137,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             robotInstance.tts.shutdown();
 
             //Setup the Robot instance with the new face
-            robotInstance.setup(face, context);
+            robotInstance.setup(context, face, prompt, bubble, left, right);
         }
 
         return robotInstance;
@@ -137,6 +150,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
      * @return The current robot instance
      */
     public static Robot getInstance() {
+        if(robotInstance == null) {
+            throw new ExceptionInInitializerError("You must initialize the robot class with getInstance(...) before calling getInstance()!");
+        }
+
         return robotInstance;
     }
 
@@ -146,8 +163,34 @@ public class Robot extends ASR implements IKubiManagerDelegate {
      * @param face The RobotFace view for the current Activity
      * @param context The current activity
      */
-    private void setup(RobotFace face, FragmentActivity context) {
+    private void setup(FragmentActivity context, RobotFace face, View prompt, View bubble, View left, View right) {
         mActivity = context;
+        mPromptContainer = prompt;
+        mThoughtBubble = bubble;
+        leftCard = left;
+        rightCard = right;
+
+        this.leftCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "left image clicked!");
+                if (rightIsShowing) {
+                    hideCard(Robot.Hand.Right);
+                    rightIsShowing = false;
+                }
+            }
+        });
+
+        this.rightCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "right image clicked!");
+                if (leftIsShowing) {
+                    hideCard(Robot.Hand.Left);
+                    leftIsShowing = false;
+                }
+            }
+        });
 
         robotFace = face;
         robotFace.setOnTouchListener(faceListener);
@@ -175,7 +218,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }
 
         resetTimers();
-
     }
 
     /**
@@ -183,6 +225,14 @@ public class Robot extends ASR implements IKubiManagerDelegate {
      */
     public void shutdown() {
         Log.i(TAG, "Shutting down Main Thread ...");
+
+        if(sleep != null) {
+            sleep.cancel();
+        }
+
+        if(bored != null) {
+            bored.cancel();
+        }
 
         progress.cleanup();
 
@@ -239,6 +289,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void act(FaceAction faceAction) {
+        if(robotFace == null) {
+            throw new NullPointerException("act(...) cannot be called if robot doesn't have a reference to a RobotFace view!");
+        }
+
         resetTimers();
 
         thread.act(faceAction);
@@ -246,18 +300,13 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
 
     // look around every 3 minutes
-    private final long BORING_TIME = 1 * 60 * 1000;
-    private final long SLEEP_TIME = 5 * 60 * 1000;
-
-    private Random random = new Random();
-
-    private Timer bored;
-    private Timer sleep;
-
     private void kubiDo(int gesture) {
-        if(kubiManager.getKubi() != null) {
-            kubiManager.getKubi().performGesture(gesture);
+        if(kubiManager.getKubi() == null) {
+            Log.w(TAG, "Unable to get a reference to a Kubi robot!");
+            return;
         }
+
+        kubiManager.getKubi().performGesture(gesture);
     }
 
     private void scheduleBored(long delay) {
@@ -513,6 +562,16 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
     }
 
+
+    /** Show a HintData, which can contain multiple hints */
+    public void showHint(HintData hintData) {
+        Fragment hint = new HintFragment().setHintData(hintData);
+
+        // add the hint fragment to the container (replacing last one, if applicable)
+        this.mActivity.getSupportFragmentManager().beginTransaction()
+                .replace(mThoughtBubble.getId(), hint).commit();
+    }
+
     // Render the given PromptData to the user
     public void showHint(final String hint) {
         if(mIsHintOpen) {
@@ -529,24 +588,20 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             return;
         }
 
+        ((TextView) mThoughtBubble.findViewById(R.id.thought_text)).setText(hint);
+
         // Animate the prompt onto the screen
-        final View hintView = this.mActivity.findViewById(R.id.thought_bubble);
-        final TextView tv = (TextView) hintView.findViewById(R.id.thought_text);
-        tv.setText(hint);
-
-        boolean isHidden = ((FrameLayout.LayoutParams)hintView.getLayoutParams()).topMargin < 0;
-
-        if(isHidden) {
-            ValueAnimator anim = ValueAnimator.ofInt(-hintView.getHeight() - 10, 20);
+        if(((FrameLayout.LayoutParams)mThoughtBubble.getLayoutParams()).topMargin < 0) {
+            ValueAnimator anim = ValueAnimator.ofInt(-mThoughtBubble.getHeight() - 10, 20);
             anim.setInterpolator(new AnticipateOvershootInterpolator());
             anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
                     int val = (Integer) valueAnimator.getAnimatedValue();
 
-                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) hintView.getLayoutParams();
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mThoughtBubble.getLayoutParams();
                     params.topMargin = val;
-                    hintView.setLayoutParams(params);
+                    mThoughtBubble.setLayoutParams(params);
                 }
             });
             anim.setDuration(500);
@@ -561,33 +616,26 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void hideHint() {
-        final View hintView = this.mActivity.findViewById(R.id.thought_bubble);
+        if(!mIsHintOpen) {
+            return;
+        }
 
-        ValueAnimator anim = ValueAnimator.ofInt(20, -hintView.getHeight() - 10);
+        ValueAnimator anim = ValueAnimator.ofInt(20, -mThoughtBubble.getHeight() - 10);
         anim.setInterpolator(new AnticipateOvershootInterpolator());
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 int val = (Integer) valueAnimator.getAnimatedValue();
 
-                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) hintView.getLayoutParams();
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mThoughtBubble.getLayoutParams();
                 params.topMargin = val;
-                hintView.setLayoutParams(params);
+                mThoughtBubble.setLayoutParams(params);
             }
         });
         anim.setDuration(500);
         anim.start();
 
         mIsHintOpen = false;
-    }
-
-    public void setPromptContainer(View promptContainer) {
-        this.mPromptContainer = promptContainer;
-    }
-
-    /** Takes in an integer referring to a view component, e.g. R.id.prompt_container */
-    public void setPromptContainer(int promptContainer) {
-        this.promptContainer = promptContainer;
     }
 
     public boolean isPromptOpen() {
@@ -600,10 +648,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     // Render the given PromptData to the user
     public void setPrompt(final Prompt prompt, final String promptId) {
-        if (promptContainer == 0) {
-            Log.i(TAG, "promptContainer 0, probably forgot to setHintContainer");
-        }
-
         if(mIsPromptOpen) {
             hidePrompt();
 
@@ -623,7 +667,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         this.mActivity.getSupportFragmentManager()
                 .beginTransaction()
-                .replace(this.promptContainer, prompt, mCurrentPromptId)
+                .replace(mPromptContainer.getId(), prompt, mCurrentPromptId)
                 .commit();
 
         // Animate the prompt onto the screen
@@ -689,57 +733,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         mIsPromptOpen = false;
         mCurrentPrompt = null;
-    }
-
-    private int hintContainer;
-
-    public void setHintContainer(int hintContainer) {
-        this.hintContainer = hintContainer;
-    }
-
-    /** Show a HintData, which can contain multiple hints */
-    public void showHint(HintData hintData) {
-        if (hintContainer == 0) {
-            Log.i(TAG, "hintContainer 0, probably forgot to setHintContainer");
-        }
-
-        Fragment hint = new HintFragment().setHintData(hintData);
-
-        // add the hint fragment to the container (replacing last one, if applicable)
-        this.mActivity.getSupportFragmentManager().beginTransaction()
-                .replace(this.hintContainer, hint).commit();
-    }
-
-    public void setCards(View left, View right) {
-        this.leftCard = left;
-        this.rightCard = right;
-
-        this.leftCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "left image clicked!");
-                if (rightIsShowing) {
-                    hideCard(Robot.Hand.Right);
-                    rightIsShowing = false;
-                }
-            }
-        });
-
-        this.rightCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "right image clicked!");
-                if (leftIsShowing) {
-                    hideCard(Robot.Hand.Left);
-                    leftIsShowing = false;
-                }
-            }
-        });
-    }
-
-    public enum Hand {
-        Left,
-        Right
     }
 
     public void showCard(Hand leftOrRight) {

@@ -6,10 +6,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/thought_bubble_width"
     android:layout_height="@dimen/thought_bubble_height"
-    android:layout_marginLeft="@dimen/thought_bubble_margin"
+    android:layout_marginStart="@dimen/thought_bubble_margin"
     android:layout_marginTop="@dimen/thought_bubble_top_margin"
     tools:layout_marginTop="20dp"
-    android:layout_gravity="start|left"
+    android:layout_gravity="start|top"
     android:background="@drawable/thought_bubble">
 
     <!--This is a temp solution to merge in Leah's hint code-->
