@@ -45,20 +45,35 @@ import uw.hcrlab.kubi.wizard.CommandHandler;
 public class Robot extends ASR implements IKubiManagerDelegate {
     public static String TAG = Robot.class.getSimpleName();
 
-    private static Robot robotInstance = null;
-
-    private String mDefaultLanguage = "EN";
-
-    private FaceThread thread;
-    private KubiManager kubiManager;
-
-    private boolean isAsleep = false;
-    private boolean isBored = false;
-
     public enum Hand {
         Left,
         Right
     }
+
+    private static Robot instance = null;
+
+    private FragmentActivity mActivity;
+
+    private ProgressIndicator progress;
+
+    private CommandHandler questions;
+
+    private String language = "EN";
+
+    private FaceThread thread;
+    private boolean isAsleep = false;
+    private boolean isBored = false;
+    private final long BORING_TIME = 60 * 1000;
+    private final long SLEEP_TIME = 5 * 60 * 1000;
+    private Random random = new Random();
+    private Timer bored;
+    private Timer sleep;
+
+    private KubiManager kubiManager;
+
+    private String PANDORA_BOT_ID = "b9581e5f6e343f72";
+    private Bot bot;
+    private TTS tts;
 
     private int faceResId;
     private int leftCardResId;
@@ -68,33 +83,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private boolean mIsPromptOpen = false;
     private boolean mIsHintOpen = false;
-
-
-    private String mCurrentPromptId;
-    private Prompt mCurrentPrompt;
-
     private Boolean leftIsShowing = false;
     private Boolean rightIsShowing = false;
 
-
-    // RobotFace timers and timeout values
-    private final long BORING_TIME = 1 * 60 * 1000;
-    private final long SLEEP_TIME = 5 * 60 * 1000;
-    private Random random = new Random();
-    private Timer bored;
-    private Timer sleep;
-
-    // The ID of the bot to use for the chatbot, can be changed
-    // you can also make a new bot by creating an account in pandorabots.com and making a new chatbot robot
-    private String PANDORA_BOT_ID = "b9581e5f6e343f72";
-    private Bot bot;
-    private TTS tts;
-
-    private FragmentActivity mActivity;
-
-    private ProgressIndicator progress;
-
-    private CommandHandler questions;
+    private String promptId;
+    private Prompt prompt;
 
     /**
      *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
@@ -118,18 +111,18 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     public static class Factory {
         public static Robot create(FragmentActivity context, int faceRes, int promptRes, int thoughtRes, int leftRes, int rightRes) {
-            if(robotInstance == null) {
-                robotInstance = new Robot();
+            if(instance == null) {
+                instance = new Robot();
             } else {
                 //Shutdown resources tied to the previous robot face to allow them to be recreated
-                robotInstance.shutdown();
-                robotInstance.tts.shutdown();
+                instance.shutdown();
+                instance.tts.shutdown();
             }
 
             // Setup UI components
-            robotInstance.setup(context, faceRes, promptRes, thoughtRes, leftRes, rightRes);
+            instance.setup(context, faceRes, promptRes, thoughtRes, leftRes, rightRes);
 
-            return robotInstance;
+            return instance;
         }
     }
 
@@ -141,11 +134,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
      * @return The Robot singleton
      */
     public static Robot getInstance() {
-        if (robotInstance == null) {
+        if (instance == null) {
             throw new NullPointerException("Use Factory.create(...) to create a robot before calling getInstance()!");
         }
 
-        return robotInstance;
+        return instance;
     }
 
     /**
@@ -252,6 +245,14 @@ public class Robot extends ASR implements IKubiManagerDelegate {
                 Log.e(TAG, "Robot thread didn't join. Trying again.");
             }
         }
+    }
+
+    public String getDefaultLanguage() {
+        return language;
+    }
+
+    public void setDefaultLanguage(String lan) {
+        language = lan;
     }
 
     /**
@@ -532,7 +533,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             if(response != null){
                 //We have a preprogrammed Response, so use it
                 Log.i(TAG, "Saying : " + response);
-                say(response, mDefaultLanguage);
+                say(response, language);
             }  else {
                 //We don't have a preprogrammed Response, so use the bot to create a Response
                 Log.i(TAG, "Default response");
@@ -569,7 +570,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         // add the hint fragment to the container (replacing last one, if applicable)
         this.mActivity.getSupportFragmentManager().beginTransaction()
-                .replace(thoughtResId.getId(), hint).commit();
+                .replace(thoughtResId, hint).commit();
     }
 
     // Render the given PromptData to the user
@@ -588,20 +589,21 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             return;
         }
 
-        ((TextView) thoughtResId.findViewById(R.id.thought_text)).setText(hint);
+        final View bubble = mActivity.findViewById(thoughtResId);
+        ((TextView) bubble.findViewById(R.id.thought_text)).setText(hint);
 
         // Animate the prompt onto the screen
-        if(((FrameLayout.LayoutParams) thoughtResId.getLayoutParams()).topMargin < 0) {
-            ValueAnimator anim = ValueAnimator.ofInt(-thoughtResId.getHeight() - 10, 20);
+        if(((FrameLayout.LayoutParams) bubble.getLayoutParams()).topMargin < 0) {
+            ValueAnimator anim = ValueAnimator.ofInt(-bubble.getHeight() - 10, 20);
             anim.setInterpolator(new AnticipateOvershootInterpolator());
             anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
                     int val = (Integer) valueAnimator.getAnimatedValue();
 
-                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) thoughtResId.getLayoutParams();
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) bubble.getLayoutParams();
                     params.topMargin = val;
-                    thoughtResId.setLayoutParams(params);
+                    bubble.setLayoutParams(params);
                 }
             });
             anim.setDuration(500);
@@ -620,16 +622,17 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             return;
         }
 
-        ValueAnimator anim = ValueAnimator.ofInt(20, -thoughtResId.getHeight() - 10);
+        final View bubble = mActivity.findViewById(thoughtResId);
+        ValueAnimator anim = ValueAnimator.ofInt(20, -bubble.getHeight() - 10);
         anim.setInterpolator(new AnticipateOvershootInterpolator());
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 int val = (Integer) valueAnimator.getAnimatedValue();
 
-                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) thoughtResId.getLayoutParams();
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) bubble.getLayoutParams();
                 params.topMargin = val;
-                thoughtResId.setLayoutParams(params);
+                bubble.setLayoutParams(params);
             }
         });
         anim.setDuration(500);
@@ -643,7 +646,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public String getCurrentPromptId() {
-        return mCurrentPromptId;
+        return promptId;
     }
 
     // Render the given PromptData to the user
@@ -662,12 +665,12 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             return;
         }
 
-        mCurrentPromptId = promptId;
-        mCurrentPrompt = prompt;
+        this.promptId = promptId;
+        this.prompt = prompt;
 
         this.mActivity.getSupportFragmentManager()
                 .beginTransaction()
-                .replace(promptResId.getId(), prompt, mCurrentPromptId)
+                .replace(promptResId, prompt, this.promptId)
                 .commit();
 
         // Animate the prompt onto the screen
@@ -695,11 +698,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void setPromptResponse(Object response) {
-        if (mCurrentPromptId != null) {
-            Firebase fb = App.getFirebase().child("questions").child(mCurrentPromptId).child("response");
+        if (promptId != null) {
+            Firebase fb = App.getFirebase().child("questions").child(promptId).child("response");
             fb.setValue(response);
         } else {
-            Log.e(TAG, "null mCurrentPromptId, not setting firebase value");
+            Log.e(TAG, "null promptId, not setting firebase value");
         }
     }
 
@@ -710,7 +713,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             this.say("Oops! That\'s not the correct answer.", "en");
         }
 
-        mCurrentPrompt.handleResults(res);
+        prompt.handleResults(res);
     }
 
     public void hidePrompt() {
@@ -732,20 +735,17 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         anim.start();
 
         mIsPromptOpen = false;
-        mCurrentPrompt = null;
+        prompt = null;
     }
 
     public void showCard(Hand leftOrRight) {
         if(leftOrRight == Hand.Left && leftIsShowing) return;
         if(leftOrRight == Hand.Right && rightIsShowing) return;
 
-        final View card = leftOrRight == Hand.Left ? leftCardResId : rightCardResId;
-
-        if(card == null) return;
-
         if(leftOrRight == Hand.Left) leftIsShowing = true;
         if(leftOrRight == Hand.Right) rightIsShowing = true;
 
+        final View card = mActivity.findViewById(leftOrRight == Hand.Left ? leftCardResId : rightCardResId);
         if(((FrameLayout.LayoutParams)card.getLayoutParams()).bottomMargin < 0) {
             ValueAnimator anim = ValueAnimator.ofInt(-card.getHeight() - 10, 20);
             anim.setInterpolator(new AnticipateOvershootInterpolator());
@@ -765,7 +765,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void showCard(Hand leftOrRight, int resID, String text) {
-        final View card = leftOrRight == Hand.Left ? leftCardResId : rightCardResId;
+        final View card = mActivity.findViewById(leftOrRight == Hand.Left ? leftCardResId : rightCardResId);
 
         if(card == null) return;
 
@@ -806,7 +806,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public ValueAnimator hideCard(Hand leftOrRight) {
-        final View card = leftOrRight == Hand.Left ? leftCardResId : rightCardResId;
+        final View card = mActivity.findViewById(leftOrRight == Hand.Left ? leftCardResId : rightCardResId);
 
         if(card == null) return null;
 
