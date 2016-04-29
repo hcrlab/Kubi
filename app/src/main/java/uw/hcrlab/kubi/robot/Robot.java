@@ -3,7 +3,6 @@ package uw.hcrlab.kubi.robot;
 import android.animation.ValueAnimator;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -12,6 +11,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,8 +31,8 @@ import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.App;
 import uw.hcrlab.kubi.R;
+import uw.hcrlab.kubi.lesson.HintArrayAdapter;
 import uw.hcrlab.kubi.lesson.HintData;
-import uw.hcrlab.kubi.lesson.HintFragment;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.screen.RobotFace;
@@ -634,15 +634,53 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
 
     /** Show a HintData, which can contain multiple hints */
-    public void showHint(HintData hintData) {
-        Fragment hint = new HintFragment().setHintData(hintData);
+    public void showHint(final HintData hint) {
+        if(mIsHintOpen) {
+            hideHint();
 
-        // add the hint fragment to the container (replacing last one, if applicable)
-        this.mActivity.getSupportFragmentManager().beginTransaction()
-                .replace(thoughtResId, hint).commit();
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showHint(hint);
+                }
+            }, 800);
+
+            return;
+        }
+
+        final View bubble = mActivity.findViewById(this.thoughtResId);
+
+        HintArrayAdapter adapter = new HintArrayAdapter(mActivity, hint.details);
+
+        TextView tv = (TextView) bubble.findViewById(R.id.thought_bubble_big);
+        ListView lv = (ListView) bubble.findViewById(R.id.thought_bubble_list);
+        lv.setAdapter(adapter);
+
+        lv.setVisibility(View.VISIBLE);
+        tv.setVisibility(View.GONE);
+
+        // Animate the prompt onto the screen
+        if(((FrameLayout.LayoutParams) bubble.getLayoutParams()).topMargin < 0) {
+            ValueAnimator anim = ValueAnimator.ofInt(-bubble.getHeight() - 10, 20);
+            anim.setInterpolator(new AnticipateOvershootInterpolator());
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    int val = (Integer) valueAnimator.getAnimatedValue();
+
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) bubble.getLayoutParams();
+                    params.topMargin = val;
+                    bubble.setLayoutParams(params);
+                }
+            });
+            anim.setDuration(500);
+            anim.start();
+
+            mIsHintOpen = true;
+        }
     }
 
-    // Render the given PromptData to the user
     public void showHint(final String hint) {
         if(mIsHintOpen) {
             hideHint();
@@ -658,8 +696,15 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             return;
         }
 
-        final View bubble = mActivity.findViewById(thoughtResId);
-        ((TextView) bubble.findViewById(R.id.thought_text)).setText(hint);
+
+        final View bubble = mActivity.findViewById(this.thoughtResId);
+
+        ListView lv = (ListView) bubble.findViewById(R.id.thought_bubble_list);
+        TextView tv = (TextView) bubble.findViewById(R.id.thought_bubble_big);
+        tv.setText(hint);
+
+        lv.setVisibility(View.GONE);
+        tv.setVisibility(View.VISIBLE);
 
         // Animate the prompt onto the screen
         if(((FrameLayout.LayoutParams) bubble.getLayoutParams()).topMargin < 0) {

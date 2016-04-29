@@ -70,13 +70,7 @@
                 android:orientation="horizontal"
                 >
                 <!-- hint (filled dynamically with fragment) -->
-                <LinearLayout
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:id="@+id/hint_container"
-                    />
+                <include layout="@layout/thought_bubble_layout"/>
 
                 <!-- eyes -->
                 <WebView

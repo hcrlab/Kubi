@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout
-    android:id="@+id/thought_bubble"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/thought_bubble"
     android:layout_width="@dimen/thought_bubble_width"
     android:layout_height="@dimen/thought_bubble_height"
     android:layout_marginStart="@dimen/thought_bubble_margin"
@@ -12,23 +12,19 @@
     android:layout_gravity="start|top"
     android:background="@drawable/thought_bubble">
 
-    <!--This is a temp solution to merge in Leah's hint code-->
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:id="@+id/hint_container"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:gravity="center"-->
-        <!--/>-->
+    <ListView
+        android:id="@+id/thought_bubble_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@null"/>
 
     <TextView
-        android:id="@+id/thought_text"
+        android:id="@+id/thought_bubble_big"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textSize="@dimen/hint_text_size"
         android:gravity="center"
         tools:text="Test Text"/>
 
-</FrameLayout>
+</RelativeLayout>
 

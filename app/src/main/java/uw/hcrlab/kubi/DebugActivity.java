@@ -1,6 +1,5 @@
 package uw.hcrlab.kubi;
 
-import uw.hcrlab.kubi.lesson.HintFragment;
 import uw.hcrlab.kubi.lesson.HintData;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
@@ -9,10 +8,8 @@ import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.PromptTypes;
 import uw.hcrlab.kubi.robot.Robot;
-import uw.hcrlab.kubi.screen.RobotFace;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -42,7 +39,7 @@ public class DebugActivity extends FragmentActivity {
         eye_area.loadUrl("file:///android_asset/eyes.html");
 
         // load robot face into layout
-        robot = Robot.Factory.create(this, R.id.robot_face_view, R.id.prompt_container, R.id.hint_container);
+        robot = Robot.Factory.create(this, R.id.robot_face_view, R.id.prompt_container, R.id.thought_bubble);
 
         // do not show the virtual keyboard on the debug prompt
         getWindow().setSoftInputMode(
@@ -109,11 +106,7 @@ public class DebugActivity extends FragmentActivity {
 
     // Render the given HintData to the user
     private void loadHint(HintData hintData) {
-        Fragment hint = new HintFragment().setHintData(hintData);
-
-        // add the hint fragment to the container (replacing last one, if applicable)
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.hint_container, hint).commit();
+        robot.showHint(hintData);
     }
 
     private void interpretDebugPrompt(View view) {
