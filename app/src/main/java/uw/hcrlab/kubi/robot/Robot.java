@@ -262,13 +262,13 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             }
         });
 
-        RobotFace face = (RobotFace) mActivity.findViewById(this.faceResId);
-        face.setOnTouchListener(faceListener);
+//        RobotFace face = (RobotFace) mActivity.findViewById(this.faceResId);
+//        face.setOnTouchListener(faceListener);
 
         progress = new ProgressIndicator(this.mActivity, R.id.progressBar, R.id.progressText);
 
-        thread = new FaceThread(face, kubiManager);
-        thread.start();
+//        thread = new FaceThread(face, kubiManager);
+//        thread.start();
 
         if(App.InWizardMode()) {
             questions.Listen();
@@ -293,23 +293,27 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         progress.cleanup();
 
-        while (true) {
-            try {
-                if(App.InWizardMode()) {
-                    questions.Stop();
-                }
-
-                if(thread != null) {
-                    thread.setRunning(false);
-                    thread.join();
-                    thread = null;
-                }
-
-                return;
-            } catch (InterruptedException e) {
-                Log.e(TAG, "Robot thread didn't join. Trying again.");
-            }
+        if(App.InWizardMode()) {
+            questions.Stop();
         }
+
+//        while (true) {
+//            try {
+//                if(App.InWizardMode()) {
+//                    questions.Stop();
+//                }
+//
+//                if(thread != null) {
+//                    thread.setRunning(false);
+//                    thread.join();
+//                    thread = null;
+//                }
+//
+//                return;
+//            } catch (InterruptedException e) {
+//                Log.e(TAG, "Robot thread didn't join. Trying again.");
+//            }
+//        }
     }
 
     public String getDefaultLanguage() {
@@ -358,14 +362,14 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void act(FaceAction faceAction) {
-        RobotFace face = (RobotFace) mActivity.findViewById(this.faceResId);
-        if(face == null) {
-            throw new NullPointerException("act(...) cannot be called if robot doesn't have a reference to a RobotFace view!");
-        }
-
-        resetTimers();
-
-        thread.act(faceAction);
+//        RobotFace face = (RobotFace) mActivity.findViewById(this.faceResId);
+//        if(face == null) {
+//            throw new NullPointerException("act(...) cannot be called if robot doesn't have a reference to a RobotFace view!");
+//        }
+//
+//        resetTimers();
+//
+//        thread.act(faceAction);
     }
 
 
@@ -389,7 +393,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             @Override
             public void run() {
                 isBored = true;
-                thread.act(FaceAction.LOOK_LEFT);
+//                thread.act(FaceAction.LOOK_LEFT);
                 kubiDo(Kubi.GESTURE_RANDOM);
                 scheduleBored(random.nextInt(20) * 1000);
             }
@@ -405,7 +409,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         scheduleBored(BORING_TIME);
 
         if (isAsleep) {
-            thread.act(FaceAction.WAKE);
+//            thread.act(FaceAction.WAKE);
             if(kubiManager.getKubi() != null) kubiManager.getKubi().moveTo(0, 0);
             isAsleep = false;
         }
@@ -419,7 +423,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             @Override
             public void run() {
                 isAsleep = true;
-                thread.act(FaceAction.SLEEP);
+//                thread.act(FaceAction.SLEEP);
                 kubiDo(Kubi.GESTURE_FACE_DOWN);
 
                 if (bored != null) {

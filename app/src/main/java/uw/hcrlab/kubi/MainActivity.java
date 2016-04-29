@@ -4,12 +4,14 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.VideoView;
 
 import com.danikula.videocache.HttpProxyCacheServer;
 
@@ -44,9 +46,30 @@ public class MainActivity extends FragmentActivity {
         robot = Robot.Factory.create(this, R.id.face, R.id.prompt_container, R.id.thought_bubble, R.id.leftCard, R.id.rightCard);
     }
 
+    VideoView eyes;
+
     @Override
     protected void onResume() {
         super.onResume();
+
+        eyes = (VideoView) findViewById(R.id.eyes);
+
+        Uri video = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.look_left_then_right);
+        eyes.setVideoURI(video);
+        eyes.setZOrderOnTop(true);
+        eyes.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.seekTo(0);
+            }
+        });
+        eyes.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                Log.d(TAG, "Eyes animation done!");
+            }
+        });
+//        eyes.start();
 
         robot.startup();
         App.FbConnect();
@@ -74,6 +97,9 @@ public class MainActivity extends FragmentActivity {
             case MotionEvent.ACTION_DOWN:
                 Log.i(TAG, "Screen touched ");
                 // TODO: log to Firebase?
+
+                Log.d(TAG, "Starting eye animation");
+                eyes.start();
 
                 if(robot.isHintOpen()) {
                     robot.hideHint();
