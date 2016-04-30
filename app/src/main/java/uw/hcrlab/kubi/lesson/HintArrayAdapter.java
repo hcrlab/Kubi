@@ -10,16 +10,15 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import uw.hcrlab.kubi.R;
-import uw.hcrlab.kubi.lesson.HintData.HintDetail;
 
 /**
  * Created by Alexander on 4/28/2016.
  */
-public class HintArrayAdapter extends ArrayAdapter<HintDetail> {
+public class HintArrayAdapter extends ArrayAdapter<PromptData.Hint> {
     private final Context context;
-    private final ArrayList<HintDetail> hints;
+    private final ArrayList<PromptData.Hint> hints;
 
-    public HintArrayAdapter(Context context, ArrayList<HintDetail> hints) {
+    public HintArrayAdapter(Context context, ArrayList<PromptData.Hint> hints) {
         super(context, -1, hints);
 
         this.context = context;

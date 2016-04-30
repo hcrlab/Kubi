@@ -8,6 +8,8 @@ import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,6 +17,7 @@ import android.widget.VideoView;
 
 import com.danikula.videocache.HttpProxyCacheServer;
 
+import java.io.IOException;
 import java.util.List;
 
 import uw.hcrlab.kubi.lesson.Prompt;
@@ -31,6 +34,9 @@ public class MainActivity extends FragmentActivity {
     /* Activity's Properties */
     private Robot robot;
 
+    private SurfaceView eyesView;
+    private MediaPlayer mp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "Creating Main Activity ...");
@@ -42,6 +48,38 @@ public class MainActivity extends FragmentActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
+        eyesView = (SurfaceView) findViewById(R.id.eyesView);
+
+        Uri video = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.look_left_then_right);
+        mp = new MediaPlayer();
+        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
+                    @Override
+                    public void onSeekComplete(MediaPlayer mediaPlayer) {
+                        mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+                            @Override
+                            public void onVideoSizeChanged(MediaPlayer mediaPlayer, int width, int height) {
+                                Log.d(TAG, "Video size: " + width + ", " + height);
+                            }
+                        });
+
+                        mediaPlayer.setDisplay(eyesView.getHolder());
+                    }
+                });
+
+                mediaPlayer.seekTo(0);
+            }
+        });
+
+        try {
+            mp.setDataSource(this, video);
+            mp.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // Initialize robot with UI components
         robot = Robot.Factory.create(this, R.id.face, R.id.prompt_container, R.id.thought_bubble, R.id.leftCard, R.id.rightCard);
     }
@@ -52,23 +90,24 @@ public class MainActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
 
-        eyes = (VideoView) findViewById(R.id.eyes);
+//        eyes = (VideoView) findViewById(R.id.eyes);
+//
+//        Uri video = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.look_left_then_right);
+//        eyes.setVideoURI(video);
+//        eyes.setZOrderOnTop(true);
+//        eyes.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//            @Override
+//            public void onPrepared(MediaPlayer mp) {
+//                mp.seekTo(0);
+//            }
+//        });
+//        eyes.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//            @Override
+//            public void onCompletion(MediaPlayer mp) {
+//                Log.d(TAG, "Eyes animation done!");
+//            }
+//        });
 
-        Uri video = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.look_left_then_right);
-        eyes.setVideoURI(video);
-        eyes.setZOrderOnTop(true);
-        eyes.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.seekTo(0);
-            }
-        });
-        eyes.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                Log.d(TAG, "Eyes animation done!");
-            }
-        });
 //        eyes.start();
 
         robot.startup();
@@ -99,7 +138,9 @@ public class MainActivity extends FragmentActivity {
                 // TODO: log to Firebase?
 
                 Log.d(TAG, "Starting eye animation");
-                eyes.start();
+                //eyes.start();
+
+                mp.start();
 
                 if(robot.isHintOpen()) {
                     robot.hideHint();

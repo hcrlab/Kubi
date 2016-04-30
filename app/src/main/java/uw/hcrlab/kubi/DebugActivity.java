@@ -1,6 +1,6 @@
 package uw.hcrlab.kubi;
 
-import uw.hcrlab.kubi.lesson.HintData;
+import uw.hcrlab.kubi.lesson.PromptData.HintCollection;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
@@ -104,8 +104,8 @@ public class DebugActivity extends FragmentActivity {
                 .replace(R.id.prompt_container, prompt).commit();
     }
 
-    // Render the given HintData to the user
-    private void loadHint(HintData hintData) {
+    // Render the given HintCollection to the user
+    private void loadHint(HintCollection hintData) {
         robot.showHint(hintData);
     }
 
@@ -124,7 +124,7 @@ public class DebugActivity extends FragmentActivity {
         }
         editText.getText().clear();
         PromptData pd = new PromptData();
-        HintData hd = new HintData();
+        HintCollection hd = new HintCollection();
         switch (input) {
             case (1):
                 pd.type = PromptTypes.SELECT;
@@ -134,7 +134,7 @@ public class DebugActivity extends FragmentActivity {
                 pd.options.add(new PromptData.Option(3, "niña").setDrawable(("girl")));
                 loadPrompt(pd);
 
-                hd.details.add(new HintData.HintDetail().setText("apple"));
+                hd.details.add(new PromptData.Hint().setText("apple"));
                 loadHint(hd);
 
                 break;

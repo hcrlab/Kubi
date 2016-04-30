@@ -1,41 +1,40 @@
 package uw.hcrlab.kubi.lesson.prompts;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import uw.hcrlab.kubi.R;
-import uw.hcrlab.kubi.lesson.HintData;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.results.TranslateResult;
 import uw.hcrlab.kubi.robot.FaceAction;
-import uw.hcrlab.kubi.robot.Robot;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
-public class TranslatePrompt extends Prompt implements TextWatcher, View.OnClickListener {
+public class TranslatePrompt extends Prompt implements TextWatcher {
     private static String TAG = TranslatePrompt.class.getSimpleName();
 
-    private ArrayList<WordButtonFragment> wordButtons;
     private HashMap<Integer, PromptData.Word> wordsById;
+
+    private View.OnClickListener hintClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Log.i(TAG, "clicked " + wordsById.get(view.getId()));
+            PromptData.Word word = wordsById.get(view.getId());
+            robot.showHint(word.hints);
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,25 +47,11 @@ public class TranslatePrompt extends Prompt implements TextWatcher, View.OnClick
             return view;
         }
 
-        // make buttons for the src text words
-        this.wordButtons = new ArrayList<>();
         this.wordsById = new HashMap<>();
-        int idx = 0;
+
+        LinearLayout sourceText = (LinearLayout) view.findViewById(R.id.l2_source_text);
         for (PromptData.Word word: this.data.words) {
-            WordButtonFragment wordButtonFragment = new WordButtonFragment();
-            wordButtonFragment.setId(idx);
-            wordButtonFragment.setWord(word);
-            wordButtonFragment.setOnClickListener(this);
-            String buttonTag = generateButtonTag(word.text, idx);
-
-            this.wordButtons.add(wordButtonFragment);
-            this.wordsById.put(idx, word);
-
-            Log.i(TAG, "Adding button " + buttonTag);
-            FragmentTransaction transaction = getActivity()
-                    .getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.l2_source_text, wordButtonFragment, buttonTag).commit();
-            idx += 1;
+            sourceText.addView(getWordView(inflater, sourceText, word));
         }
 
         // Setup the text input
@@ -78,17 +63,31 @@ public class TranslatePrompt extends Prompt implements TextWatcher, View.OnClick
         return view;
     }
 
-    private String generateButtonTag(String text, int idx) {
-        return text + "-" + idx;
-    }
+    private View getWordView(LayoutInflater inflater, ViewGroup container, PromptData.Word word) {
+        View view;
 
-    @Override
-    public void onClick(View v) {
-        Log.i(TAG, "clicked " + wordsById.get(v.getId()));
-        TextView button = (TextView) v;
-        PromptData.Word word = wordsById.get(v.getId());
-        // can safely assume the word has hints; it if didn't it would not be clickable
-        robot.showHint(word.hints);
+        if(word.hasHint()) {
+            Log.i(TAG, "Creating word button: " + word.text);
+
+            int id = View.generateViewId();
+            wordsById.put(id, word);
+
+            view = inflater.inflate(R.layout.word_button, container, false);
+
+            Button wordButton = (Button) view.findViewById(R.id.button);
+            wordButton.setText(word.text);
+            wordButton.setId(id);  // TODO: is this safe? (http://tinyurl.com/lzeu2at suggests it is)
+            wordButton.setOnClickListener(hintClickListener);
+        } else {
+            Log.i(TAG, "Creating word:" + word.text);
+
+            view = inflater.inflate(R.layout.word_plain, container, false);
+
+            TextView wordView = (TextView) view.findViewById(R.id.word_view);
+            wordView.setText(word.text);
+        }
+
+        return view;
     }
 
     @Override

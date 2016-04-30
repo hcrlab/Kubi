@@ -32,8 +32,8 @@ import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.App;
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.HintArrayAdapter;
-import uw.hcrlab.kubi.lesson.HintData;
 import uw.hcrlab.kubi.lesson.Prompt;
+import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
@@ -637,8 +637,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
 
-    /** Show a HintData, which can contain multiple hints */
-    public void showHint(final HintData hint) {
+    /** Show a HintCollection, which can contain multiple hints */
+    public void showHint(final PromptData.HintCollection hint) {
         if(mIsHintOpen) {
             hideHint();
 

@@ -47,15 +47,49 @@ public class PromptData {
                 this.type, this.PromptText, wordString, optionsString, imagesString);
     }
 
+    public static class Hint {
+        // will extend so this can be an "explain" or "conjugate" button when applicable
+        public String text;
+
+        public Hint setText(String text) {
+            this.text = text;
+            return this;
+        }
+
+        public String toString() {
+            return String.format(Locale.US, "Hint {%s}", this.text);
+        }
+    }
+
+    public static class HintCollection {
+        public ArrayList<Hint> details;
+
+        public HintCollection() {
+            this.details = new ArrayList<>();
+        }
+
+        public String toString() {
+            String detailString = "";
+            for (Hint detail: this.details) {
+                detailString += detail.toString() + ", ";
+            }
+            return String.format(Locale.US, "HintCollection {details=%s}", detailString);
+        }
+
+        public boolean isEmpty() {
+            return this.details.size() < 1;
+        }
+    }
+
     public static class Word {
         public int index;
         public String text;
-        public HintData hints;
+        public HintCollection hints;
 
         public Word(int index, String text) {
             this.index = index;
             this.text = text;
-            this.hints = new HintData();
+            this.hints = new HintCollection();
         }
 
         public boolean hasHint() {
@@ -63,7 +97,7 @@ public class PromptData {
         }
 
         public Word addHint(String hint) {
-            this.hints.details.add(new HintData.HintDetail().setText(hint));
+            this.hints.details.add(new Hint().setText(hint));
             return this;
         }
     }

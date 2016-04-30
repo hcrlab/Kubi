@@ -3,7 +3,6 @@ package uw.hcrlab.kubi.lesson.prompts;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -12,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -21,12 +19,10 @@ import java.util.ArrayList;
 
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.DrawableHelper;
-import uw.hcrlab.kubi.lesson.FramedImageFragment;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.results.NameResult;
-import uw.hcrlab.kubi.lesson.results.TranslateResult;
 import uw.hcrlab.kubi.robot.FaceAction;
 
 public class NamePrompt extends Prompt implements TextWatcher {
