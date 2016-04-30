@@ -5,11 +5,11 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,17 +17,17 @@ import java.util.Map;
 
 import uw.hcrlab.kubi.App;
 import uw.hcrlab.kubi.R;
-import uw.hcrlab.kubi.lesson.FlashCardFragment;
+import uw.hcrlab.kubi.lesson.FlashCard;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.results.SelectResult;
 import uw.hcrlab.kubi.robot.FaceAction;
 
-public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCardSelectedListener {
+public class SelectPrompt extends Prompt implements FlashCard.OnFlashCardSelectedListener {
     private static String TAG = SelectPrompt.class.getSimpleName();
 
-    private ArrayList<String> mFlashCards;
+    private ArrayList<Integer> mFlashCards;
 
     private HashMap<String, MediaPlayer> mPronunciations;
 
@@ -52,20 +52,18 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
             return view;
         }
 
+        LinearLayout options = (LinearLayout) view.findViewById(R.id.prompt_options);
 
         // add the card fragments
         mFlashCards = new ArrayList<>();
         for (PromptData.Option option: this.data.options) {
+            FlashCard card = (FlashCard) inflater.inflate(R.layout.flash_card, options, false);
 
-            FlashCardFragment cardFragment = new FlashCardFragment();
-            cardFragment.configure(option);
-            cardFragment.setOnFlashCardSelectedListener(this);
+            card.setOption(option);
+            card.setOnFlashCardSelectedListener(this);
+            options.addView(card);
 
-            String tag = createOptionTag(option.idx);
-            mFlashCards.add(tag);
-
-            FragmentTransaction trans = getActivity().getSupportFragmentManager().beginTransaction();
-            trans.add(R.id.prompt_options, cardFragment, tag).commit();
+            mFlashCards.add(card.getId());
         }
 
         return view;
@@ -131,18 +129,23 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
         return "option-" + Integer.toString(index);
     }
 
-    public void onFlashCardSelected(String tag) {
-        FlashCardFragment flashCard;
+    public void onFlashCardSelected(FlashCard card) {
+        View view = getView();
+
+        if(view == null) {
+            return;
+        }
+
+        int cardId = card.getId();
+        FlashCard flashCard;
 
         // Unselect all other cards
-        for(String card : mFlashCards) {
-            if(!card.equals(tag)) {
-                flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(card);
+        for(Integer id : mFlashCards) {
+            if(!id.equals(cardId)) {
+                flashCard = (FlashCard) view.findViewById(id);
                 flashCard.unselect();
             }
         }
-
-        flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(tag);
 
         // Only let one pronunciation play at any given time
         for(MediaPlayer mp : mPronunciations.values()) {
@@ -153,15 +156,16 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
         }
 
         // Play the pronunciation for this option
+        String tag = createOptionTag(card.getOption().idx);
         if(mPronunciations.containsKey(tag)) {
             mPronunciations.get(tag).start();
         } else {
             // Fallback if we don't have audio for this text
-            robot.say(flashCard.getOption().title, "en");
+            robot.say(card.getOption().title, "en");
         }
 
         // Notify the wizard that this card was selected
-        currentSelection = flashCard.getOption().idx;
+        currentSelection = card.getOption().idx;
         robot.setPromptResponse(currentSelection);
 
         robot.shutup();
@@ -170,14 +174,23 @@ public class SelectPrompt extends Prompt implements FlashCardFragment.OnFlashCar
     }
 
     public void handleResults(Result res) {
+        View view = getView();
+
+        if(view == null) {
+            return;
+        }
+
         SelectResult result = (SelectResult) res;
+        Integer correct = result.getCorrectIndex();
 
-        FlashCardFragment flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(createOptionTag(result.getCorrectIndex()));
-        flashCard.setCorrect();
+        for(Integer id : mFlashCards) {
+            FlashCard card = (FlashCard) getView().findViewById(id);
 
-        if(!res.isCorrect()) {
-            flashCard = (FlashCardFragment) this.getFragmentManager().findFragmentByTag(createOptionTag(currentSelection));
-            flashCard.setIncorrect();
+            if(card.getOption().idx == correct) {
+                card.setCorrect();
+            } else if(card.isSelected()){
+                card.setIncorrect();
+            }
         }
 
         if(result.isCorrect()) {
