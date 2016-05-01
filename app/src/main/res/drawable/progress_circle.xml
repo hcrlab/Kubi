@@ -3,8 +3,8 @@
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="ring"
-    android:innerRadius="20dp"
-    android:thickness="10dp"
+    android:innerRadius="32dp"
+    android:thickness="7dp"
     android:useLevel="true" >
 
     <solid android:color="@color/progress" />

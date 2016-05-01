@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="82dp"
+        android:height="82dp"
+        android:gravity="center">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+            <stroke
+                android:width="2dp"
+                android:color="@color/hand_border"/>
+        </shape>
+    </item>
+    <item
+        android:width="65dp"
+        android:height="65dp"
+        android:gravity="center">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+            <stroke
+                android:width="2dp"
+                android:color="@color/hand_border"/>
+        </shape>
+    </item>
+</layer-list>
