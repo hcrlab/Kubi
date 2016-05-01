@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/prompt_content_margin"
@@ -9,7 +10,7 @@
 
     <!-- container filled dynamically with framed image fragments -->
     <LinearLayout
-        android:layout_width="@dimen/name_imgs_width"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_weight="3"
         android:orientation="horizontal"
@@ -22,34 +23,43 @@
             android:id="@+id/name_picture_1"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/name_img_height"
+            android:layout_marginTop="-50dp"
             android:adjustViewBounds="true"
-            android:background="@drawable/name_img_frame"/>
+            android:background="@drawable/name_img_frame"
+            tools:layout_height="125dp"
+            tools:layout_width="125dp"/>
 
         <ImageView
             android:id="@+id/name_picture_2"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/name_img_height"
             android:adjustViewBounds="true"
-            android:layout_marginTop="-20dp"
-            android:layout_marginStart="-20dp"
+            android:layout_marginTop="65dp"
+            android:layout_marginStart="-40dp"
             android:rotation="-2"
-            android:background="@drawable/name_img_frame" />
+            android:background="@drawable/name_img_frame"
+            tools:layout_height="125dp"
+            tools:layout_width="125dp" />
 
         <ImageView
             android:id="@+id/name_picture_3"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/name_img_height"
             android:adjustViewBounds="true"
-            android:layout_marginStart="-10dp"
+            android:layout_marginTop="-50dp"
+            android:layout_marginStart="-30dp"
             android:background="@drawable/name_img_frame"
-            android:rotation="3"/>
+            android:rotation="3"
+            tools:layout_height="125dp"
+            tools:layout_width="125dp"/>
 
     </LinearLayout>
 
     <EditText
         android:id="@+id/l1_result_text"
-        android:layout_width="0px"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
         android:layout_weight="2"
         android:layout_gravity="center"
         android:textSize="@dimen/card_text_size"

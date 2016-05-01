@@ -47,8 +47,8 @@
     <dimen name="translate_btn_container_btm_margin">10dp</dimen>
 
     <!-- NAME Prompt -->
-    <dimen name="name_img_height">150dp</dimen>
-    <dimen name="name_imgs_width">250px</dimen>
+    <dimen name="name_img_height">125dp</dimen>
+    <dimen name="name_imgs_width">175dp</dimen>
 
     <dimen name="option_margin">5dp</dimen>
     <dimen name="option_max_img_height">50dp</dimen>
