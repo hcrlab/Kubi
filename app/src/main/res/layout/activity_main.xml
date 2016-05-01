@@ -39,7 +39,11 @@
 
         <include layout="@layout/progress_display"/>
 
-        <include layout="@layout/prompt_layout"/>
+        <FrameLayout
+            android:id="@+id/prompt_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </FrameLayout>
 
         <!--We are currently not using the individual hands, but we will keep them here just in case-->
         <include layout="@layout/left_hand"/>

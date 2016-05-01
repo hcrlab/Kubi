@@ -886,7 +886,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
                 public void run() {
                     setPrompt(prompt);
                 }
-            }, 800);
+            }, 500);
 
             return;
         }
@@ -895,31 +895,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         this.mActivity.getSupportFragmentManager()
                 .beginTransaction()
-                .replace(promptResId, prompt, prompt.getUid())
+                .setCustomAnimations(R.anim.slide_up, R.anim.slide_down)
+                .replace(R.id.prompt_placeholder, prompt, prompt.getUid())
                 .commit();
 
-        // Animate the prompt onto the screen
-        final View promptView = this.mActivity.findViewById(R.id.prompt);
-        boolean isHidden = ((FrameLayout.LayoutParams)promptView.getLayoutParams()).bottomMargin < 0;
-
-        if(isHidden) {
-            ValueAnimator anim = ValueAnimator.ofInt(-promptView.getHeight() - 10, 20);
-            anim.setInterpolator(new AnticipateOvershootInterpolator());
-            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    int val = (Integer) valueAnimator.getAnimatedValue();
-
-                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) promptView.getLayoutParams();
-                    params.bottomMargin = val;
-                    promptView.setLayoutParams(params);
-                }
-            });
-            anim.setDuration(500);
-            anim.start();
-
-            mIsPromptOpen = true;
-        }
+        mIsPromptOpen = true;
     }
 
     public void setPromptResponse(Object response) {
@@ -942,22 +922,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void hidePrompt() {
-        final View promptView = this.mActivity.findViewById(R.id.prompt);
-
-        ValueAnimator anim = ValueAnimator.ofInt(20, -promptView.getHeight() - 10);
-        anim.setInterpolator(new AnticipateOvershootInterpolator());
-        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                int val = (Integer) valueAnimator.getAnimatedValue();
-
-                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) promptView.getLayoutParams();
-                params.bottomMargin = val;
-                promptView.setLayoutParams(params);
-            }
-        });
-        anim.setDuration(500);
-        anim.start();
+        this.mActivity.getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.slide_up, R.anim.slide_down)
+                .remove(prompt)
+                .commit();
 
         mIsPromptOpen = false;
         prompt = null;

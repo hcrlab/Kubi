@@ -81,7 +81,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         // Initialize robot with UI components
-        robot = Robot.Factory.create(this, R.id.face, R.id.prompt_container, R.id.thought_bubble, R.id.leftCard, R.id.rightCard);
+        robot = Robot.Factory.create(this, R.id.face, R.id.prompt, R.id.thought_bubble, R.id.leftCard, R.id.rightCard);
     }
 
     VideoView eyes;

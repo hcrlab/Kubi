@@ -1,48 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    android:orientation="vertical"
-    android:background="@color/prompt_background"
-    android:layout_gravity="center"
-    >
 
-    <!-- filled dynamically with word buttons -->
+<FrameLayout
+    android:id="@+id/prompt"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/prompt_hand_width"
+    android:layout_height="@dimen/prompt_height"
+    android:layout_gravity="bottom|center"
+    android:layout_marginBottom="20dp">
+
+    <!-- Prompt Fragments should load here! -->
+    <FrameLayout
+        android:id="@+id/prompt_container"
+        android:layout_width="@dimen/prompt_width"
+        android:layout_height="@dimen/prompt_height"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/prompt_border" >
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="vertical"
+            android:background="@color/prompt_background"
+            android:layout_gravity="center"
+            >
+
+            <!-- filled dynamically with word buttons -->
+            <LinearLayout
+                android:id="@+id/l2_source_text"
+                android:layout_height="@dimen/translate_btn_container_height"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_marginBottom="@dimen/translate_btn_container_btm_margin"
+                android:orientation="horizontal"
+                android:gravity="center"/>
+
+
+            <EditText
+                android:id="@+id/l1_result_text"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/translate_input_margin"
+                android:layout_marginEnd="@dimen/translate_input_margin"
+                android:textSize="@dimen/card_text_size"
+                android:hint="@string/prompt_text_input_hint"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- Left Hand -->
     <LinearLayout
-        android:id="@+id/l2_source_text"
-        android:layout_height="@dimen/translate_btn_container_height"
-        android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_marginBottom="@dimen/translate_btn_container_btm_margin"
-        android:orientation="horizontal"
-        android:gravity="center"/>
+        android:orientation="vertical"
+        android:layout_width="@dimen/finger_width"
+        android:layout_height="@dimen/hand_height"
+        android:layout_gravity="center|left">
 
+        <View
+            android:id="@+id/leftFingerOne"
+            android:layout_width="@dimen/finger_width"
+            android:layout_height="@dimen/finger_height"
+            android:background="@drawable/finger"/>
 
-    <EditText
-        android:id="@+id/l1_result_text"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_gravity="center"
-        android:layout_marginStart="@dimen/translate_input_margin"
-        android:layout_marginEnd="@dimen/translate_input_margin"
-        android:textSize="@dimen/card_text_size"
-        android:hint="@string/prompt_text_input_hint"/>
+    </LinearLayout>
 
+    <!-- Right Hand -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="@dimen/finger_width"
+        android:layout_height="@dimen/hand_height"
+        android:layout_gravity="center|right">
 
-    <!--<FrameLayout-->
-        <!--android:id="@+id/translate_from_l2_container"-->
-        <!--android:layout_width="0px"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_weight="1"-->
-        <!--/>-->
+        <View
+            android:id="@+id/rightFingerOne"
+            android:layout_width="@dimen/finger_width"
+            android:layout_height="@dimen/finger_height"
+            android:background="@drawable/finger"/>
 
-    <!--<FrameLayout-->
-        <!--android:id="@+id/translate_to_l1_container"-->
-        <!--android:layout_width="0px"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_weight="1"-->
-        <!--/>-->
+    </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>
