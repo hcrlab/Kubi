@@ -196,6 +196,10 @@ public class CommandHandler extends WizardHandler {
                             }
 
                             pd.words.add(w);
+                        } else {
+                            String text = (String) word.child("text").getValue();
+                            PromptData.Word w = new PromptData.Word(text);
+                            pd.words.add(w);
                         }
                     }
 

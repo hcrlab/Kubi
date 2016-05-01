@@ -33,6 +33,7 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
             Log.i(TAG, "clicked " + wordsById.get(view.getId()));
             PromptData.Word word = wordsById.get(view.getId());
             robot.showHint(word.hints);
+            robot.pronounce(word.text);
         }
     };
 
@@ -51,7 +52,10 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
         LinearLayout sourceText = (LinearLayout) view.findViewById(R.id.l2_source_text);
         for (PromptData.Word word: this.data.words) {
-            sourceText.addView(getWordView(inflater, sourceText, word));
+            // Filter whitespace words
+            if(word.text.trim().length() > 0) {
+                sourceText.addView(getWordView(inflater, sourceText, word));
+            }
         }
 
         // Setup the text input
@@ -63,6 +67,31 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        robot.loadPronunciation(PromptData.combineWords(this.data.words));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        robot.pronounceAfterSpeech(PromptData.combineWords(this.data.words));
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        for(PromptData.Word word : this.data.words) {
+            if(word.hasHint()) {
+                robot.unloadPronunciation(word.text);
+            }
+        }
+    }
+
     private View getWordView(LayoutInflater inflater, ViewGroup container, PromptData.Word word) {
         View view;
 
@@ -71,6 +100,8 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
             int id = View.generateViewId();
             wordsById.put(id, word);
+
+            robot.loadPronunciation(word.text);
 
             view = inflater.inflate(R.layout.word_button, container, false);
 

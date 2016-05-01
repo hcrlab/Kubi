@@ -86,6 +86,11 @@ public class PromptData {
         public String text;
         public HintCollection hints;
 
+        public Word(String text) {
+            this.text = text;
+            this.hints = new HintCollection();
+        }
+
         public Word(int index, String text) {
             this.index = index;
             this.text = text;
@@ -100,6 +105,16 @@ public class PromptData {
             this.hints.details.add(new Hint().setText(hint));
             return this;
         }
+    }
+
+    public static String combineWords(ArrayList<Word> words) {
+        String out = "";
+
+        for(Word word : words) {
+            out += word.text;
+        }
+
+        return out;
     }
 
     public static class Image {

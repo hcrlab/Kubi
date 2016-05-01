@@ -1,8 +1,12 @@
 package uw.hcrlab.kubi.robot;
 
 import android.animation.ValueAnimator;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -15,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.danikula.videocache.HttpProxyCacheServer;
 import com.firebase.client.Firebase;
 import com.revolverobotics.kubiapi.IKubiManagerDelegate;
 import com.revolverobotics.kubiapi.Kubi;
@@ -22,6 +27,8 @@ import com.revolverobotics.kubiapi.KubiManager;
 import com.revolverobotics.kubiapi.KubiSearchResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -71,8 +78,13 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private KubiManager kubiManager;
 
+    protected HttpProxyCacheServer proxy;
+    private HashMap<String, MediaPlayer> mPronunciations;
+    private String delayedPronunciation;
+
     private Bot bot;
     private TTS tts;
+    private boolean isSpeaking = false;
 
     private int faceResId;
     private int leftCardResId;
@@ -88,15 +100,17 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Prompt prompt;
 
     /**
-     *  This class implements the Singleton pattern. Note that only the tts engine and RobotFace
-     *  are updated when getInstance() is called.
+     * This class implements the Singleton pattern. Note that only the tts engine and RobotFace
+     * are updated when getInstance() is called.
      */
-    private Robot(){
+    private Robot() {
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
         kubiManager.findAllKubis();
 
         createRecognizer(App.getContext());
+
+        mPronunciations = new HashMap<>();
     }
 
     /**
@@ -114,9 +128,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
          * Creates a robot instance given resource IDs for important UI components. Creates a robot
          * without individual flash cards (left and right hands)
          *
-         * @param context A reference to the Activity the robot belongs to
-         * @param faceRes Resource ID for the RobotFace view
-         * @param promptRes Resource ID for the prompt container view
+         * @param context    A reference to the Activity the robot belongs to
+         * @param faceRes    Resource ID for the RobotFace view
+         * @param promptRes  Resource ID for the prompt container view
          * @param thoughtRes Resource ID for the though bubble container view
          * @return The created instance of the Robot class
          */
@@ -131,12 +145,12 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         /**
          * Creates a robot instance given resource IDs for important UI components
          *
-         * @param context A reference to the Activity the robot belongs to
-         * @param faceRes Resource ID for the RobotFace view
-         * @param promptRes Resource ID for the prompt container view
+         * @param context    A reference to the Activity the robot belongs to
+         * @param faceRes    Resource ID for the RobotFace view
+         * @param promptRes  Resource ID for the prompt container view
          * @param thoughtRes Resource ID for the though bubble container view
-         * @param leftRes Resource ID for the left card view (the robot's right hand)
-         * @param rightRes Resource ID for the right card view (the robot's left hand)
+         * @param leftRes    Resource ID for the left card view (the robot's right hand)
+         * @param rightRes   Resource ID for the right card view (the robot's left hand)
          * @return The created instance of the Robot class
          */
         public static Robot create(FragmentActivity context, int faceRes, int promptRes, int thoughtRes, int leftRes, int rightRes) {
@@ -152,7 +166,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
          * already exists, this will shutdown the robot and prepare the robot to be re-initialized.
          */
         private static void preSetup() {
-            if(instance == null) {
+            if (instance == null) {
                 instance = new Robot();
             } else {
                 //Shutdown resources tied to the previous robot face to allow them to be recreated
@@ -164,10 +178,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         /**
          * Handles the setup actions which must occur every time a new face is passed in.
          *
-         * @param faceRes Resource ID for the RobotFace view
+         * @param faceRes   Resource ID for the RobotFace view
          * @param promptRes Resource ID for the prompt container view
          * @param bubbleRes Resource ID for the though bubble container view
-         * @param context The current activity
+         * @param context   The current activity
          */
         private static void setup(FragmentActivity context, int faceRes, int promptRes, int bubbleRes) {
             instance.mActivity = context;
@@ -182,12 +196,12 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         /**
          * Handles the setup actions which must occur every time a new face is passed in.
          *
-         * @param faceRes Resource ID for the RobotFace view
+         * @param faceRes   Resource ID for the RobotFace view
          * @param promptRes Resource ID for the prompt container view
          * @param bubbleRes Resource ID for the though bubble container view
-         * @param leftRes Resource ID for the left card view (the robot's right hand)
-         * @param rightRes Resource ID for the right card view (the robot's left hand)
-         * @param context The current activity
+         * @param leftRes   Resource ID for the left card view (the robot's right hand)
+         * @param rightRes  Resource ID for the right card view (the robot's left hand)
+         * @param context   The current activity
          */
         private static void setup(FragmentActivity context, int faceRes, int promptRes, int bubbleRes, int leftRes, int rightRes) {
             instance.mActivity = context;
@@ -208,7 +222,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             instance.tts = TTS.getInstance(instance.mActivity);
             instance.bot = new Bot(instance.mActivity, "b9581e5f6e343f72", instance.tts);
 
-            if(App.InWizardMode()) {
+            instance.proxy = App.getProxy(instance.mActivity);
+
+            if (App.InWizardMode()) {
                 instance.questions = new CommandHandler("questions");
             }
         }
@@ -218,8 +234,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
      * Gets the singleton instance of the Robot object. Note that after calling this method, the
      * robot.startup() method must be called, or the RobotFace will never be drawn.
      *
-     * @throws NullPointerException If the robot has not been created with the robot factory yet
      * @return The Robot singleton
+     * @throws NullPointerException If the robot has not been created with the robot factory yet
      */
     public static Robot getInstance() {
         if (instance == null) {
@@ -262,6 +278,28 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             }
         });
 
+        tts.setUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String s) {
+                isSpeaking = true;
+            }
+
+            @Override
+            public void onDone(String s) {
+                if(delayedPronunciation != null) {
+                    pronounce(delayedPronunciation);
+                    delayedPronunciation = null;
+                }
+
+                isSpeaking = false;
+            }
+
+            @Override
+            public void onError(String s) {
+
+            }
+        });
+
 //        RobotFace face = (RobotFace) mActivity.findViewById(this.faceResId);
 //        face.setOnTouchListener(faceListener);
 
@@ -270,7 +308,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 //        thread = new FaceThread(face, kubiManager);
 //        thread.start();
 
-        if(App.InWizardMode()) {
+        if (App.InWizardMode()) {
             questions.Listen();
         }
 
@@ -283,17 +321,19 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     public void shutdown() {
         Log.i(TAG, "Shutting down Main Thread ...");
 
-        if(sleep != null) {
+        if (sleep != null) {
             sleep.cancel();
         }
 
-        if(bored != null) {
+        if (bored != null) {
             bored.cancel();
         }
 
+        unloadAllPronunciations();
+
         progress.cleanup();
 
-        if(App.InWizardMode()) {
+        if (App.InWizardMode()) {
             questions.Stop();
         }
 
@@ -314,6 +354,70 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 //                Log.e(TAG, "Robot thread didn't join. Trying again.");
 //            }
 //        }
+    }
+
+    private String normalizeText(String text) {
+        // Normalize the text
+        text = text.toLowerCase();
+        text = text.replace(',',' ');
+        text = text.replace('.',' ');
+        text = text.trim();
+        return text;
+    }
+
+    public void loadPronunciation(String text) {
+        text = normalizeText(text);
+
+        String url = App.getAudioURL(text);
+
+        if (url != null) {
+            String audioUrl = proxy.getProxyUrl(url);
+            mPronunciations.put(text, MediaPlayer.create(mActivity, Uri.parse(audioUrl)));
+        }
+    }
+
+    public void unloadPronunciation(String text) {
+        text = normalizeText(text);
+
+        MediaPlayer mp = mPronunciations.remove(text);
+
+        if (mp != null) {
+            mp.release();
+        }
+    }
+
+    public void unloadAllPronunciations() {
+        for (Map.Entry kvp : mPronunciations.entrySet()) {
+            MediaPlayer mp = (MediaPlayer) kvp.getValue();
+            mp.release();
+        }
+
+        mPronunciations.clear();
+    }
+
+    public void pronounceAfterSpeech(String text) {
+        delayedPronunciation = text;
+    }
+
+    public boolean pronounce(String text) {
+        text = normalizeText(text);
+
+        for(MediaPlayer mp : mPronunciations.values()) {
+            if(mp.isPlaying()) {
+                mp.pause();
+                mp.seekTo(0);
+            }
+        }
+
+        MediaPlayer mp = mPronunciations.get(text);
+
+        if(mp != null) {
+            mp.start();
+            return true;
+        } else {
+            say(text, "EN");
+            return false;
+        }
     }
 
     public String getDefaultLanguage() {
@@ -769,6 +873,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     // Render the given PromptData to the user
     public void setPrompt(final Prompt prompt) {
+        if(mIsHintOpen) {
+            hideHint();
+        }
+
         if(mIsPromptOpen) {
             hidePrompt();
 

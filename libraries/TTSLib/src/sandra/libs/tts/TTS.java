@@ -26,6 +26,7 @@ import java.util.Locale;
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 
 /**
@@ -39,9 +40,6 @@ import android.util.Log;
  * @author Michael McTear
  *  
  * @version 2.2, 07/17/13
- * 
- * @see http://gl.wikipedia.org/wiki/Singleton
- * @see http://developer.android.com/reference/android/speech/tts/TextToSpeech.html
  */
 public class TTS implements OnInitListener{
 
@@ -59,7 +57,7 @@ public class TTS implements OnInitListener{
 	 * @param ctx context of the interaction
 	 */
 	private TTS(Context ctx) {
-			myTTS = new TextToSpeech(ctx,(OnInitListener) this);
+			myTTS = new TextToSpeech(ctx,this);
 	}
 
 	/**
@@ -138,6 +136,10 @@ public class TTS implements OnInitListener{
 	public void setLocale(){
 		myTTS.setLanguage(Locale.getDefault());
 	}
+
+	public void setUtteranceProgressListener(UtteranceProgressListener listener) {
+		myTTS.setOnUtteranceProgressListener(listener);
+	}
 	
 	/**
 	 * Synthesizes a text in the language indicated (or in the default language of the device
@@ -150,7 +152,7 @@ public class TTS implements OnInitListener{
 	 */
 	public void speak(String text, String languageCode, String countryCode) throws Exception{
 		setLocale(languageCode, countryCode);
-		myTTS.speak(text, TextToSpeech.QUEUE_ADD, null);
+		myTTS.speak(text, TextToSpeech.QUEUE_ADD, null, "TestID");
 
 		if(mResetRate)
 			myTTS.setSpeechRate(1.0f);
@@ -166,7 +168,7 @@ public class TTS implements OnInitListener{
 	 */
 	public void speak(String text, String languageCode) throws Exception{
 		setLocale(languageCode);
-		myTTS.speak(text, TextToSpeech.QUEUE_ADD, null);
+		myTTS.speak(text, TextToSpeech.QUEUE_ADD, null, "TestID");
 
 		if(mResetRate)
 			myTTS.setSpeechRate(1.0f);
@@ -179,7 +181,7 @@ public class TTS implements OnInitListener{
 	 */
 	public void speak(String text){
 		setLocale();
-		myTTS.speak(text, TextToSpeech.QUEUE_ADD, null);
+		myTTS.speak(text, TextToSpeech.QUEUE_ADD, null, "TestID");
 
 		if(mResetRate)
 			myTTS.setSpeechRate(1.0f);
