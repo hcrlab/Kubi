@@ -24,6 +24,7 @@ import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.PromptTypes;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
+import uw.hcrlab.kubi.robot.PermissionsManager;
 import uw.hcrlab.kubi.robot.Robot;
 import uw.hcrlab.kubi.screen.RobotFace;
 
@@ -79,6 +80,9 @@ public class MainActivity extends FragmentActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // make sure we have the permissions needed to connect bluetooth
+        PermissionsManager.requestPermissionsDialogIfNecessary(this);
 
         // Initialize robot with UI components
         robot = Robot.Factory.create(this, R.id.face, R.id.prompt, R.id.thought_bubble, R.id.leftCard, R.id.rightCard);
@@ -154,4 +158,12 @@ public class MainActivity extends FragmentActivity {
         }
         return true;
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        PermissionsManager.onRequestPermissionsResult(
+                this, requestCode, permissions, grantResults);
+    }
+
 }

@@ -70,7 +70,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private FaceThread thread;
     private boolean isAsleep = false;
     private boolean isBored = false;
-    private final long BORING_TIME = 60 * 1000;
+    // setting this to longer than sleep time becuase the boring action is *really* annoying
+    private final long BORING_TIME = 10 * 60 * 1000;
     private final long SLEEP_TIME = 5 * 60 * 1000;
     private Random random = new Random();
     private Timer bored;
@@ -122,9 +123,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
         kubiManager.findAllKubis();
-
         createRecognizer(App.getContext());
-
         mPronunciations = new HashMap<>();
     }
 
@@ -570,6 +569,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     public void perform(Action action) {
         resetTimers();
+        Log.i(TAG, "perform " + action.toString());
 
         if(kubiManager.getKubi() != null) {
             switch (action) {
