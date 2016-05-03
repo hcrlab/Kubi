@@ -114,6 +114,17 @@ public class DebugActivity extends FragmentActivity {
         EditText editText = (EditText)findViewById(R.id.debug_prompt);
         String text = editText.getText().toString();
         Log.i(TAG, String.format("edit text '%s'", text));
+
+        // showSamplePrompt(text);
+
+        robot.say(text, "en");
+
+        editText.getText().clear();
+    }
+
+
+    private void showSamplePrompt(String text) {
+        Log.i(TAG, "show sample prompt");
         int input = 0;
         try {
             input = Integer.parseInt(text);
@@ -122,7 +133,7 @@ public class DebugActivity extends FragmentActivity {
             String toastText = String.format("invalid: %s", text);
             Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
         }
-        editText.getText().clear();
+
         PromptData pd = new PromptData();
         HintCollection hd = new HintCollection();
         switch (input) {
@@ -158,7 +169,7 @@ public class DebugActivity extends FragmentActivity {
             default:
                 String msg = String.format(Locale.US, "Invalid debug input -- %d", input);
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                editText.getText().clear();
+                //editText.getText().clear();
 
         }
     }

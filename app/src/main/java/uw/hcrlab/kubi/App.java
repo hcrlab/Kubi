@@ -68,7 +68,7 @@ public class App extends Application implements Firebase.AuthResultHandler {
 
     public static void FbConnect() {
         fb.child("devices").child(deviceID).child("connected").setValue(true);
-        fb.child("devices").child(deviceID).child("name").setValue("Alex's Nexus 7");
+        fb.child("devices").child(deviceID).child("name").setValue("Leah's Nexus 7");
     }
 
     public static void FbDisconnect() {

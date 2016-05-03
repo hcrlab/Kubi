@@ -99,6 +99,21 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private Prompt prompt;
 
+    private String lastCorrectResponse = "";
+    private String[] correctResponses = {
+            "Yay! You got it!",
+            "You are correct.",
+            "Good job!",
+            "Well done.",
+    };
+    private String lastIncorrectResponse = "";
+    private String[] incorrectResponses = {
+            "Oops! That\'s not the correct answer.",
+            "Nope.",
+            "Sorry, you are incorrect.",
+            "Incorrect.",
+    };
+
     /**
      * This class implements the Singleton pattern. Note that only the tts engine and RobotFace
      * are updated when getInstance() is called.
@@ -450,6 +465,22 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             Log.e(TAG, language + " not available for TTS, default language used instead");
         }
     }
+
+    /**
+     * Say a random response from the given collection of choices.
+     * @param choices - collection to choose a random string from
+     * @param dontSay - if a string matching this is selected, pick again
+     * @return - the string that was said
+     */
+    public String sayRandomResponse(String[] choices, String dontSay) {
+        String selection;
+        do {
+            selection = choices[random.nextInt(choices.length)];
+        } while (selection.equals(dontSay));
+        say(selection, "en");
+        return selection;
+    }
+
 
     public void shutup() {
         tts.stop();
@@ -913,9 +944,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     public void showResult(Result res) {
         if(res.isCorrect()) {
-            this.say("Yay! You got it!", "en");
+            lastCorrectResponse = sayRandomResponse(correctResponses, lastCorrectResponse);
         } else {
-            this.say("Oops! That\'s not the correct answer.", "en");
+            lastIncorrectResponse = sayRandomResponse(incorrectResponses, lastIncorrectResponse);
         }
 
         prompt.handleResults(res);
