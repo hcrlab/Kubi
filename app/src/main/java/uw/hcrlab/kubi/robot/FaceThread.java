@@ -16,8 +16,7 @@ import uw.hcrlab.kubi.screen.RobotFaceUtils;
  */
 public class FaceThread extends Thread {
     /* injected from MainActivity */
-    private final RobotFace robotFace;
-    private final KubiManager kubiManager;
+    private final Eyes eyes;
 
     private ConcurrentLinkedQueue<FaceAction> faceActions = new ConcurrentLinkedQueue<FaceAction>();
 
@@ -34,12 +33,11 @@ public class FaceThread extends Thread {
 
     private long nextBlinkTime;
 
-    public FaceThread(RobotFace robotFace, KubiManager kubiManager) {
+    public FaceThread(Eyes eyes) {
         super();
         Log.i(TAG, "Initializing FaceThread ...");
 
-        this.robotFace = robotFace;
-        this.kubiManager = kubiManager;
+        this.eyes = eyes;
 
         nextBlinkTime = getNextBlinkTime();
     }
@@ -52,11 +50,11 @@ public class FaceThread extends Thread {
     public void run() {
         Log.d(TAG, "Starting the main loop");
 
-        RobotFaceUtils.showAction(robotFace, FaceAction.WAKE);
+        eyes.showAction(FaceAction.BLINK);
 
         while (isRunning) {
             try {
-                synchronized (robotFace) {
+                synchronized (eyes) {
                     FaceAction faceAction = faceActions.poll();
 
                     if(!isAsleep || faceAction == FaceAction.WAKE) {
@@ -64,11 +62,11 @@ public class FaceThread extends Thread {
                             // Carry out FaceAction
                             isAsleep = (faceAction == FaceAction.SLEEP);
 
-                            RobotFaceUtils.showAction(robotFace, faceAction);
+                            eyes.showAction(faceAction);
                             nextBlinkTime = getNextBlinkTime();
                         } else if (nextBlinkTime - System.currentTimeMillis() < EPSILON) {
                             // Blink
-                            RobotFaceUtils.showAction(robotFace, FaceAction.BLINK);
+                            eyes.showAction(FaceAction.BLINK);
                             nextBlinkTime = getNextBlinkTime();
                         }
                     }
@@ -77,7 +75,7 @@ public class FaceThread extends Thread {
                 }
 
             } catch (Exception e) {
-                // TODO: Implment this catch block...
+                // TODO: Implement this catch block...
             }
         }
     }

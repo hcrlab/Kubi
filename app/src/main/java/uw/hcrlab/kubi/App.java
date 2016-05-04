@@ -2,6 +2,7 @@ package uw.hcrlab.kubi;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -30,6 +31,8 @@ public class App extends Application implements Firebase.AuthResultHandler {
     private static String deviceID;
     private static String deviceName;
 
+    private HttpProxyCacheServer proxy;
+
     private static HashMap<String, String> mAudioURLs;
 
     @Override
@@ -42,15 +45,50 @@ public class App extends Application implements Firebase.AuthResultHandler {
         mAudioURLs = new HashMap<>();
 
         fb = new Firebase("https://hcrkubi.firebaseio.com");
-        fb.authWithPassword("hcrlab@cs.uw.edu", "motion6", this);
 
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        deviceName = Build.MANUFACTURER + " " + Build.MODEL;
 
         initImageLoader(getApplicationContext());
     }
 
-    private HttpProxyCacheServer proxy;
+    public void saveCredentials(String username, String password, String name) {
+        SharedPreferences pref = this.getSharedPreferences("uw.hcrlab.kubi.settings", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+
+        editor.putString("username", username);
+        editor.putString("password", password);
+        editor.putString("device_name", name);
+
+        editor.commit();
+    }
+
+    public boolean authenticate(Firebase.AuthResultHandler callback) {
+        if(fb.getAuth() != null) {
+            loadAudio();
+            return true;
+        }
+
+        // Get stored values
+        SharedPreferences pref = this.getSharedPreferences("uw.hcrlab.kubi.settings", MODE_PRIVATE);
+        String username = pref.getString("username", null);
+        String password = pref.getString("password", null);
+        deviceName = pref.getString("device_name", "Default Device Name");
+
+        if(username != null && password != null && deviceName != null) {
+            if(callback == null) {
+                fb.authWithPassword(username, password, this);
+            } else {
+                fb.authWithPassword(username, password, callback);
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean authenticate() {
+        return authenticate(null);
+    }
 
     public static HttpProxyCacheServer getProxy(Context context) {
         App app = (App) context.getApplicationContext();
@@ -68,7 +106,22 @@ public class App extends Application implements Firebase.AuthResultHandler {
 
     public static void FbConnect() {
         fb.child("devices").child(deviceID).child("connected").setValue(true);
-        fb.child("devices").child(deviceID).child("name").setValue("Alex's Nexus 7");
+
+        // Check for the device name and set it if need be
+        Firebase ref = fb.child("devices").child(deviceID);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                if(!snap.child("name").exists() && deviceName != null) {
+                    snap.child("name").getRef().setValue(deviceName);
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Log.e(TAG, "Couldn't get device info!");
+            }
+        });
     }
 
     public static void FbDisconnect() {
@@ -91,6 +144,16 @@ public class App extends Application implements Firebase.AuthResultHandler {
     public void onAuthenticated(AuthData authData) {
         Log.i(TAG, "Authenticated with Firebase!");
 
+        loadAudio();
+    }
+
+    @Override
+    public void onAuthenticationError(FirebaseError firebaseError) {
+        Log.e(TAG, "Firebase Authentication Error!");
+        Log.e(TAG, firebaseError.toString());
+    }
+
+    private void loadAudio() {
         fb.child("audio").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snap) {
@@ -107,12 +170,6 @@ public class App extends Application implements Firebase.AuthResultHandler {
                 Log.e(TAG, "Error getting the audio links from Firebase!");
             }
         });
-    }
-
-    @Override
-    public void onAuthenticationError(FirebaseError firebaseError) {
-        Log.e(TAG, "Firebase Authentication Error!");
-        Log.e(TAG, firebaseError.toString());
     }
 
     public static String getAudioURL(String text) {

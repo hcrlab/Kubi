@@ -2,10 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:stretchColumns="1"
     android:background="#000000"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <!-- top margin row -->
     <LinearLayout android:layout_width="match_parent"
@@ -70,7 +70,31 @@
                 android:orientation="horizontal"
                 >
                 <!-- hint (filled dynamically with fragment) -->
-                <include layout="@layout/thought_bubble_layout"/>
+                <RelativeLayout
+                    android:id="@+id/thought_bubble"
+                    android:layout_width="@dimen/thought_bubble_width"
+                    android:layout_height="@dimen/thought_bubble_height"
+                    android:layout_marginStart="@dimen/thought_bubble_margin"
+                    android:layout_marginTop="@dimen/thought_bubble_top_margin"
+                    tools:layout_marginTop="20dp"
+                    android:layout_gravity="start|top"
+                    android:background="@drawable/thought_bubble">
+
+                    <ListView
+                        android:id="@+id/thought_bubble_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:divider="@null"/>
+
+                    <TextView
+                        android:id="@+id/thought_bubble_big"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textSize="@dimen/hint_text_size"
+                        android:gravity="center"
+                        tools:text="Test Text"/>
+
+                </RelativeLayout>
 
                 <!-- eyes -->
                 <WebView

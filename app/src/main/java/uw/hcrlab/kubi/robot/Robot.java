@@ -87,6 +87,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private boolean isSpeaking = false;
 
     private int faceResId;
+    private int eyesResId;
     private int leftCardResId;
     private int rightCardResId;
     private int promptResId;
@@ -129,14 +130,14 @@ public class Robot extends ASR implements IKubiManagerDelegate {
          * without individual flash cards (left and right hands)
          *
          * @param context    A reference to the Activity the robot belongs to
-         * @param faceRes    Resource ID for the RobotFace view
+         * @param eyesRes    Resource ID for the SurfaceHolder for the robot eyes
          * @param promptRes  Resource ID for the prompt container view
          * @param thoughtRes Resource ID for the though bubble container view
          * @return The created instance of the Robot class
          */
-        public static Robot create(FragmentActivity context, int faceRes, int promptRes, int thoughtRes) {
+        public static Robot create(FragmentActivity context, int eyesRes, int promptRes, int thoughtRes) {
             preSetup();
-            setup(context, faceRes, promptRes, thoughtRes);
+            setup(context, eyesRes, promptRes, thoughtRes);
             postSetup();
 
             return instance;
@@ -146,16 +147,16 @@ public class Robot extends ASR implements IKubiManagerDelegate {
          * Creates a robot instance given resource IDs for important UI components
          *
          * @param context    A reference to the Activity the robot belongs to
-         * @param faceRes    Resource ID for the RobotFace view
+         * @param eyesRes    Resource ID for the SurfaceHolder for the robot eyes
          * @param promptRes  Resource ID for the prompt container view
          * @param thoughtRes Resource ID for the though bubble container view
          * @param leftRes    Resource ID for the left card view (the robot's right hand)
          * @param rightRes   Resource ID for the right card view (the robot's left hand)
          * @return The created instance of the Robot class
          */
-        public static Robot create(FragmentActivity context, int faceRes, int promptRes, int thoughtRes, int leftRes, int rightRes) {
+        public static Robot create(FragmentActivity context, int eyesRes, int promptRes, int thoughtRes, int leftRes, int rightRes) {
             preSetup();
-            setup(context, faceRes, promptRes, thoughtRes, leftRes, rightRes);
+            setup(context, eyesRes, promptRes, thoughtRes, leftRes, rightRes);
             postSetup();
 
             return instance;
@@ -178,15 +179,15 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         /**
          * Handles the setup actions which must occur every time a new face is passed in.
          *
-         * @param faceRes   Resource ID for the RobotFace view
+         * @param eyesRes   Resource ID for the SurfaceHolder for the robot eyes
          * @param promptRes Resource ID for the prompt container view
          * @param bubbleRes Resource ID for the though bubble container view
          * @param context   The current activity
          */
-        private static void setup(FragmentActivity context, int faceRes, int promptRes, int bubbleRes) {
+        private static void setup(FragmentActivity context, int eyesRes, int promptRes, int bubbleRes) {
             instance.mActivity = context;
 
-            instance.faceResId = faceRes;
+            instance.eyesResId = eyesRes;
             instance.promptResId = promptRes;
             instance.thoughtResId = bubbleRes;
 
@@ -196,17 +197,17 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         /**
          * Handles the setup actions which must occur every time a new face is passed in.
          *
-         * @param faceRes   Resource ID for the RobotFace view
+         * @param eyesRes   Resource ID for the SurfaceHolder for the robot eyes
          * @param promptRes Resource ID for the prompt container view
          * @param bubbleRes Resource ID for the though bubble container view
          * @param leftRes   Resource ID for the left card view (the robot's right hand)
          * @param rightRes  Resource ID for the right card view (the robot's left hand)
          * @param context   The current activity
          */
-        private static void setup(FragmentActivity context, int faceRes, int promptRes, int bubbleRes, int leftRes, int rightRes) {
+        private static void setup(FragmentActivity context, int eyesRes, int promptRes, int bubbleRes, int leftRes, int rightRes) {
             instance.mActivity = context;
 
-            instance.faceResId = faceRes;
+            instance.eyesResId = eyesRes;
             instance.promptResId = promptRes;
             instance.thoughtResId = bubbleRes;
             instance.leftCardResId = leftRes;
@@ -300,13 +301,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             }
         });
 
-//        RobotFace face = (RobotFace) mActivity.findViewById(this.faceResId);
-//        face.setOnTouchListener(faceListener);
-
         progress = new ProgressIndicator(this.mActivity, R.id.progressBar, R.id.progressText);
 
-//        thread = new FaceThread(face, kubiManager);
-//        thread.start();
+        Eyes eyes = (Eyes) mActivity.findViewById(R.id.main_eyes);
+        thread = new FaceThread(eyes);
+        thread.start();
 
         if (App.InWizardMode()) {
             questions.Listen();
@@ -337,23 +336,19 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             questions.Stop();
         }
 
-//        while (true) {
-//            try {
-//                if(App.InWizardMode()) {
-//                    questions.Stop();
-//                }
-//
-//                if(thread != null) {
-//                    thread.setRunning(false);
-//                    thread.join();
-//                    thread = null;
-//                }
-//
-//                return;
-//            } catch (InterruptedException e) {
-//                Log.e(TAG, "Robot thread didn't join. Trying again.");
-//            }
-//        }
+        while (true) {
+            try {
+                if(thread != null) {
+                    thread.setRunning(false);
+                    thread.join();
+                    thread = null;
+                }
+
+                return;
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Robot thread didn't join. Trying again.");
+            }
+        }
     }
 
     private String normalizeText(String text) {

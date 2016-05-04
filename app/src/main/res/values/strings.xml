@@ -4,20 +4,20 @@
     <string name="app_name">KubiLingo</string>
     <string name="action_settings">Settings</string>
     <string name="listen">Listen</string>
-    
+
     <!-- Menu option strings -->
     <string name="action_gestures">Gestures</string>
     <string name="connect_kubi">Connect to Nearest Kubi</string>
     <string name="track_face">Track face</string>
-    
-	<!-- Button labels -->
+
+    <!-- Button labels -->
     <string name="left_button">Left</string>
     <string name="right_button">Right</string>
     <string name="up_button">Up</string>
     <string name="down_button">Down</string>
     <string name="speak_button">Speak</string>
     <string name="listen_button">Listen</string>
-    
+
     <string name="say_something">Enter speech</string>
     <string name="gesture_title">Gestures</string>
     <string name="title_activity_main">KubiLingo.Alex</string>
@@ -28,6 +28,12 @@
     <string name="debug_activity">DebugActivity</string>
 
     <!-- DuoLingo Prompts -->
-    <string name="prompt_text_input_hint">Translate to Swedish</string>
+    <string name="prompt_text_input_hint">Type the Translation</string>
 
+    <!-- Start Up Activity Strings -->
+    <string name="startup_username">Username</string>
+    <string name="startup_password">Password</string>
+    <string name="startup_device_name">Device Name</string>
+    <string name="startup_button">Start KubiLingo</string>
+    <string name="startup_error_text">Username and/or password are incorrect!</string>
 </resources>

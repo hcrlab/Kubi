@@ -14,31 +14,79 @@
         android:background="@color/gray"
         android:orientation="horizontal">
 
-        <uw.hcrlab.kubi.screen.RobotFace
-            android:id="@+id/face"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="top"
-            android:visibility="gone"/>
-
-        <SurfaceView
-            android:id="@+id/eyesView"
+        <!-- Eyes -->
+        <uw.hcrlab.kubi.robot.Eyes
+            android:id="@+id/main_eyes"
             android:layout_width="400dp"
             android:layout_height="202dp"
             android:layout_marginTop="20dp"
-            android:layout_gravity="top|center" />
+            android:layout_gravity="top|center"
+            android:background="@color/correct"/>
 
-        <VideoView
-            android:id="@+id/eyes"
-            android:layout_width="400dp"
-            android:layout_height="202dp"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="top|center"/>
+        <!-- Thought Bubble -->
+        <RelativeLayout
+            android:id="@+id/thought_bubble"
+            android:layout_width="@dimen/thought_bubble_width"
+            android:layout_height="@dimen/thought_bubble_height"
+            android:layout_marginStart="@dimen/thought_bubble_margin"
+            android:layout_marginTop="@dimen/thought_bubble_top_margin"
+            tools:layout_marginTop="20dp"
+            android:layout_gravity="start|top"
+            android:background="@drawable/thought_bubble">
 
-        <include layout="@layout/thought_bubble_layout"/>
+            <ListView
+                android:id="@+id/thought_bubble_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@null"/>
 
-        <include layout="@layout/progress_display"/>
+            <TextView
+                android:id="@+id/thought_bubble_big"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/hint_text_size"
+                android:gravity="center"
+                tools:text="Test Text"/>
 
+        </RelativeLayout>
+
+        <!-- Progress Display -->
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="82dp"
+            android:layout_height="82dp"
+            android:layout_gravity="end"
+            android:layout_margin="10dp">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginStart="1dp"
+                android:layout_gravity="end"
+                android:max="100"
+                android:progress="90"
+                android:progressDrawable="@drawable/progress_circle"/>
+
+            <FrameLayout
+                android:layout_width="82dp"
+                android:layout_height="82dp"
+                android:background="@drawable/progress_background"/>
+
+            <TextSwitcher
+                android:id="@+id/progressText"
+                android:background="#00000000"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_alignStart="@id/progressBar"
+                android:layout_alignTop="@id/progressBar"
+                android:layout_alignEnd="@id/progressBar"
+                android:layout_alignBottom="@id/progressBar" />
+
+        </RelativeLayout>
+
+        <!-- Prompt -->
         <FrameLayout
             android:id="@+id/prompt_placeholder"
             android:layout_width="match_parent"
