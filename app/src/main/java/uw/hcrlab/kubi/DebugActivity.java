@@ -121,9 +121,31 @@ public class DebugActivity extends FragmentActivity {
         Log.i(TAG, String.format("edit text '%s'", text));
 
         // showSamplePrompt(text);
-
+        // executeEnumAction(text);
         // robot.say(text, "en");
 
+        String[] strings = text.split(" ");
+        boolean invalid = false;
+        if (strings.length == 2) {
+            try {
+                int x = Integer.parseInt(strings[0]);
+                int y = Integer.parseInt(strings[1]);
+                robot.moveTo(x, y);
+            } catch (NumberFormatException nfe) {
+                invalid = true;
+            }
+        } else {
+            invalid = true;
+        }
+
+        if (invalid) {
+            Toast.makeText(getApplicationContext(), "invalid", Toast.LENGTH_SHORT).show();
+        }
+
+        editText.getText().clear();
+    }
+
+    private void executeEnumAction(String text) {
         try {
             Action action = Action.valueOf(text.toUpperCase());
             robot.perform(action);
@@ -131,8 +153,6 @@ public class DebugActivity extends FragmentActivity {
             String toastText = "invalid action " + text;
             Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
         }
-
-        editText.getText().clear();
     }
 
 

@@ -567,6 +567,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }, SLEEP_TIME);
     }
 
+    public void moveTo(int x, int y) {
+        kubiManager.getKubi().moveTo(x, y);
+    }
+
     public void perform(Action action) {
         resetTimers();
         Log.i(TAG, "perform " + action.toString());
@@ -747,6 +751,13 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         if (newStatus == KubiManager.STATUS_CONNECTED && oldStatus == KubiManager.STATUS_CONNECTING) {
             Kubi kubi = manager.getKubi();
             kubi.performGesture(Kubi.GESTURE_NOD);
+//            final Handler handler = new Handler();
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    moveTo(0, 50);
+//                }
+//            }, 1700);
         }
     }
 
@@ -978,8 +989,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     public void showResult(Result res) {
         if(res.isCorrect()) {
             lastCorrectResponse = sayRandomResponse(correctResponses, lastCorrectResponse);
+            perform(Action.NOD);
         } else {
             lastIncorrectResponse = sayRandomResponse(incorrectResponses, lastIncorrectResponse);
+            perform(Action.SHAKE);
         }
 
         prompt.handleResults(res);
