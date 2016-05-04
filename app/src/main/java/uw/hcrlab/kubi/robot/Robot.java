@@ -4,7 +4,6 @@ import android.animation.ValueAnimator;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.app.FragmentActivity;
@@ -42,7 +41,6 @@ import uw.hcrlab.kubi.lesson.HintArrayAdapter;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
-import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
 import uw.hcrlab.kubi.wizard.CommandHandler;
 
@@ -71,13 +69,15 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private boolean isAsleep = false;
     private boolean isBored = false;
     // setting this to longer than sleep time becuase the boring action is *really* annoying
-    private final long BORING_TIME = 10 * 60 * 1000;
+    private final long BORING_TIME = 1000 * 60 * 1000;
     private final long SLEEP_TIME = 5 * 60 * 1000;
     private Random random = new Random();
     private Timer bored;
     private Timer sleep;
 
     private KubiManager kubiManager;
+    private long connectionAttemptEndTime;
+    private long lastAttemptTime;
 
     protected HttpProxyCacheServer proxy;
     private HashMap<String, MediaPlayer> mPronunciations;
@@ -122,7 +122,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Robot() {
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
-        kubiManager.findAllKubis();
+        connectToKubi(10000);
         createRecognizer(App.getContext());
         mPronunciations = new HashMap<>();
     }
@@ -693,6 +693,39 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }
     };
 
+    /* Retry connecting to Kubi for the given amount of time */
+    private void connectToKubi(int ms) {
+        long start = System.currentTimeMillis();
+        connectionAttemptEndTime = start + ms;
+        attemptKubiConnect();
+    }
+
+    /*
+    Handles retry logic for connecting to Kubi via bluetooth.
+    If we're within the time limit for retrying, wait the right amount of time then retry.
+    Callbacks detecting a failure to connect should call this method directly.
+    */
+    private void attemptKubiConnect() {
+        int minWait = 2000; // wait at least this long between attempts
+        long now = System.currentTimeMillis();
+        if (System.currentTimeMillis() < connectionAttemptEndTime) {
+            if (now - lastAttemptTime < minWait) {
+                Log.i(TAG, "waiting to retry...");
+                try {
+                    Thread.sleep(500);
+                    attemptKubiConnect();
+                } catch (InterruptedException ie) {
+                }
+            } else {
+                Log.i(TAG, "retrying kubi connection");
+                lastAttemptTime = System.currentTimeMillis();
+                kubiManager.findAllKubis();
+            }
+        } else {
+            Log.i(TAG, "maximum connection attempt time limit exceeded");
+        }
+    }
+
     /* IKubiManagerDelegate methods */
 
     @Override
@@ -705,9 +738,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     @Override
     public void kubiManagerFailed(KubiManager manager, int reason) {
         Log.i(TAG, "Kubi Manager Failed: " + reason);
-        if (reason == KubiManager.FAIL_CONNECTION_LOST || reason == KubiManager.FAIL_DISTANCE) {
-            manager.findAllKubis();
-        }
+        attemptKubiConnect();  // engage retry logic
     }
 
     @Override
@@ -727,6 +758,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             manager.stopFinding();
             // Attempt to connect to the kubi
             manager.connectToKubi(result.get(0));
+        } else {
+            attemptKubiConnect();  // engage retry logic
         }
     }
 

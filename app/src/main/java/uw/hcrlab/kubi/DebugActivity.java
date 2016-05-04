@@ -125,7 +125,7 @@ public class DebugActivity extends FragmentActivity {
         // robot.say(text, "en");
 
         try {
-            Action action = Action.valueOf(text);
+            Action action = Action.valueOf(text.toUpperCase());
             robot.perform(action);
         } catch (IllegalArgumentException iae) {
             String toastText = "invalid action " + text;
