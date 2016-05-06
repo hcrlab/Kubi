@@ -59,6 +59,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private FragmentActivity mActivity;
 
+    private Toast currentToast;
+
     private ProgressIndicator progress;
 
     private CommandHandler questions;
@@ -78,6 +80,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private KubiManager kubiManager;
     private long connectionAttemptEndTime;
     private long lastAttemptTime;
+    private int numAttemtps;
 
     protected HttpProxyCacheServer proxy;
     private HashMap<String, MediaPlayer> mPronunciations;
@@ -122,7 +125,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Robot() {
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
-        connectToKubi(10000);
+        connectToKubi(20000);
         createRecognizer(App.getContext());
         mPronunciations = new HashMap<>();
     }
@@ -326,7 +329,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             questions.Listen();
         }
 
-        resetTimers();
+        //resetTimers();
     }
 
     /**
@@ -368,6 +371,13 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 //                Log.e(TAG, "Robot thread didn't join. Trying again.");
 //            }
 //        }
+    }
+
+    private void replaceCurrentToast(String text) {
+        if (currentToast != null) {
+            currentToast.cancel();
+        }
+        Toast.makeText(App.getContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     private String normalizeText(String text) {
@@ -490,7 +500,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         try {
             super.listen(RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH, 1);
         } catch (Exception ex) {
-            Toast.makeText(mActivity, "ASR could not be started: invalid params", Toast.LENGTH_SHORT).show();
+            replaceCurrentToast("ASR could not be started: invalid params");
             Log.e(TAG, ex.getMessage());
         }
     }
@@ -557,7 +567,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             @Override
             public void run() {
                 isAsleep = true;
-//                thread.act(FaceAction.SLEEP);
+                // thread.act(FaceAction.SLEEP);
                 kubiDo(Kubi.GESTURE_FACE_DOWN);
 
                 if (bored != null) {
@@ -572,7 +582,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     }
 
     public void perform(Action action) {
-        resetTimers();
+        //resetTimers();
         Log.i(TAG, "perform " + action.toString());
 
         if(kubiManager.getKubi() != null) {
@@ -692,7 +702,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             Log.i(TAG, "RobotFace touch occurred!");
-            resetTimers();
+            //resetTimers();
             return false;
         }
     };
@@ -701,6 +711,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private void connectToKubi(int ms) {
         long start = System.currentTimeMillis();
         connectionAttemptEndTime = start + ms;
+        numAttemtps = 0;
         attemptKubiConnect();
     }
 
@@ -723,6 +734,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             } else {
                 Log.i(TAG, "retrying kubi connection");
                 lastAttemptTime = System.currentTimeMillis();
+                numAttemtps += 1;
+                replaceCurrentToast("Attempt " + numAttemtps + " to connect to kubi base...");
                 kubiManager.findAllKubis();
             }
         } else {
@@ -751,6 +764,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         if (newStatus == KubiManager.STATUS_CONNECTED && oldStatus == KubiManager.STATUS_CONNECTING) {
             Kubi kubi = manager.getKubi();
             kubi.performGesture(Kubi.GESTURE_NOD);
+            replaceCurrentToast("Successfully connected to Kubi base");
+
 //            final Handler handler = new Handler();
 //            handler.postDelayed(new Runnable() {
 //                @Override
