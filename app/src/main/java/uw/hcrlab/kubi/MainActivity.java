@@ -141,17 +141,6 @@ public class MainActivity extends FragmentActivity {
                 Log.i(TAG, "Screen touched ");
                 // TODO: log to Firebase?
 
-                Log.d(TAG, "Starting eye animation");
-                //eyes.start();
-
-                mp.start();
-
-                if(robot.isHintOpen()) {
-                    robot.hideHint();
-                } else {
-                    robot.showHint("Some hint text");
-                }
-
                 break;
             default:
                 break;
