@@ -1,12 +1,9 @@
 package uw.hcrlab.kubi;
 
-import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
 import uw.hcrlab.kubi.robot.PermissionsManager;
@@ -15,9 +12,6 @@ import uw.hcrlab.kubi.robot.Robot;
 
 public class MainActivity extends FragmentActivity {
     private static String TAG = MainActivity.class.getSimpleName();
-
-    private static final int DEVICE_SETUP_CODE = 1;
-    private boolean authenticated = false;
 
     /* Activity's Properties */
     private Robot robot;
@@ -37,43 +31,22 @@ public class MainActivity extends FragmentActivity {
 
         // Initialize robot with UI components
         robot = Robot.Factory.create(this, R.id.main_eyes, R.id.prompt, R.id.thought_bubble, R.id.leftCard, R.id.rightCard);
-
-        App app = (App) getApplication();
-        authenticated = app.authenticate();
-
-        if(!authenticated) {
-            startActivityForResult(new Intent(this, SetupActivity.class), DEVICE_SETUP_CODE);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == DEVICE_SETUP_CODE) {
-            robot.startup();
-            App.FbConnect();
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if(authenticated) {
-            robot.startup();
-            App.FbConnect();
-        }
+        robot.startup();
+        App.FbConnect();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        if(authenticated) {
-            App.FbDisconnect();
-            robot.shutdown();
-        }
+        App.FbDisconnect();
+        robot.shutdown();
     }
 
     @Override
@@ -107,12 +80,4 @@ public class MainActivity extends FragmentActivity {
         }
         return true;
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        PermissionsManager.onRequestPermissionsResult(
-                this, requestCode, permissions, grantResults);
-    }
-
 }

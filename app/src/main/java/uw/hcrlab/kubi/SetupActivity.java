@@ -13,6 +13,8 @@ import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
+import uw.hcrlab.kubi.robot.PermissionsManager;
+
 public class SetupActivity extends Activity implements View.OnClickListener, Firebase.AuthResultHandler {
 
     ProgressDialog progress;
@@ -20,14 +22,31 @@ public class SetupActivity extends Activity implements View.OnClickListener, Fir
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        App app = (App) getApplication();
+        if(app.authenticate()) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_setup);
 
         progress = new ProgressDialog(this);
         progress.setTitle("KubiLingo Setup");
         progress.setMessage("Checking Credentials...");
 
+        // make sure we have the permissions needed to connect bluetooth
+        PermissionsManager.requestPermissionsDialogIfNecessary(this);
+
         Button btn = (Button) findViewById(R.id.startup_submit_btn);
         btn.setOnClickListener(this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        PermissionsManager.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 
     @Override
@@ -48,8 +67,8 @@ public class SetupActivity extends Activity implements View.OnClickListener, Fir
     public void onAuthenticated(AuthData authData) {
         progress.dismiss();
 
-        Intent result = new Intent();
-        setResult(RESULT_OK, result);
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
         finish();
     }
 

@@ -23,6 +23,8 @@ import java.util.HashMap;
 public class App extends Application implements Firebase.AuthResultHandler {
     public static String TAG = App.class.getSimpleName();
 
+    public static final int DEVICE_SETUP_CODE = 1;
+
     private static Context mContext;
     private static Boolean mIsWizardMode = true;
     private static Firebase fb;

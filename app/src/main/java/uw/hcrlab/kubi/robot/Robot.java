@@ -78,6 +78,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Timer sleep;
 
     private KubiManager kubiManager;
+    Handler connectionHandler = new Handler();
     private int numAttempts = 0;
 
     protected HttpProxyCacheServer proxy;
@@ -128,8 +129,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         createRecognizer(App.getContext());
         mPronunciations = new HashMap<>();
     }
-
-    Handler connectionHandler = new Handler();
 
     /*
     Handles retry logic for connecting to Kubi via bluetooth.
