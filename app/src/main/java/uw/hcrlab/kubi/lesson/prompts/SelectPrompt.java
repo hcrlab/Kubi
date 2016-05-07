@@ -18,7 +18,7 @@ import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.results.SelectResult;
 import uw.hcrlab.kubi.robot.FaceAction;
 
-public class SelectPrompt extends Prompt implements FlashCard.OnFlashCardSelectedListener {
+public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener {
     private static String TAG = SelectPrompt.class.getSimpleName();
 
     private ArrayList<Integer> flashCardIds;
@@ -103,6 +103,7 @@ public class SelectPrompt extends Prompt implements FlashCard.OnFlashCardSelecte
         }
     }
 
+    @Override
     public void onFlashCardSelected(FlashCard card) {
         View view = getView();
 
@@ -123,6 +124,21 @@ public class SelectPrompt extends Prompt implements FlashCard.OnFlashCardSelecte
 
         // Notify the wizard that this card was selected
         robot.setPromptResponse(card.getOption().idx);
+
+        robot.shutup();
+        handler.removeCallbacks(confirm);
+        handler.postDelayed(confirm, 3000);
+
+        robot.pronounce(card.getOption().title);
+    }
+
+    @Override
+    public void onSelectedFlashCardClicked(FlashCard card) {
+        View view = getView();
+
+        if(view == null) {
+            return;
+        }
 
         robot.shutup();
         handler.removeCallbacks(confirm);

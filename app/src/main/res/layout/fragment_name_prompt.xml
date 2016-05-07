@@ -80,6 +80,7 @@
                 android:layout_marginEnd="20dp"
                 android:layout_weight="2"
                 android:layout_gravity="center"
+                android:inputType="textNoSuggestions"
                 android:textSize="@dimen/card_text_size"
                 android:hint="@string/prompt_text_input_hint" />
 

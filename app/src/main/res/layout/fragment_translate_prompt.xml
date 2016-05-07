@@ -45,6 +45,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/translate_input_margin"
                 android:layout_marginEnd="@dimen/translate_input_margin"
+                android:inputType="textNoSuggestions"
                 android:textSize="@dimen/card_text_size"
                 android:hint="@string/prompt_text_input_hint"/>
 

@@ -22,10 +22,11 @@ public class FlashCard extends LinearLayout implements View.OnTouchListener {
 
     private boolean selected = false;
 
-    private OnFlashCardSelectedListener parent;
+    private FlashCardListener parent;
 
-    public interface OnFlashCardSelectedListener {
+    public interface FlashCardListener {
         void onFlashCardSelected(FlashCard view);
+        void onSelectedFlashCardClicked(FlashCard view);
     }
 
     public FlashCard(Context context) {
@@ -79,7 +80,7 @@ public class FlashCard extends LinearLayout implements View.OnTouchListener {
         return this.option;
     }
 
-    public void setOnFlashCardSelectedListener(OnFlashCardSelectedListener listener) {
+    public void setOnFlashCardSelectedListener(FlashCardListener listener) {
         parent = listener;
     }
 
@@ -88,8 +89,9 @@ public class FlashCard extends LinearLayout implements View.OnTouchListener {
 
         if(event.getAction() == MotionEvent.ACTION_DOWN){
             if(selected) {
-                this.setBackgroundResource(R.drawable.card_border);
-                selected = false;
+                if(parent != null) {
+                    parent.onSelectedFlashCardClicked(this);
+                }
             } else {
                 this.setBackgroundResource(R.drawable.card_border_selected);
                 selected = true;
