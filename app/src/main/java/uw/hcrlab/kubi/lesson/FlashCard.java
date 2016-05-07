@@ -21,12 +21,13 @@ public class FlashCard extends LinearLayout implements View.OnTouchListener {
     private PromptData.Option option;
 
     private boolean selected = false;
+    private boolean complete = false;
 
     private FlashCardListener parent;
 
     public interface FlashCardListener {
         void onFlashCardSelected(FlashCard view);
-        void onSelectedFlashCardClicked(FlashCard view);
+        void onFlashCardClicked(FlashCard view);
     }
 
     public FlashCard(Context context) {
@@ -88,17 +89,12 @@ public class FlashCard extends LinearLayout implements View.OnTouchListener {
         Log.d(TAG, "Item selected! " + MotionEvent.actionToString(event.getAction()));
 
         if(event.getAction() == MotionEvent.ACTION_DOWN){
-            if(selected) {
-                if(parent != null) {
-                    parent.onSelectedFlashCardClicked(this);
-                }
-            } else {
-                this.setBackgroundResource(R.drawable.card_border_selected);
-                selected = true;
+            if(!selected) {
+                select();
+            }
 
-                if(parent != null) {
-                    parent.onFlashCardSelected(this);
-                }
+            if(parent != null) {
+                parent.onFlashCardClicked(this);
             }
 
             return true;
@@ -107,26 +103,55 @@ public class FlashCard extends LinearLayout implements View.OnTouchListener {
         return false;
     }
 
-
-    public void unselect() {
-        if (selected) {
-            this.setBackgroundResource(R.drawable.card_border);
-            selected = false;
-        }
-    }
-
     public boolean isSelected() {
         return selected;
     }
 
+    public void select() {
+        if(!complete) {
+            this.setBackgroundResource(R.drawable.card_border_selected);
+
+            TextView caption = (TextView) this.findViewById(R.id.caption);
+            caption.setTextColor(getResources().getColor(R.color.white, getContext().getTheme()));
+
+            selected = true;
+
+            if (parent != null) {
+                parent.onFlashCardSelected(this);
+            }
+        }
+    }
+
+    public void unselect() {
+        if (selected && !complete) {
+            this.setBackgroundResource(R.drawable.card_border);
+
+            TextView caption = (TextView) this.findViewById(R.id.caption);
+            caption.setTextColor(getResources().getColor(R.color.black, getContext().getTheme()));
+
+            selected = false;
+        }
+    }
+
     public void setCorrect() {
-        this.setBackgroundResource(R.drawable.card_border_correct);
-        selected = false;
+        if(!complete) {
+            this.setBackgroundResource(R.drawable.card_border_correct);
+            selected = false;
+        }
     }
 
     public void setIncorrect() {
-        this.setBackgroundResource(R.drawable.card_border_incorrect);
-        selected = false;
+        if(!complete) {
+            this.setBackgroundResource(R.drawable.card_border_incorrect);
+            selected = false;
+        }
     }
 
+    public void setComplete() {
+        complete = true;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
 }

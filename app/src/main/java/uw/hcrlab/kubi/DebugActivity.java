@@ -7,6 +7,8 @@ import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.PromptTypes;
+import uw.hcrlab.kubi.robot.Action;
+import uw.hcrlab.kubi.robot.PermissionsManager;
 import uw.hcrlab.kubi.robot.Robot;
 
 import android.os.Bundle;
@@ -37,6 +39,9 @@ public class DebugActivity extends FragmentActivity {
         // load eyes gif
         WebView eye_area = (WebView) findViewById(R.id.webview_eyes);
         eye_area.loadUrl("file:///android_asset/eyes.html");
+
+        // make sure we have the permissions needed to connect bluetooth
+        PermissionsManager.requestPermissionsDialogIfNecessary(this);
 
         // load robot face into layout
         robot = Robot.Factory.create(this, R.id.robot_face_view, R.id.prompt_container, R.id.thought_bubble);
@@ -114,6 +119,45 @@ public class DebugActivity extends FragmentActivity {
         EditText editText = (EditText)findViewById(R.id.debug_prompt);
         String text = editText.getText().toString();
         Log.i(TAG, String.format("edit text '%s'", text));
+
+        // showSamplePrompt(text);
+        // executeEnumAction(text);
+        // robot.say(text, "en");
+
+        String[] strings = text.split(" ");
+        boolean invalid = false;
+        if (strings.length == 2) {
+            try {
+                int x = Integer.parseInt(strings[0]);
+                int y = Integer.parseInt(strings[1]);
+                robot.moveTo(x, y);
+            } catch (NumberFormatException nfe) {
+                invalid = true;
+            }
+        } else {
+            invalid = true;
+        }
+
+        if (invalid) {
+            Toast.makeText(getApplicationContext(), "invalid", Toast.LENGTH_SHORT).show();
+        }
+
+        editText.getText().clear();
+    }
+
+    private void executeEnumAction(String text) {
+        try {
+            Action action = Action.valueOf(text.toUpperCase());
+            robot.perform(action);
+        } catch (IllegalArgumentException iae) {
+            String toastText = "invalid action " + text;
+            Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private void showSamplePrompt(String text) {
+        Log.i(TAG, "show sample prompt");
         int input = 0;
         try {
             input = Integer.parseInt(text);
@@ -122,7 +166,7 @@ public class DebugActivity extends FragmentActivity {
             String toastText = String.format("invalid: %s", text);
             Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
         }
-        editText.getText().clear();
+
         PromptData pd = new PromptData();
         HintCollection hd = new HintCollection();
         switch (input) {
@@ -158,9 +202,17 @@ public class DebugActivity extends FragmentActivity {
             default:
                 String msg = String.format(Locale.US, "Invalid debug input -- %d", input);
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                editText.getText().clear();
+                //editText.getText().clear();
 
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        PermissionsManager.onRequestPermissionsResult(
+                this, requestCode, permissions, grantResults);
+    }
+
 }
 

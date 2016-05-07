@@ -3,8 +3,6 @@ package uw.hcrlab.kubi;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 

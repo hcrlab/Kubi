@@ -4,7 +4,6 @@ import android.animation.ValueAnimator;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.app.FragmentActivity;
@@ -42,7 +41,6 @@ import uw.hcrlab.kubi.lesson.HintArrayAdapter;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
-import uw.hcrlab.kubi.screen.RobotFace;
 import uw.hcrlab.kubi.speech.SpeechUtils;
 import uw.hcrlab.kubi.wizard.CommandHandler;
 
@@ -61,6 +59,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private FragmentActivity mActivity;
 
+    private Toast currentToast;
+
     private ProgressIndicator progress;
 
     private CommandHandler questions;
@@ -70,13 +70,17 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private FaceThread thread;
     private boolean isAsleep = false;
     private boolean isBored = false;
-    private final long BORING_TIME = 60 * 1000;
+    // setting this to longer than sleep time becuase the boring action is *really* annoying
+    private final long BORING_TIME = 1000 * 60 * 1000;
     private final long SLEEP_TIME = 5 * 60 * 1000;
     private Random random = new Random();
     private Timer bored;
     private Timer sleep;
 
     private KubiManager kubiManager;
+    private long connectionAttemptEndTime;
+    private long lastAttemptTime;
+    private int numAttemtps;
 
     protected HttpProxyCacheServer proxy;
     private HashMap<String, MediaPlayer> mPronunciations;
@@ -100,6 +104,21 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private Prompt prompt;
 
+    private String lastCorrectResponse = "";
+    private String[] correctResponses = {
+            "Yay! You got it!",
+            "You are correct.",
+            "Good job!",
+            "Well done.",
+    };
+    private String lastIncorrectResponse = "";
+    private String[] incorrectResponses = {
+            "Oops! That\'s not the correct answer.",
+            "Nope.",
+            "Sorry, you are incorrect.",
+            "Incorrect.",
+    };
+
     /**
      * This class implements the Singleton pattern. Note that only the tts engine and RobotFace
      * are updated when getInstance() is called.
@@ -107,10 +126,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Robot() {
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
-        kubiManager.findAllKubis();
-
+        connectToKubi(20000);
         createRecognizer(App.getContext());
-
         mPronunciations = new HashMap<>();
     }
 
@@ -311,7 +328,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             questions.Listen();
         }
 
-        resetTimers();
+        //resetTimers();
     }
 
     /**
@@ -349,6 +366,13 @@ public class Robot extends ASR implements IKubiManagerDelegate {
                 Log.e(TAG, "Robot thread didn't join. Trying again.");
             }
         }
+    }
+
+    private void replaceCurrentToast(String text) {
+        if (currentToast != null) {
+            currentToast.cancel();
+        }
+        Toast.makeText(App.getContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     private String normalizeText(String text) {
@@ -446,6 +470,22 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }
     }
 
+    /**
+     * Say a random response from the given collection of choices.
+     * @param choices - collection to choose a random string from
+     * @param dontSay - if a string matching this is selected, pick again
+     * @return - the string that was said
+     */
+    public String sayRandomResponse(String[] choices, String dontSay) {
+        String selection;
+        do {
+            selection = choices[random.nextInt(choices.length)];
+        } while (selection.equals(dontSay));
+        say(selection, "en");
+        return selection;
+    }
+
+
     public void shutup() {
         tts.stop();
     }
@@ -455,7 +495,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         try {
             super.listen(RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH, 1);
         } catch (Exception ex) {
-            Toast.makeText(mActivity, "ASR could not be started: invalid params", Toast.LENGTH_SHORT).show();
+            replaceCurrentToast("ASR could not be started: invalid params");
             Log.e(TAG, ex.getMessage());
         }
     }
@@ -522,7 +562,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             @Override
             public void run() {
                 isAsleep = true;
-//                thread.act(FaceAction.SLEEP);
+                // thread.act(FaceAction.SLEEP);
                 kubiDo(Kubi.GESTURE_FACE_DOWN);
 
                 if (bored != null) {
@@ -532,8 +572,13 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }, SLEEP_TIME);
     }
 
+    public void moveTo(int x, int y) {
+        kubiManager.getKubi().moveTo(x, y);
+    }
+
     public void perform(Action action) {
-        resetTimers();
+        //resetTimers();
+        Log.i(TAG, "perform " + action.toString());
 
         if(kubiManager.getKubi() != null) {
             switch (action) {
@@ -652,10 +697,46 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             Log.i(TAG, "RobotFace touch occurred!");
-            resetTimers();
+            //resetTimers();
             return false;
         }
     };
+
+    /* Retry connecting to Kubi for the given amount of time */
+    private void connectToKubi(int ms) {
+        long start = System.currentTimeMillis();
+        connectionAttemptEndTime = start + ms;
+        numAttemtps = 0;
+        attemptKubiConnect();
+    }
+
+    /*
+    Handles retry logic for connecting to Kubi via bluetooth.
+    If we're within the time limit for retrying, wait the right amount of time then retry.
+    Callbacks detecting a failure to connect should call this method directly.
+    */
+    private void attemptKubiConnect() {
+        int minWait = 2000; // wait at least this long between attempts
+        long now = System.currentTimeMillis();
+        if (System.currentTimeMillis() < connectionAttemptEndTime) {
+            if (now - lastAttemptTime < minWait) {
+                Log.i(TAG, "waiting to retry...");
+                try {
+                    Thread.sleep(500);
+                    attemptKubiConnect();
+                } catch (InterruptedException ie) {
+                }
+            } else {
+                Log.i(TAG, "retrying kubi connection");
+                lastAttemptTime = System.currentTimeMillis();
+                numAttemtps += 1;
+                replaceCurrentToast("Attempt " + numAttemtps + " to connect to kubi base...");
+                kubiManager.findAllKubis();
+            }
+        } else {
+            Log.i(TAG, "maximum connection attempt time limit exceeded");
+        }
+    }
 
     /* IKubiManagerDelegate methods */
 
@@ -669,9 +750,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     @Override
     public void kubiManagerFailed(KubiManager manager, int reason) {
         Log.i(TAG, "Kubi Manager Failed: " + reason);
-        if (reason == KubiManager.FAIL_CONNECTION_LOST || reason == KubiManager.FAIL_DISTANCE) {
-            manager.findAllKubis();
-        }
+        attemptKubiConnect();  // engage retry logic
     }
 
     @Override
@@ -680,6 +759,15 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         if (newStatus == KubiManager.STATUS_CONNECTED && oldStatus == KubiManager.STATUS_CONNECTING) {
             Kubi kubi = manager.getKubi();
             kubi.performGesture(Kubi.GESTURE_NOD);
+            replaceCurrentToast("Successfully connected to Kubi base");
+
+//            final Handler handler = new Handler();
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    moveTo(0, 50);
+//                }
+//            }, 1700);
         }
     }
 
@@ -691,6 +779,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             manager.stopFinding();
             // Attempt to connect to the kubi
             manager.connectToKubi(result.get(0));
+        } else {
+            attemptKubiConnect();  // engage retry logic
         }
     }
 
@@ -908,9 +998,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     public void showResult(Result res) {
         if(res.isCorrect()) {
-            this.say("Yay! You got it!", "en");
+            lastCorrectResponse = sayRandomResponse(correctResponses, lastCorrectResponse);
+            perform(Action.NOD);
         } else {
-            this.say("Oops! That\'s not the correct answer.", "en");
+            lastIncorrectResponse = sayRandomResponse(incorrectResponses, lastIncorrectResponse);
+            perform(Action.SHAKE);
         }
 
         prompt.handleResults(res);

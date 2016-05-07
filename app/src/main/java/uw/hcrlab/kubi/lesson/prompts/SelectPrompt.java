@@ -124,25 +124,16 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
 
         // Notify the wizard that this card was selected
         robot.setPromptResponse(card.getOption().idx);
-
-        robot.shutup();
-        handler.removeCallbacks(confirm);
-        handler.postDelayed(confirm, 3000);
-
-        robot.pronounce(card.getOption().title);
     }
 
     @Override
-    public void onSelectedFlashCardClicked(FlashCard card) {
-        View view = getView();
-
-        if(view == null) {
-            return;
-        }
-
+    public void onFlashCardClicked(FlashCard card) {
         robot.shutup();
-        handler.removeCallbacks(confirm);
-        handler.postDelayed(confirm, 3000);
+
+        if(card.isSelected() && !card.isComplete()) {
+            handler.removeCallbacks(confirm);
+            handler.postDelayed(confirm, 3000);
+        }
 
         robot.pronounce(card.getOption().title);
     }
@@ -165,6 +156,8 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
             } else if(card.isSelected()){
                 card.setIncorrect();
             }
+
+            card.setComplete();
         }
 
         if(result.isCorrect()) {
