@@ -34,7 +34,17 @@ public class ProgressIndicator implements ValueEventListener {
 
     private Firebase ref;
 
-    public ProgressIndicator(final Activity activity, final int pbResId, int switcherResId) {
+    private static ProgressIndicator instance;
+
+    public static ProgressIndicator getInstance(final Activity activity, final int pbResId, int switcherResId) {
+        if(instance == null) {
+            instance = new ProgressIndicator(activity, pbResId, switcherResId);
+        }
+
+        return instance;
+    }
+
+    private ProgressIndicator(final Activity activity, final int pbResId, int switcherResId) {
         this.pb = (ProgressBar) activity.findViewById(pbResId);
         this.ts = (TextSwitcher) activity.findViewById(switcherResId);
 

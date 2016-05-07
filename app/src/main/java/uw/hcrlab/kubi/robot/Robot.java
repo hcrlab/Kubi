@@ -78,9 +78,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Timer sleep;
 
     private KubiManager kubiManager;
-    private long connectionAttemptEndTime;
-    private long lastAttemptTime;
-    private int numAttemtps;
+    private int numAttempts = 0;
 
     protected HttpProxyCacheServer proxy;
     private HashMap<String, MediaPlayer> mPronunciations;
@@ -126,9 +124,70 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Robot() {
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
-        connectToKubi(20000);
+        kubiManager.findAllKubis();
         createRecognizer(App.getContext());
         mPronunciations = new HashMap<>();
+    }
+
+    Handler connectionHandler = new Handler();
+
+    /*
+    Handles retry logic for connecting to Kubi via bluetooth.
+    If we're within the time limit for retrying, wait the right amount of time then retry.
+    Callbacks detecting a failure to connect should call this method directly.
+    */
+    private void attemptKubiConnect() {
+        connectionHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(numAttempts < 9) {
+                    numAttempts += 1;
+                    replaceCurrentToast("Attempt " + (numAttempts + 1) + " to connect to kubi base...");
+                    kubiManager.findAllKubis();
+                } else {
+                    replaceCurrentToast("Max attempts exceeded. Could not connect to a Kubi robot!");
+                    Log.d(TAG, "Could not connect to a Kubi!");
+                }
+            }
+        }, 2000);
+    }
+
+    /* IKubiManagerDelegate methods */
+
+    @Override
+    public void kubiDeviceFound(KubiManager manager, KubiSearchResult result) {
+        Log.i(TAG, "A kubi device was found");
+        // Attempt to connect to the kubi
+        manager.connectToKubi(result);
+    }
+
+    @Override
+    public void kubiManagerFailed(KubiManager manager, int reason) {
+        Log.i(TAG, "Kubi Manager Failed: " + reason);
+        attemptKubiConnect();  // engage retry logic
+    }
+
+    @Override
+    public void kubiManagerStatusChanged(KubiManager manager, int oldStatus, int newStatus) {
+        // When the Kubi has successfully connected, nod as a sign of success
+        if (newStatus == KubiManager.STATUS_CONNECTED && oldStatus == KubiManager.STATUS_CONNECTING) {
+            Kubi kubi = manager.getKubi();
+            kubi.performGesture(Kubi.GESTURE_NOD);
+            replaceCurrentToast("Successfully connected to Kubi base");
+        }
+    }
+
+    @Override
+    public void kubiScanComplete(KubiManager manager, ArrayList<KubiSearchResult> result) {
+        Log.i(TAG, "Kubi scan completed");
+        Log.i(TAG, "Size of result is " + result.size());
+        if(result.size() > 0) {
+            manager.stopFinding();
+            // Attempt to connect to the kubi
+            manager.connectToKubi(result.get(0));
+        } else {
+            attemptKubiConnect();  // engage retry logic
+        }
     }
 
     /**
@@ -318,7 +377,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             }
         });
 
-        progress = new ProgressIndicator(this.mActivity, R.id.progressBar, R.id.progressText);
+        progress = ProgressIndicator.getInstance(this.mActivity, R.id.progressBar, R.id.progressText);
 
         Eyes eyes = (Eyes) mActivity.findViewById(R.id.main_eyes);
         thread = new FaceThread(eyes);
@@ -372,7 +431,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         if (currentToast != null) {
             currentToast.cancel();
         }
-        Toast.makeText(App.getContext(), text, Toast.LENGTH_SHORT).show();
+
+        currentToast = Toast.makeText(App.getContext(), text, Toast.LENGTH_SHORT);
+        currentToast.show();
     }
 
     private String normalizeText(String text) {
@@ -701,89 +762,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             return false;
         }
     };
-
-    /* Retry connecting to Kubi for the given amount of time */
-    private void connectToKubi(int ms) {
-        long start = System.currentTimeMillis();
-        connectionAttemptEndTime = start + ms;
-        numAttemtps = 0;
-        attemptKubiConnect();
-    }
-
-    /*
-    Handles retry logic for connecting to Kubi via bluetooth.
-    If we're within the time limit for retrying, wait the right amount of time then retry.
-    Callbacks detecting a failure to connect should call this method directly.
-    */
-    private void attemptKubiConnect() {
-        int minWait = 2000; // wait at least this long between attempts
-        long now = System.currentTimeMillis();
-        if (System.currentTimeMillis() < connectionAttemptEndTime) {
-            if (now - lastAttemptTime < minWait) {
-                Log.i(TAG, "waiting to retry...");
-                try {
-                    Thread.sleep(500);
-                    attemptKubiConnect();
-                } catch (InterruptedException ie) {
-                }
-            } else {
-                Log.i(TAG, "retrying kubi connection");
-                lastAttemptTime = System.currentTimeMillis();
-                numAttemtps += 1;
-                replaceCurrentToast("Attempt " + numAttemtps + " to connect to kubi base...");
-                kubiManager.findAllKubis();
-            }
-        } else {
-            Log.i(TAG, "maximum connection attempt time limit exceeded");
-        }
-    }
-
-    /* IKubiManagerDelegate methods */
-
-    @Override
-    public void kubiDeviceFound(KubiManager manager, KubiSearchResult result) {
-        Log.i(TAG, "A kubi device was found");
-        // Attempt to connect to the kubi
-        manager.connectToKubi(result);
-    }
-
-    @Override
-    public void kubiManagerFailed(KubiManager manager, int reason) {
-        Log.i(TAG, "Kubi Manager Failed: " + reason);
-        attemptKubiConnect();  // engage retry logic
-    }
-
-    @Override
-    public void kubiManagerStatusChanged(KubiManager manager, int oldStatus, int newStatus) {
-        // When the Kubi has successfully connected, nod as a sign of success
-        if (newStatus == KubiManager.STATUS_CONNECTED && oldStatus == KubiManager.STATUS_CONNECTING) {
-            Kubi kubi = manager.getKubi();
-            kubi.performGesture(Kubi.GESTURE_NOD);
-            replaceCurrentToast("Successfully connected to Kubi base");
-
-//            final Handler handler = new Handler();
-//            handler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    moveTo(0, 50);
-//                }
-//            }, 1700);
-        }
-    }
-
-    @Override
-    public void kubiScanComplete(KubiManager manager, ArrayList<KubiSearchResult> result) {
-        Log.i(TAG, "Kubi scan completed");
-        Log.i(TAG, "Size of result is " + result.size());
-        if(result.size() > 0) {
-            manager.stopFinding();
-            // Attempt to connect to the kubi
-            manager.connectToKubi(result.get(0));
-        } else {
-            attemptKubiConnect();  // engage retry logic
-        }
-    }
-
     @Override
     public void processAsrResults(ArrayList<String> nBestList, float[] nBestConfidences) {
         String speechInput = nBestList.get(0);
