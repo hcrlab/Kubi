@@ -145,6 +145,9 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
             return;
         }
 
+        // If the robot is still waiting to say "Is that your final answer?" stop it...
+        handler.removeCallbacks(confirm);
+
         SelectResult result = (SelectResult) res;
         Integer correct = result.getCorrectIndex();
 

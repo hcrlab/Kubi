@@ -126,7 +126,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Robot() {
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
-        connectToKubi(20000);
+        //connectToKubi(20000);
         createRecognizer(App.getContext());
         mPronunciations = new HashMap<>();
     }

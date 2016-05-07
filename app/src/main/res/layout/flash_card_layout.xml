@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/card_text_top_margin"
         android:gravity="bottom|center_horizontal"
+        android:textColor="@color/text_dark"
         android:textSize="@dimen/card_text_size"
         tools:text="Apple"/>
 

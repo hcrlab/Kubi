@@ -127,7 +127,7 @@ public class FlashCard extends LinearLayout implements View.OnTouchListener {
             this.setBackgroundResource(R.drawable.card_border);
 
             TextView caption = (TextView) this.findViewById(R.id.caption);
-            caption.setTextColor(getResources().getColor(R.color.black, getContext().getTheme()));
+            caption.setTextColor(getResources().getColor(R.color.text_dark, getContext().getTheme()));
 
             selected = false;
         }
@@ -136,6 +136,10 @@ public class FlashCard extends LinearLayout implements View.OnTouchListener {
     public void setCorrect() {
         if(!complete) {
             this.setBackgroundResource(R.drawable.card_border_correct);
+
+            TextView caption = (TextView) this.findViewById(R.id.caption);
+            caption.setTextColor(getResources().getColor(R.color.white, getContext().getTheme()));
+
             selected = false;
         }
     }
@@ -143,6 +147,10 @@ public class FlashCard extends LinearLayout implements View.OnTouchListener {
     public void setIncorrect() {
         if(!complete) {
             this.setBackgroundResource(R.drawable.card_border_incorrect);
+
+            TextView caption = (TextView) this.findViewById(R.id.caption);
+            caption.setTextColor(getResources().getColor(R.color.white, getContext().getTheme()));
+
             selected = false;
         }
     }
