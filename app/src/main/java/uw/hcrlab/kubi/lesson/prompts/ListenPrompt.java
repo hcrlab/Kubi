@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -28,6 +29,14 @@ import uw.hcrlab.kubi.robot.FaceAction;
 public class ListenPrompt extends Prompt implements TextWatcher {
     private static String TAG = ListenPrompt.class.getSimpleName();
 
+    private View.OnClickListener repeatClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Log.i(TAG, "clicked " + view.getId());
+            robot.pronounce(data.PromptText);
+        }
+    };
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -41,6 +50,11 @@ public class ListenPrompt extends Prompt implements TextWatcher {
         }
 
         // Repeat buttons
+        // TODO: implement the ability to pronounce the same text at different speeds
+        Button repeat_button = (Button) view.findViewById(R.id.repeat_button);
+        repeat_button.setOnClickListener(repeatClickListener);
+        Button repeat_slow_button = (Button) view.findViewById(R.id.repeat_slow_button);
+        repeat_slow_button.setOnClickListener(repeatClickListener);
 
         // focus on the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
