@@ -1,146 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:stretchColumns="1"
     android:background="#000000"
     android:orientation="vertical">
-
-    <!-- top margin row -->
-    <LinearLayout android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        android:gravity="end"
-        >
-
-        <!-- top margin -->
-        <ImageView
-            android:layout_width="0px"
-            android:layout_height="match_parent"
-            android:layout_weight="10"
-            android:id="@+id/top_margin"
-            android:src="#000000"
-            />
-
-        <uw.hcrlab.kubi.screen.RobotFace
-            android:layout_width="0px"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:id="@+id/robot_face_view"
-            />
-
-        <!-- progress indicator -->
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:id="@+id/progress"
-            android:src="@drawable/kubi_progress" />
-
-    </LinearLayout>
-
-    <!-- main content row -->
-    <LinearLayout android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="8"
-        android:orientation="horizontal"
-        >
-
-        <!-- left margin -->
-        <ImageView
-            android:layout_width="0px"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:id="@+id/left_margin"
-            android:src="#000000"
-            />
-
-        <!-- main content -->
-        <LinearLayout android:layout_width="0px"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_weight="8"
-            >
-            <!-- main content row 1 -->
-            <LinearLayout android:layout_width="match_parent"
-                android:layout_height="0px"
-                android:layout_weight="3"
-                android:orientation="horizontal"
-                >
-                <!-- hint (filled dynamically with fragment) -->
-                <RelativeLayout
-                    android:id="@+id/thought_bubble"
-                    android:layout_width="@dimen/thought_bubble_width"
-                    android:layout_height="@dimen/thought_bubble_height"
-                    android:layout_marginStart="@dimen/thought_bubble_margin"
-                    android:layout_marginTop="@dimen/thought_bubble_top_margin"
-                    tools:layout_marginTop="20dp"
-                    android:layout_gravity="start|top"
-                    android:background="@drawable/thought_bubble">
-
-                    <ListView
-                        android:id="@+id/thought_bubble_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:divider="@null"/>
-
-                    <TextView
-                        android:id="@+id/thought_bubble_big"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textSize="@dimen/hint_text_size"
-                        android:gravity="center"
-                        tools:text="Test Text"/>
-
-                </RelativeLayout>
-
-                <!-- eyes -->
-                <WebView
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="3"
-                    android:id="@+id/webview_eyes"
-                    />
-                <!--<uw.hcrlab.kubi.screen.RobotFace-->
-                    <!--android:layout_width="0px"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_weight="3"-->
-                    <!--android:id="@+id/robot_face_view"-->
-                    <!--/>-->
-
-                <!-- placeholder to the right of eyes-->
-                <ImageView
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:id="@+id/block_to_the_right_of_eyes"
-                    android:src="#000000"
-                    />
-            </LinearLayout>
-
-            <!-- main content row 2 -->
-            <!-- prompt container: this will contain a different fragment for each question type -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0px"
-                android:layout_weight="4"
-                android:orientation="horizontal"
-                android:id="@+id/prompt_container"
-                />
-
-        </LinearLayout>
-
-        <!-- right margin -->
-        <ImageView
-            android:layout_width="0px"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:id="@+id/right_margin"
-            android:src="#000000"
-            />
-    </LinearLayout>
 
     <!-- bottom margin -->
     <!--<ImageView-->
@@ -150,20 +15,15 @@
         <!--android:id="@+id/bottom_margin"-->
         <!--android:src="#000000" />-->
 
-    <LinearLayout
-        android:id="@+id/bottom_bar_container"
-        android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:orientation="horizontal"
-        android:layout_weight="1"
-        >
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/debug_prompt"
-            android:inputType="text"
-            android:background="#ffffff"
-            />
-    </LinearLayout>
+    <include layout="@layout/activity_main" />
 
-</LinearLayout>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:id="@+id/debug_prompt"
+        android:inputType="text"
+        android:background="#ffffff"
+        />
+
+</FrameLayout>

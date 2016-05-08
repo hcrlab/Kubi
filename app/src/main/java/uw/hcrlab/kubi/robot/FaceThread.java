@@ -27,7 +27,7 @@ public class FaceThread extends Thread {
 
     /* Idle behavior periods */
     private final long EPSILON = 100;
-    private final long BLINK_TIME = 2 * 1000;
+    private final long BLINK_TIME = 5 * 1000;
 
     private Random random = new Random();
 

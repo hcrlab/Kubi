@@ -25,38 +25,19 @@ import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.results.NameResult;
 import uw.hcrlab.kubi.robot.FaceAction;
 
-public class NamePrompt extends Prompt implements TextWatcher {
-    private static String TAG = NamePrompt.class.getSimpleName();
+public class ListenPrompt extends Prompt implements TextWatcher {
+    private static String TAG = ListenPrompt.class.getSimpleName();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.i(TAG, "Creating NAME prompt fragment from " + this.data);
+        Log.i(TAG, "Creating LISTEN prompt fragment from " + this.data);
 
-        View view = inflater.inflate(R.layout.fragment_name_prompt, container, false);
+        View view = inflater.inflate(R.layout.fragment_listen_prompt, container, false);
 
         if (savedInstanceState != null) {
             return view;
-        }
-
-        ArrayList<ImageView> imgs = new ArrayList<>();
-        imgs.add((ImageView) view.findViewById(R.id.name_picture_1));
-        imgs.add((ImageView) view.findViewById(R.id.name_picture_2));
-        imgs.add((ImageView) view.findViewById(R.id.name_picture_3));
-
-        for(int i = 0; i < this.data.images.size(); ++i) {
-            PromptData.Image img = this.data.images.get(i);
-            ImageView imgView = imgs.get(i);
-
-            if(img.hasURL()) {
-                ImageLoader.getInstance().displayImage(img.imageUrl, imgView);
-            } else {
-                // debug case, until we start passing image URLs through from  duolingo
-                Drawable drawable = view.getResources().getDrawable(
-                        DrawableHelper.getIdFromString(img.drawable), getActivity().getTheme());
-                imgView.setImageDrawable(drawable);
-            }
         }
 
         // focus on the text input
@@ -70,33 +51,21 @@ public class NamePrompt extends Prompt implements TextWatcher {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
 
-        final String[] parts = this.data.PromptText.split("[“”]");
-
-        if(parts.length > 1) {
-            Handler h = new Handler();
-            h.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    robot.act(FaceAction.LOOK_LEFT);
-                    robot.showHint("\"" + parts[1] + "\"");
-                }
-            }, 1000);
-            h.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    robot.hideHint();
-                }
-            }, 7000);
-        }
+        robot.loadPronunciation(PromptData.combineWords(this.data.words));
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    public void onResume() {
+        super.onResume();
 
+        robot.pronounceAfterSpeech(PromptData.combineWords(this.data.words));
     }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -106,9 +75,7 @@ public class NamePrompt extends Prompt implements TextWatcher {
     }
 
     @Override
-    public void afterTextChanged(Editable s) {
-
-    }
+    public void afterTextChanged(Editable s) {}
 
     public void handleResults(Result res) {
         NameResult result = (NameResult) res;

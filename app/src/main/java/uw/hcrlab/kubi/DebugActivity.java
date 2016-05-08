@@ -2,6 +2,7 @@ package uw.hcrlab.kubi;
 
 import uw.hcrlab.kubi.lesson.PromptData.HintCollection;
 import uw.hcrlab.kubi.lesson.Prompt;
+import uw.hcrlab.kubi.lesson.prompts.ListenPrompt;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
@@ -16,6 +17,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.EditText;
@@ -32,29 +34,28 @@ public class DebugActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "Creating Debug Activity ...");
 
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_debug);
 
         // load eyes gif
-        WebView eye_area = (WebView) findViewById(R.id.webview_eyes);
-        eye_area.loadUrl("file:///android_asset/eyes.html");
+//        WebView eye_area = (WebView) findViewById(R.id.webview_eyes);
+//        eye_area.loadUrl("file:///android_asset/eyes.html");
+
 
         // make sure we have the permissions needed to connect bluetooth
         PermissionsManager.requestPermissionsDialogIfNecessary(this);
 
         // load robot face into layout
-        robot = Robot.Factory.create(this, R.id.robot_face_view, R.id.prompt_container, R.id.thought_bubble);
-
-        // do not show the virtual keyboard on the debug prompt
-        getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        // focus on the debug prompt
-        final EditText debugPrompt = (EditText) findViewById(R.id.debug_prompt);
-        debugPrompt.setShowSoftInputOnFocus(false);
+        robot = Robot.Factory.create(this, R.id.main_eyes, R.id.prompt, R.id.thought_bubble);
 
         // set up the debug prompt
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        final EditText debugPrompt = (EditText) findViewById(R.id.debug_prompt);
+        debugPrompt.setShowSoftInputOnFocus(false);
         debugPrompt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -74,8 +75,6 @@ public class DebugActivity extends FragmentActivity {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        // TODO: send key event to proper fragment
-
         // Returns true to stop propagation of the key event (i.e. signal the event was handled)
         return true;
     }
@@ -96,6 +95,9 @@ public class DebugActivity extends FragmentActivity {
             case NAME:
                 prompt = new NamePrompt();
                 break;
+            case LISTEN:
+                prompt = new ListenPrompt();
+                break;
             default:
                 throw new IllegalArgumentException(
                         String.format(Locale.US, "Prompt type not implemented: %s", promptData.type));
@@ -104,9 +106,7 @@ public class DebugActivity extends FragmentActivity {
         prompt.setUid("testID-notUnique");
         prompt.setData(promptData);
 
-        // add the prompt fragment to the container (replacing last one, if applicable)
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.prompt_container, prompt).commit();
+        robot.setPrompt(prompt);
     }
 
     // Render the given HintCollection to the user
@@ -120,10 +120,15 @@ public class DebugActivity extends FragmentActivity {
         String text = editText.getText().toString();
         Log.i(TAG, String.format("edit text '%s'", text));
 
-        // showSamplePrompt(text);
+        showSamplePrompt(text);
         // executeEnumAction(text);
         // robot.say(text, "en");
+        // moveHead(text);
 
+        editText.getText().clear();
+    }
+
+    private void moveHead(String text) {
         String[] strings = text.split(" ");
         boolean invalid = false;
         if (strings.length == 2) {
@@ -141,8 +146,6 @@ public class DebugActivity extends FragmentActivity {
         if (invalid) {
             Toast.makeText(getApplicationContext(), "invalid", Toast.LENGTH_SHORT).show();
         }
-
-        editText.getText().clear();
     }
 
     private void executeEnumAction(String text) {
@@ -154,7 +157,6 @@ public class DebugActivity extends FragmentActivity {
             Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
         }
     }
-
 
     private void showSamplePrompt(String text) {
         Log.i(TAG, "show sample prompt");
@@ -197,6 +199,11 @@ public class DebugActivity extends FragmentActivity {
                 pd.images.add(new PromptData.Image("apple", false));
                 pd.images.add(new PromptData.Image("banana", false));
                 pd.images.add(new PromptData.Image("apple", false));
+                loadPrompt(pd);
+                break;
+            case (6):
+                pd.type = PromptTypes.LISTEN;
+                pd.PromptText = "una manzana";
                 loadPrompt(pd);
                 break;
             default:

@@ -125,7 +125,8 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private Robot() {
         //Only one copy of this ever
         kubiManager = new KubiManager(this, true);
-        kubiManager.findAllKubis();
+        //kubiManager.findAllKubis();
+        attemptKubiConnect();
         createRecognizer(App.getContext());
         mPronunciations = new HashMap<>();
     }
@@ -136,6 +137,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     Callbacks detecting a failure to connect should call this method directly.
     */
     private void attemptKubiConnect() {
+        Log.i(TAG, "attemptKubiConnect " + numAttempts);
         connectionHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -155,14 +157,14 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     @Override
     public void kubiDeviceFound(KubiManager manager, KubiSearchResult result) {
-        Log.i(TAG, "A kubi device was found");
+        Log.i(TAG, "kubiDeviceFound()");
         // Attempt to connect to the kubi
         manager.connectToKubi(result);
     }
 
     @Override
     public void kubiManagerFailed(KubiManager manager, int reason) {
-        Log.i(TAG, "Kubi Manager Failed: " + reason);
+        Log.i(TAG, "kubiManagerFailed(): " + reason);
         attemptKubiConnect();  // engage retry logic
     }
 
@@ -178,8 +180,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     @Override
     public void kubiScanComplete(KubiManager manager, ArrayList<KubiSearchResult> result) {
-        Log.i(TAG, "Kubi scan completed");
-        Log.i(TAG, "Size of result is " + result.size());
+        Log.i(TAG, "kubiScanComplete(): Found " + result.size() + " kubis.");
         if(result.size() > 0) {
             manager.stopFinding();
             // Attempt to connect to the kubi

@@ -50,13 +50,8 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
         this.wordsById = new HashMap<>();
 
-        LinearLayout sourceText = (LinearLayout) view.findViewById(R.id.l2_source_text);
-        for (PromptData.Word word: this.data.words) {
-            // Filter whitespace words
-            if(word.text.trim().length() > 0) {
-                sourceText.addView(getWordView(inflater, sourceText, word));
-            }
-        }
+        // Repeat buttons
+
 
         // Setup the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
@@ -70,14 +65,12 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
     @Override
     public void onStart() {
         super.onStart();
-
         robot.loadPronunciation(PromptData.combineWords(this.data.words));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
         robot.pronounceAfterSpeech(PromptData.combineWords(this.data.words));
     }
 
