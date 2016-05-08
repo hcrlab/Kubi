@@ -50,14 +50,12 @@ public class Eyes extends FrameLayout {
         @Override
         public void run() {
             look(Look.BLINK);
-
-            postDelayed(blink, getNextBlinkTime());
         }
     };
 
     private long getNextBlinkTime() {
         // 2 to 4 seconds in the future
-        return System.currentTimeMillis() + 2000 + random.nextInt(10) * 200;
+        return 2000 + random.nextInt(10) * 200;
     }
 
     public Eyes(Context context, AttributeSet attrs) {
@@ -95,7 +93,7 @@ public class Eyes extends FrameLayout {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
                 surfaceExists = true;
-                start(R.raw.blink);
+                look(Look.BLINK);
             }
 
             @Override
@@ -141,6 +139,8 @@ public class Eyes extends FrameLayout {
 
         MediaPlayer mp = media.get(res);
 
+        Log.d(TAG, "Start called...");
+
         if(mp != null) {
             removeCallbacks(blink);
 
@@ -153,7 +153,7 @@ public class Eyes extends FrameLayout {
                             @Override
                             public void onCompletion(MediaPlayer mediaPlayer) {
                                 isPlaying = false;
-                                post(blink);
+                                postDelayed(blink, getNextBlinkTime());
                             }
                         });
                         isPlaying = true;
@@ -183,7 +183,7 @@ public class Eyes extends FrameLayout {
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
                         isPlaying = false;
-                        post(blink);
+                        postDelayed(blink, getNextBlinkTime());
                     }
                 });
                 isPlaying = true;

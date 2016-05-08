@@ -26,6 +26,8 @@ import uw.hcrlab.kubi.speech.SpeechUtils;
 public class Speech extends ASR {
     public static String TAG = Speech.class.getSimpleName();
 
+    private static Speech instance;
+
     private Bot bot;
     private TTS tts;
 
@@ -41,7 +43,7 @@ public class Speech extends ASR {
 
     private boolean isSpeaking = false;
 
-    public Speech(Activity activity) {
+    private Speech(Activity activity) {
         this.activity = activity;
 
         createRecognizer(App.getContext());
@@ -51,6 +53,14 @@ public class Speech extends ASR {
 
         tts = TTS.getInstance(activity);
         bot = new Bot(activity, "b9581e5f6e343f72", tts);
+    }
+
+    public static Speech getInstance(Activity activity) {
+        if(instance == null) {
+            instance = new Speech(activity);
+        }
+
+        return instance;
     }
 
     public void cleanup() {

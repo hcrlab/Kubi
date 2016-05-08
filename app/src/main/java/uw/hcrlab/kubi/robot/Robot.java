@@ -212,8 +212,8 @@ public class Robot {
          * Post-setup actions that are taken for all versions of the create function
          */
         private static void postSetup() {
-            instance.body = new Body();
-            instance.speech = new Speech(instance.owner);
+            instance.body = Body.getInstance();
+            instance.speech = Speech.getInstance(instance.owner);
 
             if (App.InWizardMode()) {
                 instance.questions = new CommandHandler("questions");

@@ -19,18 +19,47 @@ import uw.hcrlab.kubi.App;
 public class Body implements IKubiManagerDelegate {
     public static String TAG = Body.class.getSimpleName();
 
+    private static Body instance;
+
     private KubiManager kubiManager;
     Handler connectionHandler = new Handler();
     private int numAttempts = 0;
 
-    public Body() {
+    /**
+     * Private constructor for the Body class. This class implements the Singleton pattern - preventing
+     * the creation of multiple instances of Body objects.
+     */
+    private Body() {
         kubiManager = new KubiManager(this, true);
         kubiManager.findAllKubis();
+    }
+
+    public static Body getInstance() {
+        if(instance == null) {
+            instance = new Body();
+        }
+
+        return instance;
     }
 
     public void cleanup() {
         kubiManager.disconnect();
     }
+
+    private Runnable retry = new Runnable() {
+        @Override
+        public void run() {
+            if(numAttempts < 9) {
+                numAttempts += 1;
+                Robot.replaceCurrentToast("Attempt " + (numAttempts + 1) + " to connect to kubi base...");
+                kubiManager.findAllKubis();
+            } else {
+                connectionHandler.removeCallbacks(retry);
+                Robot.replaceCurrentToast("Max attempts exceeded. Could not connect to a Kubi robot!");
+                Log.d(TAG, "Could not connect to a Kubi!");
+            }
+        }
+    };
 
     /*
     Handles retry logic for connecting to Kubi via bluetooth.
@@ -43,19 +72,8 @@ public class Body implements IKubiManagerDelegate {
             return;
         }
 
-        connectionHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(numAttempts < 9) {
-                    numAttempts += 1;
-                    Robot.replaceCurrentToast("Attempt " + (numAttempts + 1) + " to connect to kubi base...");
-                    kubiManager.findAllKubis();
-                } else {
-                    Robot.replaceCurrentToast("Max attempts exceeded. Could not connect to a Kubi robot!");
-                    Log.d(TAG, "Could not connect to a Kubi!");
-                }
-            }
-        }, 2000);
+        connectionHandler.removeCallbacks(retry);
+        connectionHandler.postDelayed(retry, 3000);
     }
 
     /* IKubiManagerDelegate methods */
@@ -63,6 +81,7 @@ public class Body implements IKubiManagerDelegate {
     @Override
     public void kubiDeviceFound(KubiManager manager, KubiSearchResult result) {
         Log.i(TAG, "A kubi device was found");
+        connectionHandler.removeCallbacks(retry);
         // Attempt to connect to the kubi
         manager.connectToKubi(result);
     }
@@ -77,8 +96,11 @@ public class Body implements IKubiManagerDelegate {
     public void kubiManagerStatusChanged(KubiManager manager, int oldStatus, int newStatus) {
         // When the Kubi has successfully connected, nod as a sign of success
         if (newStatus == KubiManager.STATUS_CONNECTED && oldStatus == KubiManager.STATUS_CONNECTING) {
+            connectionHandler.removeCallbacks(retry);
+
             Kubi kubi = manager.getKubi();
             kubi.performGesture(Kubi.GESTURE_NOD);
+            
             Robot.replaceCurrentToast("Successfully connected to Kubi base");
         }
     }
@@ -88,10 +110,12 @@ public class Body implements IKubiManagerDelegate {
         Log.i(TAG, "Kubi scan completed");
         Log.i(TAG, "Size of result is " + result.size());
         if(result.size() > 0) {
+            connectionHandler.removeCallbacks(retry);
             manager.stopFinding();
             // Attempt to connect to the kubi
             manager.connectToKubi(result.get(0));
         } else {
+            Log.e(TAG, "No Kubi's detected... Retrying scan...");
             attemptKubiConnect();  // engage retry logic
         }
     }
