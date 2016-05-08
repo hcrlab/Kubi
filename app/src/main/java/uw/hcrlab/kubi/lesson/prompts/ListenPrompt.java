@@ -40,6 +40,8 @@ public class ListenPrompt extends Prompt implements TextWatcher {
             return view;
         }
 
+        // Repeat buttons
+
         // focus on the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
         // Make sure the on-screen keyboard never shows. Forces the use of the bluetooth keyboard

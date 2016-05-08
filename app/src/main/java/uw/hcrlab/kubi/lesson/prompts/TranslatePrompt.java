@@ -50,12 +50,18 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
         this.wordsById = new HashMap<>();
 
-        // Repeat buttons
-
+       LinearLayout sourceText = (LinearLayout) view.findViewById(R.id.l2_source_text);
+       for (PromptData.Word word: this.data.words) {
+           // Filter whitespace words
+           if(word.text.trim().length() > 0) {
+               sourceText.addView(getWordView(inflater, sourceText, word));
+           }
+       }
 
         // Setup the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
-        resultText.setShowSoftInputOnFocus(false); // Never show soft keyboard. Forces use of bluetooth keyboard
+        // Never show soft keyboard. Forces use of bluetooth keyboard
+        resultText.setShowSoftInputOnFocus(false);
         resultText.requestFocus();
         resultText.addTextChangedListener(this);
 
