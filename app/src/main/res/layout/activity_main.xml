@@ -1,102 +1,94 @@
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/gray"
+    android:orientation="horizontal"
     android:screenOrientation="landscape"
-    tools:context=".MainActivity" >
+    tools:context=".MainActivity">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/gray"
-        android:orientation="horizontal">
+    <!-- Eyes -->
+    <uw.hcrlab.kubi.robot.Eyes
+        android:id="@+id/main_eyes"
+        android:layout_width="400dp"
+        android:layout_height="202dp"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="top|center"
+        android:background="@color/correct"/>
 
-        <!-- Eyes -->
-        <uw.hcrlab.kubi.robot.Eyes
-            android:id="@+id/main_eyes"
-            android:layout_width="400dp"
-            android:layout_height="202dp"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="top|center"
-            android:background="@color/correct"/>
+    <!-- Thought Bubble -->
+    <RelativeLayout
+        android:id="@+id/thought_bubble"
+        android:layout_width="@dimen/thought_bubble_width"
+        android:layout_height="@dimen/thought_bubble_height"
+        android:layout_marginStart="@dimen/thought_bubble_margin"
+        android:layout_marginTop="@dimen/thought_bubble_top_margin"
+        tools:layout_marginTop="20dp"
+        android:layout_gravity="start|top"
+        android:background="@drawable/thought_bubble">
 
-        <!-- Thought Bubble -->
-        <RelativeLayout
-            android:id="@+id/thought_bubble"
-            android:layout_width="@dimen/thought_bubble_width"
-            android:layout_height="@dimen/thought_bubble_height"
-            android:layout_marginStart="@dimen/thought_bubble_margin"
-            android:layout_marginTop="@dimen/thought_bubble_top_margin"
-            tools:layout_marginTop="20dp"
-            android:layout_gravity="start|top"
-            android:background="@drawable/thought_bubble">
+        <ListView
+            android:id="@+id/thought_bubble_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"/>
 
-            <ListView
-                android:id="@+id/thought_bubble_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:divider="@null"/>
+        <TextView
+            android:id="@+id/thought_bubble_big"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="@dimen/hint_text_size"
+            android:gravity="center"
+            tools:text="Test Text"/>
 
-            <TextView
-                android:id="@+id/thought_bubble_big"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:textSize="@dimen/hint_text_size"
-                android:gravity="center"
-                tools:text="Test Text"/>
+    </RelativeLayout>
 
-        </RelativeLayout>
+    <!-- Progress Display -->
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="82dp"
+        android:layout_height="82dp"
+        android:layout_gravity="end"
+        android:layout_margin="10dp">
 
-        <!-- Progress Display -->
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginStart="1dp"
+            android:layout_gravity="end"
+            android:max="100"
+            android:progress="90"
+            android:progressDrawable="@drawable/progress_circle"/>
+
+        <FrameLayout
             android:layout_width="82dp"
             android:layout_height="82dp"
-            android:layout_gravity="end"
-            android:layout_margin="10dp">
+            android:background="@drawable/progress_background"/>
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginTop="1dp"
-                android:layout_marginStart="1dp"
-                android:layout_gravity="end"
-                android:max="100"
-                android:progress="90"
-                android:progressDrawable="@drawable/progress_circle"/>
-
-            <FrameLayout
-                android:layout_width="82dp"
-                android:layout_height="82dp"
-                android:background="@drawable/progress_background"/>
-
-            <TextSwitcher
-                android:id="@+id/progressText"
-                android:background="#00000000"
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:layout_alignStart="@id/progressBar"
-                android:layout_alignTop="@id/progressBar"
-                android:layout_alignEnd="@id/progressBar"
-                android:layout_alignBottom="@id/progressBar" />
-
-        </RelativeLayout>
-
-        <!-- Prompt -->
-        <FrameLayout
-            android:id="@+id/prompt_placeholder"
+        <TextSwitcher
+            android:id="@+id/progressText"
+            android:background="#00000000"
+            android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </FrameLayout>
+            android:layout_alignStart="@id/progressBar"
+            android:layout_alignTop="@id/progressBar"
+            android:layout_alignEnd="@id/progressBar"
+            android:layout_alignBottom="@id/progressBar" />
 
-        <!--We are currently not using the individual hands, but we will keep them here just in case-->
-        <include layout="@layout/left_hand"/>
-        <include layout="@layout/right_hand"/>
+    </RelativeLayout>
 
+    <!-- Prompt -->
+    <FrameLayout
+        android:id="@+id/prompt_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     </FrameLayout>
 
-</LinearLayout>
+    <!--We are currently not using the individual hands, but we will keep them here just in case-->
+    <include layout="@layout/left_hand"/>
+    <include layout="@layout/right_hand"/>
+
+</FrameLayout>

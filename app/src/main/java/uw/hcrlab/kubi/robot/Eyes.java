@@ -41,6 +41,10 @@ public class Eyes extends FrameLayout {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.eyes_layout, this);
 
+        if(this.isInEditMode()) {
+            return;
+        }
+
         surface = (SurfaceView) findViewById(R.id.eyes_layout_surface);
 
         media = new HashMap<>();
@@ -68,7 +72,7 @@ public class Eyes extends FrameLayout {
 
             @Override
             public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
+                Log.d(TAG, "Surface changed");
             }
 
             @Override
@@ -79,23 +83,25 @@ public class Eyes extends FrameLayout {
     }
 
     public void loadDefault(int res) {
-        final MediaPlayer current = media.get(R.raw.blink);
-
-        if(current != null) {
-            current.seekTo(0);
-            current.setDisplay(surface.getHolder());
-        }
+//        final MediaPlayer current = media.get(R.raw.blink);
+//
+//        if(current != null) {
+//            current.seekTo(0);
+//            current.setDisplay(surface.getHolder());
+//        }
     }
 
     private MediaPlayer loadMedia(int res) {
-        Uri video = Uri.parse("android.resource://" + getContext().getPackageName() + "/" + res);
+        final Uri video = Uri.parse("android.resource://" + getContext().getPackageName() + "/" + res);
 
         MediaPlayer mp = new MediaPlayer();
 
         mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
+                Log.d(TAG, "Prepared video: " + video.toString());
                 mediaPlayer.seekTo(0);
+                mediaPlayer.setOnPreparedListener(null);
             }
         });
 
@@ -132,16 +138,25 @@ public class Eyes extends FrameLayout {
                         current.setOnSeekCompleteListener(null);
                     }
                 });
+                current.pause();
                 current.seekTo(0);
             } else {
                 if(current != null) {
+                    current.pause();
                     current.setDisplay(null);
                     current.seekTo(0);
                 }
 
                 current = mp;
                 current.setDisplay(surface.getHolder());
-                current.start();
+                current.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+                    @Override
+                    public void onVideoSizeChanged(MediaPlayer mediaPlayer, int i, int i1) {
+                        current.start();
+                        current.setOnVideoSizeChangedListener(null);
+                    }
+                });
+                //current.start();
                 current.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {

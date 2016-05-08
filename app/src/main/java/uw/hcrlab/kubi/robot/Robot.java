@@ -136,6 +136,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     Callbacks detecting a failure to connect should call this method directly.
     */
     private void attemptKubiConnect() {
+        if(numAttempts > 9 || kubiManager.getKubi() != null) {
+            replaceCurrentToast("Kubi already connected!");
+            return;
+        }
+
         connectionHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
