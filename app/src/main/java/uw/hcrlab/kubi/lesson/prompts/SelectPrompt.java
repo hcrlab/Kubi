@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.FlashCard;
@@ -22,6 +23,12 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
     private static String TAG = SelectPrompt.class.getSimpleName();
 
     private ArrayList<Integer> flashCardIds;
+
+    private Eyes.Look[] lookDirections = {
+            Eyes.Look.LOOK_DOWN_LEFT,
+            Eyes.Look.LOOK_DOWN,
+            Eyes.Look.LOOK_DOWN_RIGHT
+    };
 
     private Handler handler = new Handler();
 
@@ -156,6 +163,7 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
 
             if(card.getOption().idx == correct) {
                 card.setCorrect();
+                robot.look(lookDirections[card.getOption().idx - 1]);
             } else if(card.isSelected()){
                 card.setIncorrect();
             }

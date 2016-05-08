@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 
+import uw.hcrlab.kubi.robot.Eyes;
 import uw.hcrlab.kubi.robot.Robot;
 
 
@@ -61,10 +62,10 @@ public class MainActivity extends FragmentActivity {
                 Log.i(TAG, "Screen touched ");
                 // TODO: log to Firebase?
 
-//                Log.d(TAG, "Starting eye animation");
-//
-//                ((Eyes)findViewById(R.id.main_eyes)).start(R.raw.look_down);
-//
+                Log.d(TAG, "Starting eye animation");
+
+                ((Eyes)findViewById(R.id.main_eyes)).look(Eyes.Look.LOOK_DOWN_LEFT);
+
 //                if(robot.isHintOpen()) {
 //                    robot.hideHint();
 //                } else {
