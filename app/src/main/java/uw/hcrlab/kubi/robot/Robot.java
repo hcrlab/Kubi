@@ -354,7 +354,7 @@ public class Robot {
                 Eyes eyes = (Eyes) owner.findViewById(eyesResId);
                 eyes.look(Eyes.Look.LOOK_LEFT);
 
-                body.move(Action.LOOK_AROUND);
+                body.move(Body.Action.LOOK_AROUND);
                 scheduleBored(random.nextInt(20) * 1000);
             }
         }, delay);
@@ -600,10 +600,10 @@ public class Robot {
     public void showResult(Result res) {
         if(res.isCorrect()) {
             lastCorrectResponse = speech.sayRandomResponse(correctResponses, lastCorrectResponse);
-            body.move(Action.NOD);
+            body.move(Body.Action.NOD);
         } else {
             lastIncorrectResponse = speech.sayRandomResponse(incorrectResponses, lastIncorrectResponse);
-            body.move(Action.SHAKE);
+            body.move(Body.Action.SHAKE);
         }
 
         prompt.handleResults(res);

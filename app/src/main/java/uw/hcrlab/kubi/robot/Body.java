@@ -21,6 +21,18 @@ public class Body implements IKubiManagerDelegate {
 
     private static Body instance;
 
+    public enum Action {
+        SLEEP,
+        WAKE,
+        LOOK_AROUND,
+        NOD,
+        SHAKE,
+        FACE_FORWARD,
+        YAY_GESTURE,
+        OOPS_GESTURE,
+        EXCELLENT_GESTURE
+    }
+
     private KubiManager kubiManager;
     Handler connectionHandler = new Handler();
     private int numAttempts = 0;

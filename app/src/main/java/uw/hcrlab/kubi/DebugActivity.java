@@ -7,7 +7,7 @@ import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.PromptTypes;
-import uw.hcrlab.kubi.robot.Action;
+import uw.hcrlab.kubi.robot.Body;
 import uw.hcrlab.kubi.robot.Robot;
 
 import android.os.Bundle;
@@ -146,7 +146,7 @@ public class DebugActivity extends FragmentActivity {
 
     private void executeEnumAction(String text) {
         try {
-            Action action = Action.valueOf(text.toUpperCase());
+            Body.Action action = Body.Action.valueOf(text.toUpperCase());
             robot.body.move(action);
         } catch (IllegalArgumentException iae) {
             String toastText = "invalid action " + text;
