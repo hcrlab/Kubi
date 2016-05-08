@@ -33,7 +33,7 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
             Log.i(TAG, "clicked " + wordsById.get(view.getId()));
             PromptData.Word word = wordsById.get(view.getId());
             robot.showHint(word.hints);
-            robot.pronounce(word.text);
+            robot.speech.pronounce(word.text);
         }
     };
 
@@ -71,14 +71,14 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
     public void onStart() {
         super.onStart();
 
-        robot.loadPronunciation(PromptData.combineWords(this.data.words));
+        robot.speech.loadPronunciation(PromptData.combineWords(this.data.words));
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        robot.pronounceAfterSpeech(PromptData.combineWords(this.data.words));
+        robot.speech.pronounceAfterSpeech(PromptData.combineWords(this.data.words));
     }
 
     @Override
@@ -87,7 +87,7 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
         for(PromptData.Word word : this.data.words) {
             if(word.hasHint()) {
-                robot.unloadPronunciation(word.text);
+                robot.speech.unloadPronunciation(word.text);
             }
         }
     }
@@ -101,7 +101,7 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
             int id = View.generateViewId();
             wordsById.put(id, word);
 
-            robot.loadPronunciation(word.text);
+            robot.speech.loadPronunciation(word.text);
 
             view = inflater.inflate(R.layout.word_button, container, false);
 

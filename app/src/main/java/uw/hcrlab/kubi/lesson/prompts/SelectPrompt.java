@@ -28,7 +28,7 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
     private Runnable confirm = new Runnable() {
         @Override
         public void run() {
-            robot.say("Is that your final answer?", "en");
+            robot.speech.say("Is that your final answer?", "en");
         }
     };
 
@@ -66,7 +66,7 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
 
         // Load the audio resources
         for(PromptData.Option option: this.data.options) {
-            robot.loadPronunciation(option.title);
+            robot.speech.loadPronunciation(option.title);
         }
     }
 
@@ -99,7 +99,7 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
         super.onStop();
 
         for(PromptData.Option option : this.data.options) {
-            robot.unloadPronunciation(option.title);
+            robot.speech.unloadPronunciation(option.title);
         }
     }
 
@@ -128,14 +128,14 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
 
     @Override
     public void onFlashCardClicked(FlashCard card) {
-        robot.shutup();
+        robot.speech.shutup();
 
         if(card.isSelected() && !card.isComplete()) {
             handler.removeCallbacks(confirm);
             handler.postDelayed(confirm, 3000);
         }
 
-        robot.pronounce(card.getOption().title);
+        robot.speech.pronounce(card.getOption().title);
     }
 
     public void handleResults(Result res) {

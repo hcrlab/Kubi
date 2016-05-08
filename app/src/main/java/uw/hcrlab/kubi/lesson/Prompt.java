@@ -37,7 +37,7 @@ public abstract class Prompt extends Fragment {
         super.onResume();
 
         if (robot != null && this.data != null && this.data.PromptText != null) {
-            robot.say(this.data.PromptText, "en");
+            robot.speech.say(this.data.PromptText, "en");
         }
     }
 

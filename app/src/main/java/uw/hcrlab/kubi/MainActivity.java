@@ -27,7 +27,7 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         // Initialize robot with UI components
-        robot = Robot.Factory.create(this, R.id.main_eyes, R.id.prompt_container, R.id.thought_bubble, R.id.leftCard, R.id.rightCard);
+        robot = Robot.Factory.create(this, R.id.main_eyes, R.id.prompt_placeholder, R.id.thought_bubble, R.id.leftCard, R.id.rightCard);
     }
 
     @Override
