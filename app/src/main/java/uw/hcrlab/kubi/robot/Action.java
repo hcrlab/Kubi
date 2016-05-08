@@ -6,10 +6,8 @@ public enum Action {
     LOOK_AROUND,
     NOD,
     SHAKE,
-    PAY_ATTENTION,
-    YAY,
-    OOPS,
-    EXCELLENT,
-    LOWER_HANDS,
-    RAISE_HANDS
+    FACE_FORWARD,
+    YAY_GESTURE,
+    OOPS_GESTURE,
+    EXCELLENT_GESTURE
 }

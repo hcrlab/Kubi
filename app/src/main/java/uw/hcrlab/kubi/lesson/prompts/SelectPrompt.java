@@ -16,7 +16,7 @@ import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.results.SelectResult;
-import uw.hcrlab.kubi.robot.FaceAction;
+import uw.hcrlab.kubi.robot.Eyes;
 
 public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener {
     private static String TAG = SelectPrompt.class.getSimpleName();
@@ -81,7 +81,7 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
             h.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    robot.act(FaceAction.LOOK_LEFT);
+                    robot.look(Eyes.Look.LOOK_LEFT);
                     robot.showHint("\"" + parts[1] + "\"");
                 }
             }, 1000);
@@ -164,9 +164,9 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
         }
 
         if(result.isCorrect()) {
-            robot.act(FaceAction.GIGGLE);
+            robot.look(Eyes.Look.HAPPY);
         } else {
-            robot.act(FaceAction.LOOK_DOWN);
+            robot.look(Eyes.Look.SAD);
         }
     }
 }

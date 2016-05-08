@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
-import uw.hcrlab.kubi.robot.PermissionsManager;
+
 import uw.hcrlab.kubi.robot.Robot;
 
 
@@ -26,11 +26,8 @@ public class MainActivity extends FragmentActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
-        // make sure we have the permissions needed to connect bluetooth
-        PermissionsManager.requestPermissionsDialogIfNecessary(this);
-
         // Initialize robot with UI components
-        robot = Robot.Factory.create(this, R.id.main_eyes, R.id.prompt, R.id.thought_bubble, R.id.leftCard, R.id.rightCard);
+        robot = Robot.Factory.create(this, R.id.main_eyes, R.id.prompt_container, R.id.thought_bubble, R.id.leftCard, R.id.rightCard);
     }
 
     @Override

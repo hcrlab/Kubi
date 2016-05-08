@@ -20,7 +20,7 @@ import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.results.TranslateResult;
-import uw.hcrlab.kubi.robot.FaceAction;
+import uw.hcrlab.kubi.robot.Eyes;
 
 public class TranslatePrompt extends Prompt implements TextWatcher {
     private static String TAG = TranslatePrompt.class.getSimpleName();
@@ -145,9 +145,9 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
         }
 
         if(result.isCorrect()) {
-            robot.act(FaceAction.GIGGLE);
+            robot.look(Eyes.Look.HAPPY);
         } else {
-            robot.act(FaceAction.LOOK_DOWN);
+            robot.look(Eyes.Look.SAD);
         }
     }
 }

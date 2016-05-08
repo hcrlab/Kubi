@@ -47,7 +47,7 @@ import uw.hcrlab.kubi.wizard.CommandHandler;
 /**
  * Created by kimyen on 4/7/15.
  */
-public class Robot extends ASR implements IKubiManagerDelegate {
+public class Robot extends ASR  {
     public static String TAG = Robot.class.getSimpleName();
 
     public enum Hand {
@@ -58,38 +58,28 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     private static Robot instance = null;
 
     private FragmentActivity mActivity;
-
-    private Toast currentToast;
-
     private ProgressIndicator progress;
-
     private CommandHandler questions;
 
     private String language = "EN";
 
-    private FaceThread thread;
-    private boolean isAsleep = false;
+    private boolean isStarted = false;
     private boolean isBored = false;
-    // setting this to longer than sleep time becuase the boring action is *really* annoying
     private final long BORING_TIME = 1000 * 60 * 1000;
-    private final long SLEEP_TIME = 5 * 60 * 1000;
+
     private Random random = new Random();
     private Timer bored;
-    private Timer sleep;
-
-    private KubiManager kubiManager;
-    Handler connectionHandler = new Handler();
-    private int numAttempts = 0;
 
     protected HttpProxyCacheServer proxy;
     private HashMap<String, MediaPlayer> mPronunciations;
     private String delayedPronunciation;
 
+    private static Toast currentToast;
+
     private Bot bot;
     private TTS tts;
     private boolean isSpeaking = false;
 
-    private int faceResId;
     private int eyesResId;
     private int leftCardResId;
     private int rightCardResId;
@@ -118,87 +108,25 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             "Incorrect.",
     };
 
+    public Body body;
+
     /**
      * This class implements the Singleton pattern. Note that only the tts engine and RobotFace
      * are updated when getInstance() is called.
      */
     private Robot() {
-        //Only one copy of this ever
-        kubiManager = new KubiManager(this, true);
-        kubiManager.findAllKubis();
+        body = new Body();
         createRecognizer(App.getContext());
         mPronunciations = new HashMap<>();
     }
 
-    /*
-    Handles retry logic for connecting to Kubi via bluetooth.
-    If we're within the time limit for retrying, wait the right amount of time then retry.
-    Callbacks detecting a failure to connect should call this method directly.
-    */
-    private void attemptKubiConnect() {
-        if(numAttempts > 9 || kubiManager.getKubi() != null) {
-            replaceCurrentToast("Kubi already connected!");
-            return;
-        }
 
-        connectionHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(numAttempts < 9) {
-                    numAttempts += 1;
-                    replaceCurrentToast("Attempt " + (numAttempts + 1) + " to connect to kubi base...");
-                    kubiManager.findAllKubis();
-                } else {
-                    replaceCurrentToast("Max attempts exceeded. Could not connect to a Kubi robot!");
-                    Log.d(TAG, "Could not connect to a Kubi!");
-                }
-            }
-        }, 2000);
-    }
-
-    /* IKubiManagerDelegate methods */
-
-    @Override
-    public void kubiDeviceFound(KubiManager manager, KubiSearchResult result) {
-        Log.i(TAG, "A kubi device was found");
-        // Attempt to connect to the kubi
-        manager.connectToKubi(result);
-    }
-
-    @Override
-    public void kubiManagerFailed(KubiManager manager, int reason) {
-        Log.i(TAG, "Kubi Manager Failed: " + reason);
-        attemptKubiConnect();  // engage retry logic
-    }
-
-    @Override
-    public void kubiManagerStatusChanged(KubiManager manager, int oldStatus, int newStatus) {
-        // When the Kubi has successfully connected, nod as a sign of success
-        if (newStatus == KubiManager.STATUS_CONNECTED && oldStatus == KubiManager.STATUS_CONNECTING) {
-            Kubi kubi = manager.getKubi();
-            kubi.performGesture(Kubi.GESTURE_NOD);
-            replaceCurrentToast("Successfully connected to Kubi base");
-        }
-    }
-
-    @Override
-    public void kubiScanComplete(KubiManager manager, ArrayList<KubiSearchResult> result) {
-        Log.i(TAG, "Kubi scan completed");
-        Log.i(TAG, "Size of result is " + result.size());
-        if(result.size() > 0) {
-            manager.stopFinding();
-            // Attempt to connect to the kubi
-            manager.connectToKubi(result.get(0));
-        } else {
-            attemptKubiConnect();  // engage retry logic
-        }
-    }
 
     /**
      * Cleans up resources which exist regardless of whether a robot has been setup or not.
      */
     public void cleanup() {
-        kubiManager.disconnect();
+        body.cleanup();
     }
 
     /**
@@ -302,7 +230,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         private static void postSetup() {
             instance.tts = TTS.getInstance(instance.mActivity);
             instance.bot = new Bot(instance.mActivity, "b9581e5f6e343f72", instance.tts);
-
             instance.proxy = App.getProxy(instance.mActivity);
 
             if (App.InWizardMode()) {
@@ -330,7 +257,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
      * Starts the robot by starting the FaceThread if it has not already been started.
      */
     public void startup() {
-        if (thread != null) {
+        if (isStarted) {
             Log.i(TAG, "Robot already started ...");
             return;
         }
@@ -383,15 +310,13 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
         progress = ProgressIndicator.getInstance(this.mActivity, R.id.progressBar, R.id.progressText);
 
-        Eyes eyes = (Eyes) mActivity.findViewById(R.id.main_eyes);
-        thread = new FaceThread(eyes);
-        thread.start();
-
         if (App.InWizardMode()) {
             questions.Listen();
         }
 
-        //resetTimers();
+        resetTimers();
+
+        isStarted = true;
     }
 
     /**
@@ -399,10 +324,6 @@ public class Robot extends ASR implements IKubiManagerDelegate {
      */
     public void shutdown() {
         Log.i(TAG, "Shutting down Main Thread ...");
-
-        if (sleep != null) {
-            sleep.cancel();
-        }
 
         if (bored != null) {
             bored.cancel();
@@ -415,23 +336,9 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         if (App.InWizardMode()) {
             questions.Stop();
         }
-
-        while (true) {
-            try {
-                if(thread != null) {
-                    thread.setRunning(false);
-                    thread.join();
-                    thread = null;
-                }
-
-                return;
-            } catch (InterruptedException e) {
-                Log.e(TAG, "Robot thread didn't join. Trying again.");
-            }
-        }
     }
 
-    private void replaceCurrentToast(String text) {
+    public static void replaceCurrentToast(String text) {
         if (currentToast != null) {
             currentToast.cancel();
         }
@@ -565,26 +472,16 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         }
     }
 
-    public void act(FaceAction faceAction) {
-//        RobotFace face = (RobotFace) mActivity.findViewById(this.faceResId);
-//        if(face == null) {
-//            throw new NullPointerException("act(...) cannot be called if robot doesn't have a reference to a RobotFace view!");
-//        }
-//
-//        resetTimers();
-//
-//        thread.act(faceAction);
-    }
+    public void look(Eyes.Look look) {
+        Eyes eyes = (Eyes) mActivity.findViewById(eyesResId);
 
-
-    // look around every 3 minutes
-    private void kubiDo(int gesture) {
-        if(kubiManager.getKubi() == null) {
-            Log.w(TAG, "Unable to get a reference to a Kubi robot!");
-            return;
+        if(eyes == null) {
+            throw new NullPointerException("look(...) cannot be called if robot doesn't have a reference to an Eyes view!");
         }
 
-        kubiManager.getKubi().performGesture(gesture);
+        resetTimers();
+
+        eyes.look(look);
     }
 
     private void scheduleBored(long delay) {
@@ -597,8 +494,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
             @Override
             public void run() {
                 isBored = true;
-//                thread.act(FaceAction.LOOK_LEFT);
-                kubiDo(Kubi.GESTURE_RANDOM);
+
+                Eyes eyes = (Eyes) mActivity.findViewById(eyesResId);
+                eyes.look(Eyes.Look.LOOK_LEFT);
+
+                body.move(Action.LOOK_AROUND);
                 scheduleBored(random.nextInt(20) * 1000);
             }
         }, delay);
@@ -606,154 +506,14 @@ public class Robot extends ASR implements IKubiManagerDelegate {
 
     private void resetTimers() {
         if (isBored) {
-            if(kubiManager.getKubi() != null) kubiManager.getKubi().moveTo(0, 0);
+            body.moveTo(0,0);
             isBored = false;
         }
 
         scheduleBored(BORING_TIME);
-
-        if (isAsleep) {
-//            thread.act(FaceAction.WAKE);
-            if(kubiManager.getKubi() != null) kubiManager.getKubi().moveTo(0, 0);
-            isAsleep = false;
-        }
-
-        if (sleep != null) {
-            sleep.cancel();
-        }
-
-        sleep = new Timer();
-        sleep.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                isAsleep = true;
-                // thread.act(FaceAction.SLEEP);
-                kubiDo(Kubi.GESTURE_FACE_DOWN);
-
-                if (bored != null) {
-                    bored.cancel();
-                }
-            }
-        }, SLEEP_TIME);
     }
 
-    public void moveTo(int x, int y) {
-        kubiManager.getKubi().moveTo(x, y);
-    }
 
-    public void perform(Action action) {
-        //resetTimers();
-        Log.i(TAG, "perform " + action.toString());
-
-        if(kubiManager.getKubi() != null) {
-            switch (action) {
-                case SLEEP:
-                    kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN);
-                    break;
-                case WAKE:
-                    kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_UP);
-                    break;
-                case LOOK_AROUND:
-                    kubiManager.getKubi().performGesture(Kubi.GESTURE_RANDOM);
-                    break;
-                case NOD:
-                    kubiManager.getKubi().performGesture(Kubi.GESTURE_NOD);
-                    break;
-                case SHAKE:
-                    kubiManager.getKubi().performGesture(Kubi.GESTURE_SHAKE);
-                    break;
-                case PAY_ATTENTION:
-                    kubiManager.getKubi().moveTo(0, 0);
-                    break;
-                case YAY:
-                    yay();
-                    break;
-                case OOPS:
-                    oops();
-                    break;
-                case EXCELLENT:
-                    excellent();
-                    break;
-                case LOWER_HANDS:
-                    hideCard(Robot.Hand.Left);
-                    hideCard(Robot.Hand.Right);
-                    break;
-                case RAISE_HANDS:
-                    showCard(Robot.Hand.Left);
-                    showCard(Robot.Hand.Right);
-                    break;
-            }
-        }
-    }
-
-    private void yay() {
-        final Kubi kubi = kubiManager.getKubi();
-
-        if(kubi == null) return;
-
-        kubi.act(new Runnable() {
-            @Override
-            public void run() {
-                if(kubi != null) kubi.moveTo(0, 20, 1.0f, false);
-            }
-        }, 200);
-        kubi.act(new Runnable() {
-            @Override
-            public void run() {
-                if(kubi != null) kubi.moveTo(0, 0, 1.0f, false);
-            }
-        }, 800);
-    }
-
-    private void oops() {
-        final Kubi kubi = kubiManager.getKubi();
-
-        if(kubi == null) return;
-
-        kubi.act(new Runnable() {
-            @Override
-            public void run() {
-                if(kubi != null) kubi.moveTo(0, -15, 1.0f, false);
-            }
-        }, 200);
-        kubi.act(new Runnable() {
-            @Override
-            public void run() {
-                if(kubi != null) kubi.moveTo(0, 0, 1.0f, false);
-            }
-        }, 600);
-    }
-
-    private void excellent() {
-        final Kubi kubi = kubiManager.getKubi();
-
-        if(kubi == null) return;
-
-        kubi.act(new Runnable() {
-            @Override
-            public void run() {
-                if(kubi != null) kubi.moveTo(10, 20, 1.0f, false);
-            }
-        }, 200);
-        kubi.act(new Runnable() {
-            @Override
-            public void run() {
-                if(kubi != null) kubi.moveTo(0, 0, 1.0f, false);
-            }
-        }, 600);
-        kubi.act(new Runnable() {
-            @Override
-            public void run() {
-                kubi.moveTo(-10, 20, 1.0f, false);
-            }
-        }, 1000);
-        kubi.act(new Runnable() {
-            @Override
-            public void run() {
-                kubi.moveTo(0, 0, 1.0f, false);
-            }
-        }, 1400);
-    }
 
     /**
      * Touch listener for the RobotFace
@@ -762,10 +522,11 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             Log.i(TAG, "RobotFace touch occurred!");
-            //resetTimers();
+            resetTimers();
             return false;
         }
     };
+
     @Override
     public void processAsrResults(ArrayList<String> nBestList, float[] nBestConfidences) {
         String speechInput = nBestList.get(0);
@@ -963,7 +724,7 @@ public class Robot extends ASR implements IKubiManagerDelegate {
         this.mActivity.getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.anim.slide_up, R.anim.slide_down)
-                .replace(R.id.prompt_placeholder, prompt, prompt.getUid())
+                .replace(promptResId, prompt, prompt.getUid())
                 .commit();
 
         mIsPromptOpen = true;
@@ -981,10 +742,10 @@ public class Robot extends ASR implements IKubiManagerDelegate {
     public void showResult(Result res) {
         if(res.isCorrect()) {
             lastCorrectResponse = sayRandomResponse(correctResponses, lastCorrectResponse);
-            perform(Action.NOD);
+            body.move(Action.NOD);
         } else {
             lastIncorrectResponse = sayRandomResponse(incorrectResponses, lastIncorrectResponse);
-            perform(Action.SHAKE);
+            body.move(Action.SHAKE);
         }
 
         prompt.handleResults(res);

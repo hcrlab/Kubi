@@ -8,14 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Random;
 
 import uw.hcrlab.kubi.R;
-import uw.hcrlab.kubi.screen.RobotFace;
 
 /**
  * Created by Alexander on 5/3/2016.
@@ -23,14 +22,43 @@ import uw.hcrlab.kubi.screen.RobotFace;
 public class Eyes extends FrameLayout {
     public static String TAG = Eyes.class.getSimpleName();
 
+    public enum Look {
+        BLINK,
+        BLINK2,
+        LOOK_LEFT,
+        LOOK_RIGHT,
+        LOOK_DOWN,
+        LOOK_DOWN_LEFT,
+        LOOK_DOWN_RIGHT,
+        LOOK_UP,
+        LOOK_UP_RIGHT,
+        LOOK_UP_LEFT,
+        HAPPY,
+        SAD,
+        SHOCKED
+    }
+
     private boolean surfaceExists = false;
     private boolean isPlaying = false;
 
     private SurfaceView surface;
-
     private HashMap<Integer, MediaPlayer> media;
-
     private MediaPlayer current;
+
+    private Random random = new Random();
+    private Runnable blink = new Runnable() {
+        @Override
+        public void run() {
+            look(Look.BLINK);
+
+            postDelayed(blink, getNextBlinkTime());
+        }
+    };
+
+    private long getNextBlinkTime() {
+        // 2 to 4 seconds in the future
+        return System.currentTimeMillis() + 2000 + random.nextInt(10) * 200;
+    }
 
     public Eyes(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -67,7 +95,7 @@ public class Eyes extends FrameLayout {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
                 surfaceExists = true;
-                loadDefault(R.raw.blink);
+                start(R.raw.blink);
             }
 
             @Override
@@ -80,15 +108,6 @@ public class Eyes extends FrameLayout {
                 surfaceExists = false;
             }
         });
-    }
-
-    public void loadDefault(int res) {
-//        final MediaPlayer current = media.get(R.raw.blink);
-//
-//        if(current != null) {
-//            current.seekTo(0);
-//            current.setDisplay(surface.getHolder());
-//        }
     }
 
     private MediaPlayer loadMedia(int res) {
@@ -123,6 +142,8 @@ public class Eyes extends FrameLayout {
         MediaPlayer mp = media.get(res);
 
         if(mp != null) {
+            removeCallbacks(blink);
+
             if(current == mp) {
                 current.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
                     @Override
@@ -132,6 +153,7 @@ public class Eyes extends FrameLayout {
                             @Override
                             public void onCompletion(MediaPlayer mediaPlayer) {
                                 isPlaying = false;
+                                post(blink);
                             }
                         });
                         isPlaying = true;
@@ -161,6 +183,7 @@ public class Eyes extends FrameLayout {
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
                         isPlaying = false;
+                        post(blink);
                     }
                 });
                 isPlaying = true;
@@ -168,9 +191,59 @@ public class Eyes extends FrameLayout {
         }
     }
 
-    public void showAction(FaceAction action) {
-        if(action == FaceAction.BLINK) {
-            start(R.raw.blink);
+    public void look(Look type) {
+        switch(type) {
+            case BLINK:
+                start(R.raw.blink);
+                break;
+
+            case BLINK2:
+                start(R.raw.blink_twice);
+                break;
+
+            case HAPPY:
+                start(R.raw.happy);
+                break;
+
+            case SAD:
+                start(R.raw.sad);
+                break;
+
+            case SHOCKED:
+                start(R.raw.shocked);
+                break;
+
+            case LOOK_LEFT:
+                start(R.raw.look_left);
+                break;
+
+            case LOOK_UP_LEFT:
+                start(R.raw.look_up_left);
+                break;
+
+            case LOOK_UP:
+                start(R.raw.look_up);
+                break;
+
+            case LOOK_UP_RIGHT:
+                start(R.raw.look_up_right);
+                break;
+
+            case LOOK_RIGHT:
+                start(R.raw.look_right);
+                break;
+
+            case LOOK_DOWN_RIGHT:
+                start(R.raw.look_down_right);
+                break;
+
+            case LOOK_DOWN:
+                start(R.raw.look_down);
+                break;
+
+            case LOOK_DOWN_LEFT:
+                start(R.raw.look_down_left);
+                break;
         }
     }
 }

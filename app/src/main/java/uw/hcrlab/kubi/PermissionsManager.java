@@ -1,4 +1,4 @@
-package uw.hcrlab.kubi.robot;
+package uw.hcrlab.kubi;
 
 import android.Manifest;
 import android.app.Activity;
@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
+
+import uw.hcrlab.kubi.robot.Robot;
 
 /**
  * Created by lrperlmu on 5/3/16.

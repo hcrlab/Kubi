@@ -23,7 +23,7 @@ import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.results.NameResult;
-import uw.hcrlab.kubi.robot.FaceAction;
+import uw.hcrlab.kubi.robot.Eyes;
 
 public class NamePrompt extends Prompt implements TextWatcher {
     private static String TAG = NamePrompt.class.getSimpleName();
@@ -79,7 +79,7 @@ public class NamePrompt extends Prompt implements TextWatcher {
             h.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    robot.act(FaceAction.LOOK_LEFT);
+                    robot.look(Eyes.Look.LOOK_LEFT);
                     robot.showHint("\"" + parts[1] + "\"");
                 }
             }, 1000);
@@ -118,9 +118,9 @@ public class NamePrompt extends Prompt implements TextWatcher {
         }
 
         if(result.isCorrect()) {
-            robot.act(FaceAction.GIGGLE);
+            robot.look(Eyes.Look.HAPPY);
         } else {
-            robot.act(FaceAction.LOOK_DOWN);
+            robot.look(Eyes.Look.SAD);
         }
     }
 }

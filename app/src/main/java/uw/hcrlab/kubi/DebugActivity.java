@@ -8,7 +8,6 @@ import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.PromptTypes;
 import uw.hcrlab.kubi.robot.Action;
-import uw.hcrlab.kubi.robot.PermissionsManager;
 import uw.hcrlab.kubi.robot.Robot;
 
 import android.os.Bundle;
@@ -130,7 +129,7 @@ public class DebugActivity extends FragmentActivity {
             try {
                 int x = Integer.parseInt(strings[0]);
                 int y = Integer.parseInt(strings[1]);
-                robot.moveTo(x, y);
+                robot.body.moveTo(x, y);
             } catch (NumberFormatException nfe) {
                 invalid = true;
             }
@@ -148,7 +147,7 @@ public class DebugActivity extends FragmentActivity {
     private void executeEnumAction(String text) {
         try {
             Action action = Action.valueOf(text.toUpperCase());
-            robot.perform(action);
+            robot.body.move(action);
         } catch (IllegalArgumentException iae) {
             String toastText = "invalid action " + text;
             Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();

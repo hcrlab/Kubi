@@ -19,7 +19,7 @@ public class SpeechUtils {
 
     static {
         /*
-         Parse the simple questions and responses that the robot is able to perform.
+         Parse the simple questions and responses that the robot is able to move.
          These responses are defined under res/values/arrays.xml
           */
         Resources res = App.getContext().getResources();

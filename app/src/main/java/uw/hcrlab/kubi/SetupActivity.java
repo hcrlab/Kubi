@@ -13,8 +13,6 @@ import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
-import uw.hcrlab.kubi.robot.PermissionsManager;
-
 public class SetupActivity extends Activity implements View.OnClickListener, Firebase.AuthResultHandler {
 
     ProgressDialog progress;
