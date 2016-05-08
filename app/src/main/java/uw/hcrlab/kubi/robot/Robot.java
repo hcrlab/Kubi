@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,7 +26,6 @@ import uw.hcrlab.kubi.lesson.HintArrayAdapter;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
-import uw.hcrlab.kubi.speech.SpeechUtils;
 import uw.hcrlab.kubi.wizard.CommandHandler;
 
 /**
@@ -36,38 +34,54 @@ import uw.hcrlab.kubi.wizard.CommandHandler;
 public class Robot {
     public static String TAG = Robot.class.getSimpleName();
 
+    /**
+     * An enumeration describing the two types of single hand flash cards that can be displayed
+     */
     public enum Hand {
         Left,
         Right
     }
 
-    private static Robot instance = null;
+    /**
+     * A toast object used for coordinating toasts that the Robot displays
+     */
+    private static Toast currentToast;
 
-    private FragmentActivity mActivity;
+    /**
+     * The activity that owns this Robot
+     */
+    private FragmentActivity owner;
+
+    // Primary Robot components
+    private static Robot instance = null;
+    public Body body;
+    public Speech speech;
     private ProgressIndicator progress;
     private CommandHandler questions;
 
+    // State variables
     private boolean isStarted = false;
     private boolean isBored = false;
-    private final long BORING_TIME = 1000 * 60 * 1000;
+    private boolean isPromptOpen = false;
+    private boolean isHintOpen = false;
+    private Boolean isLeftShowing = false;
+    private Boolean isRightShowing = false;
 
+    // Fields for managing the "bored" state of the robot
+    private final long BORING_TIME = 1000 * 60 * 1000;
     private Random random = new Random();
     private Timer bored;
 
-
-    private static Toast currentToast;
-
+    // References to UI Components
     private int eyesResId;
     private int leftCardResId;
     private int rightCardResId;
     private int promptResId;
     private int thoughtResId;
 
-    private boolean mIsPromptOpen = false;
-    private boolean mIsHintOpen = false;
-    private Boolean leftIsShowing = false;
-    private Boolean rightIsShowing = false;
-
+    /**
+     * The current prompt object
+     */
     private Prompt prompt;
 
     private String lastCorrectResponse = "";
@@ -85,16 +99,11 @@ public class Robot {
             "Incorrect.",
     };
 
-    public Body body;
-    public Speech speech;
-
     /**
      * This class implements the Singleton pattern and the Factory pattern. All initialization of
      * Robot objects is performed by the Robot.Factory subclass.
      */
     private Robot() {}
-
-
 
     /**
      * Cleans up resources which exist regardless of whether a robot has been setup or not.
@@ -168,7 +177,7 @@ public class Robot {
          * @param context   The current activity
          */
         private static void setup(FragmentActivity context, int eyesRes, int promptRes, int bubbleRes) {
-            instance.mActivity = context;
+            instance.owner = context;
 
             instance.eyesResId = eyesRes;
             instance.promptResId = promptRes;
@@ -188,7 +197,7 @@ public class Robot {
          * @param context   The current activity
          */
         private static void setup(FragmentActivity context, int eyesRes, int promptRes, int bubbleRes, int leftRes, int rightRes) {
-            instance.mActivity = context;
+            instance.owner = context;
 
             instance.eyesResId = eyesRes;
             instance.promptResId = promptRes;
@@ -204,7 +213,7 @@ public class Robot {
          */
         private static void postSetup() {
             instance.body = new Body();
-            instance.speech = new Speech(instance.mActivity);
+            instance.speech = new Speech(instance.owner);
 
             if (App.InWizardMode()) {
                 instance.questions = new CommandHandler("questions");
@@ -236,33 +245,33 @@ public class Robot {
             return;
         }
 
-        View left = mActivity.findViewById(this.leftCardResId);
+        View left = owner.findViewById(this.leftCardResId);
         left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "left image clicked!");
-                if (rightIsShowing) {
+                if (isRightShowing) {
                     hideCard(Robot.Hand.Right);
-                    rightIsShowing = false;
+                    isRightShowing = false;
                 }
             }
         });
 
-        View right = mActivity.findViewById(this.rightCardResId);
+        View right = owner.findViewById(this.rightCardResId);
         right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "right image clicked!");
-                if (leftIsShowing) {
+                if (isLeftShowing) {
                     hideCard(Robot.Hand.Left);
-                    leftIsShowing = false;
+                    isLeftShowing = false;
                 }
             }
         });
 
         speech.startup();
 
-        progress = ProgressIndicator.getInstance(this.mActivity, R.id.progressBar, R.id.progressText);
+        progress = ProgressIndicator.getInstance(this.owner, R.id.progressBar, R.id.progressText);
 
         if (App.InWizardMode()) {
             questions.Listen();
@@ -292,6 +301,12 @@ public class Robot {
         }
     }
 
+    /**
+     * Creates or replaces the currently displayed toast object. This allows the robot to show one
+     * toast at a time.
+     *
+     * @param text The text to display in the toast
+     */
     public static void replaceCurrentToast(String text) {
         if (currentToast != null) {
             currentToast.cancel();
@@ -301,8 +316,14 @@ public class Robot {
         currentToast.show();
     }
 
+    /**
+     * Performs an eye gesture such as "Look Left" or "Look Happy". These can be directional or
+     * emotional eye gestures.
+     *
+     * @param look The eye gesture to preform
+     */
     public void look(Eyes.Look look) {
-        Eyes eyes = (Eyes) mActivity.findViewById(eyesResId);
+        Eyes eyes = (Eyes) owner.findViewById(eyesResId);
 
         if(eyes == null) {
             throw new NullPointerException("look(...) cannot be called if robot doesn't have a reference to an Eyes view!");
@@ -313,6 +334,12 @@ public class Robot {
         eyes.look(look);
     }
 
+    /**
+     * Sets a timer that makes the robot look off into space if the user isn't interacting with it
+     * (i.e. this makes the robot pretend to be bored).
+     *
+     * @param delay Milliseconds for the robot to wait before becoming bored
+     */
     private void scheduleBored(long delay) {
         if(bored != null) {
             bored.cancel();
@@ -324,7 +351,7 @@ public class Robot {
             public void run() {
                 isBored = true;
 
-                Eyes eyes = (Eyes) mActivity.findViewById(eyesResId);
+                Eyes eyes = (Eyes) owner.findViewById(eyesResId);
                 eyes.look(Eyes.Look.LOOK_LEFT);
 
                 body.move(Action.LOOK_AROUND);
@@ -333,6 +360,9 @@ public class Robot {
         }, delay);
     }
 
+    /**
+     * Resets the bored timer by canceling the current timer and creating a new one.
+     */
     private void resetTimers() {
         if (isBored) {
             body.moveTo(0,0);
@@ -345,7 +375,8 @@ public class Robot {
 
 
     /**
-     * Touch listener for the RobotFace
+     * Listener for responding to touch gestures on on the robot which are not handled by any
+     * subviews (such as the prompt fragments).
      */
     private View.OnTouchListener faceListener = new View.OnTouchListener() {
         @Override
@@ -356,9 +387,11 @@ public class Robot {
         }
     };
 
-    /** Show a HintCollection, which can contain multiple hints */
+    /**
+     * Show a HintCollection, which can contain multiple hints, in the robot's thought bubble
+     */
     public void showHint(final PromptData.HintCollection hint) {
-        if(mIsHintOpen) {
+        if(isHintOpen) {
             hideHint();
 
             final Handler handler = new Handler();
@@ -372,9 +405,9 @@ public class Robot {
             return;
         }
 
-        final View bubble = mActivity.findViewById(this.thoughtResId);
+        final View bubble = owner.findViewById(this.thoughtResId);
 
-        HintArrayAdapter adapter = new HintArrayAdapter(mActivity, hint.details);
+        HintArrayAdapter adapter = new HintArrayAdapter(owner, hint.details);
 
         TextView tv = (TextView) bubble.findViewById(R.id.thought_bubble_big);
         ListView lv = (ListView) bubble.findViewById(R.id.thought_bubble_list);
@@ -400,12 +433,17 @@ public class Robot {
             anim.setDuration(500);
             anim.start();
 
-            mIsHintOpen = true;
+            isHintOpen = true;
         }
     }
 
+    /**
+     * Shows a string hint in the robot's thought bubble
+     *
+     * @param hint The text to display
+     */
     public void showHint(final String hint) {
-        if(mIsHintOpen) {
+        if(isHintOpen) {
             hideHint();
 
             final Handler handler = new Handler();
@@ -420,7 +458,7 @@ public class Robot {
         }
 
 
-        final View bubble = mActivity.findViewById(this.thoughtResId);
+        final View bubble = owner.findViewById(this.thoughtResId);
 
         ListView lv = (ListView) bubble.findViewById(R.id.thought_bubble_list);
         TextView tv = (TextView) bubble.findViewById(R.id.thought_bubble_big);
@@ -446,20 +484,28 @@ public class Robot {
             anim.setDuration(500);
             anim.start();
 
-            mIsHintOpen = true;
+            isHintOpen = true;
         }
     }
 
+    /**
+     * Indicates if the robot is currently displaying a hint
+     *
+     * @return True if the thought bubble is visible, false otherwise
+     */
     public boolean isHintOpen() {
-        return mIsHintOpen;
+        return isHintOpen;
     }
 
+    /**
+     * Hides the robot's thought bubble if it is visible.
+     */
     public void hideHint() {
-        if(!mIsHintOpen) {
+        if(!isHintOpen) {
             return;
         }
 
-        final View bubble = mActivity.findViewById(thoughtResId);
+        final View bubble = owner.findViewById(thoughtResId);
         ValueAnimator anim = ValueAnimator.ofInt(20, -bubble.getHeight() - 10);
         anim.setInterpolator(new AnticipateOvershootInterpolator());
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -475,24 +521,38 @@ public class Robot {
         anim.setDuration(500);
         anim.start();
 
-        mIsHintOpen = false;
+        isHintOpen = false;
     }
 
+    /**
+     * Indicates if the robot is currently displaying a prompt to the user.
+     *
+     * @return True if a prompt is visible, false otherwise.
+     */
     public boolean isPromptOpen() {
-        return mIsPromptOpen;
+        return isPromptOpen;
     }
 
+    /**
+     * Gets the robot's current prompt
+     *
+     * @return Returns the robot's current prompt, or null if the robot does not currently have a prompt.
+     */
     public Prompt getPrompt() {
         return prompt;
     }
 
-    // Render the given PromptData to the user
+    /**
+     * Animates a prompt onto the robot's screen
+     *
+     * @param prompt The prompt to display
+     */
     public void setPrompt(final Prompt prompt) {
-        if(mIsHintOpen) {
+        if(isHintOpen) {
             hideHint();
         }
 
-        if(mIsPromptOpen) {
+        if(isPromptOpen) {
             hidePrompt();
 
             final Handler handler = new Handler();
@@ -508,15 +568,20 @@ public class Robot {
 
         this.prompt = prompt;
 
-        this.mActivity.getSupportFragmentManager()
+        this.owner.getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.anim.slide_up, R.anim.slide_down)
                 .replace(promptResId, prompt, prompt.getUid())
                 .commit();
 
-        mIsPromptOpen = true;
+        isPromptOpen = true;
     }
 
+    /**
+     * Stores the user's response to the current prompt to Firebase
+     *
+     * @param response The user's response to store to Firebase
+     */
     public void setPromptResponse(Object response) {
         if (prompt != null && prompt.getUid() != null) {
             Firebase fb = App.getFirebase().child("questions").child(prompt.getUid()).child("response");
@@ -526,6 +591,12 @@ public class Robot {
         }
     }
 
+    /**
+     * Display the correct response to the current response and carry out the robot's reaction to
+     * whether the user got the answer correct or incorrect.
+     *
+     * @param res The result of the user's answer to the current prompt (indicating if the user's answer was correct or not)
+     */
     public void showResult(Result res) {
         if(res.isCorrect()) {
             lastCorrectResponse = speech.sayRandomResponse(correctResponses, lastCorrectResponse);
@@ -538,25 +609,33 @@ public class Robot {
         prompt.handleResults(res);
     }
 
+    /**
+     * Animates the current prompt off of the screen and sets the current prompt to null.
+     */
     public void hidePrompt() {
-        this.mActivity.getSupportFragmentManager()
+        this.owner.getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.anim.slide_up, R.anim.slide_down)
                 .remove(prompt)
                 .commit();
 
-        mIsPromptOpen = false;
+        isPromptOpen = false;
         prompt = null;
     }
 
+    /**
+     * Shows a single hand flash card
+     *
+     * @param leftOrRight The single hand flash card to display (left or right)
+     */
     public void showCard(Hand leftOrRight) {
-        if(leftOrRight == Hand.Left && leftIsShowing) return;
-        if(leftOrRight == Hand.Right && rightIsShowing) return;
+        if(leftOrRight == Hand.Left && isLeftShowing) return;
+        if(leftOrRight == Hand.Right && isRightShowing) return;
 
-        if(leftOrRight == Hand.Left) leftIsShowing = true;
-        if(leftOrRight == Hand.Right) rightIsShowing = true;
+        if(leftOrRight == Hand.Left) isLeftShowing = true;
+        if(leftOrRight == Hand.Right) isRightShowing = true;
 
-        final View card = mActivity.findViewById(leftOrRight == Hand.Left ? leftCardResId : rightCardResId);
+        final View card = owner.findViewById(leftOrRight == Hand.Left ? leftCardResId : rightCardResId);
         if(((FrameLayout.LayoutParams)card.getLayoutParams()).bottomMargin < 0) {
             ValueAnimator anim = ValueAnimator.ofInt(-card.getHeight() - 10, 20);
             anim.setInterpolator(new AnticipateOvershootInterpolator());
@@ -575,8 +654,15 @@ public class Robot {
         }
     }
 
+    /**
+     * Shows a single hand flash card with the given image and text
+     *
+     * @param leftOrRight The hand to display this flash card in
+     * @param resID The resource ID of the image to display
+     * @param text The text to display on the flash card
+     */
     public void showCard(Hand leftOrRight, int resID, String text) {
-        final View card = mActivity.findViewById(leftOrRight == Hand.Left ? leftCardResId : rightCardResId);
+        final View card = owner.findViewById(leftOrRight == Hand.Left ? leftCardResId : rightCardResId);
 
         if(card == null) return;
 
@@ -584,12 +670,12 @@ public class Robot {
         ImageView i = null;
 
         if(leftOrRight == Hand.Left) {
-            leftIsShowing = true;
+            isLeftShowing = true;
 
             t = (TextView)card.findViewById(R.id.leftCardText);
             i = (ImageView)card.findViewById(R.id.leftCardImage);
         } else {
-            rightIsShowing = true;
+            isRightShowing = true;
 
             t = (TextView)card.findViewById(R.id.rightCardText);
             i = (ImageView)card.findViewById(R.id.rightCardImage);
@@ -616,16 +702,22 @@ public class Robot {
         }
     }
 
+    /**
+     * Animates the indicated flash card off of th screen
+     *
+     * @param leftOrRight The flash card to hide
+     * @return The animator which is animating the card off of the screen
+     */
     public ValueAnimator hideCard(Hand leftOrRight) {
-        final View card = mActivity.findViewById(leftOrRight == Hand.Left ? leftCardResId : rightCardResId);
+        final View card = owner.findViewById(leftOrRight == Hand.Left ? leftCardResId : rightCardResId);
 
         if(card == null) return null;
 
-        if(leftOrRight == Hand.Left && !leftIsShowing) return null;
-        if(leftOrRight == Hand.Right && !rightIsShowing) return null;
+        if(leftOrRight == Hand.Left && !isLeftShowing) return null;
+        if(leftOrRight == Hand.Right && !isRightShowing) return null;
 
-        if(leftOrRight == Hand.Left) leftIsShowing = false;
-        if(leftOrRight == Hand.Right) rightIsShowing = false;
+        if(leftOrRight == Hand.Left) isLeftShowing = false;
+        if(leftOrRight == Hand.Right) isRightShowing = false;
 
         ValueAnimator anim = ValueAnimator.ofInt(20, -card.getHeight() - 10);
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
