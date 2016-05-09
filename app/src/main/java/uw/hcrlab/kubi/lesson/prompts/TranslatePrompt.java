@@ -1,5 +1,7 @@
 package uw.hcrlab.kubi.lesson.prompts;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,6 +28,9 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
     private static String TAG = TranslatePrompt.class.getSimpleName();
 
     private HashMap<Integer, PromptData.Word> wordsById;
+
+    private String response;
+    private int duration;
 
     private View.OnClickListener hintClickListener = new View.OnClickListener() {
         @Override
@@ -60,9 +65,11 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
         // Setup the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
-        resultText.setShowSoftInputOnFocus(false); // Never show soft keyboard. Forces use of bluetooth keyboard
+        //resultText.setShowSoftInputOnFocus(false); // Never show soft keyboard. Forces use of bluetooth keyboard
         resultText.requestFocus();
         resultText.addTextChangedListener(this);
+
+        duration = getResources().getInteger(android.R.integer.config_longAnimTime);
 
         return view;
     }
@@ -128,7 +135,8 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        robot.setPromptResponse(s.toString());
+        response = s.toString();
+        robot.setPromptResponse(response);
     }
 
     @Override
@@ -137,6 +145,13 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
     }
 
     public void handleResults(Result res) {
+        View view = getView();
+
+        if(view == null) {
+            Log.e(TAG, "Unable to get TRANSLATE prompt view!");
+            return;
+        }
+
         TranslateResult result = (TranslateResult) res;
 
         if(result.hasBlame()) {
@@ -144,10 +159,78 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
             toast.show();
         }
 
+        final View usersText = view.findViewById(R.id.l1_result_text);
+
         if(result.isCorrect()) {
             robot.look(Eyes.Look.HAPPY);
+
+            TextView correctText = (TextView) view.findViewById(R.id.translate_original_correct);
+
+            if(usersText == null || correctText == null) {
+                Log.e(TAG, "Unable to get views for displaying TRANSLATE results!");
+                return;
+            }
+
+            correctText.setText(response);
+            correctText.setAlpha(0f);
+            correctText.setVisibility(View.VISIBLE);
+
+            correctText.animate()
+                    .alpha(1f)
+                    .setDuration(duration)
+                    .setListener(null);
+
+            usersText.animate()
+                    .alpha(0f)
+                    .setDuration(duration)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            usersText.setVisibility(View.GONE);
+                        }
+                    });
         } else {
             robot.look(Eyes.Look.SAD);
+
+            if(result.hasBlame()) {
+                robot.showHint(result.getBlame());
+            }
+
+            TextView correctText = (TextView) view.findViewById(R.id.translate_correct_text);
+            TextView incorrectText = (TextView) view.findViewById(R.id.translate_incorrect_text);
+
+            if(usersText == null || correctText == null || incorrectText == null) {
+                Log.e(TAG, "Unable to get views for displaying TRANSLATE results!");
+                return;
+            }
+
+            correctText.setText(result.getSolutions().get(0));
+            correctText.setAlpha(0f);
+            correctText.setVisibility(View.VISIBLE);
+
+            correctText.animate()
+                    .alpha(1f)
+                    .setDuration(duration)
+                    .setListener(null);
+
+            incorrectText.setText(response);
+            incorrectText.setAlpha(0f);
+            incorrectText.setVisibility(View.VISIBLE);
+
+            incorrectText.animate()
+                    .alpha(1f)
+                    .setDuration(duration)
+                    .setListener(null);
+
+            usersText.animate()
+                    .alpha(0f)
+                    .setDuration(duration)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            usersText.setVisibility(View.GONE);
+                        }
+                    });
         }
     }
 }

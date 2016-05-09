@@ -1,5 +1,7 @@
 package uw.hcrlab.kubi.lesson.prompts;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -27,6 +30,9 @@ import uw.hcrlab.kubi.robot.Eyes;
 
 public class NamePrompt extends Prompt implements TextWatcher {
     private static String TAG = NamePrompt.class.getSimpleName();
+
+    private String response;
+    private int duration;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,9 +67,11 @@ public class NamePrompt extends Prompt implements TextWatcher {
 
         // focus on the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
-        resultText.setShowSoftInputOnFocus(false); // Make sure the on-screen keyboard never shows. Forces the use of the bluetooth keyboard
+        //resultText.setShowSoftInputOnFocus(false); // Make sure the on-screen keyboard never shows. Forces the use of the bluetooth keyboard
         resultText.requestFocus();
         resultText.addTextChangedListener(this);
+
+        duration = getResources().getInteger(android.R.integer.config_longAnimTime);
 
         return view;
     }
@@ -100,7 +108,8 @@ public class NamePrompt extends Prompt implements TextWatcher {
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         if (robot != null) {
-            robot.setPromptResponse(s.toString());
+            response = s.toString();
+            robot.setPromptResponse(response);
         }
     }
 
@@ -110,17 +119,91 @@ public class NamePrompt extends Prompt implements TextWatcher {
     }
 
     public void handleResults(Result res) {
+        View view = getView();
+
+        if(view == null) {
+            Log.e(TAG, "Unable to get TRANSLATE prompt view!");
+            return;
+        }
+
         NameResult result = (NameResult) res;
 
         if(result.hasBlame()) {
-            Toast toast = Toast.makeText(getActivity().getApplicationContext(), result.getBlame(), Toast.LENGTH_SHORT);
-            toast.show();
+            robot.showHint(result.getBlame());
         }
+
+        final View usersText = view.findViewById(R.id.l1_result_text);
 
         if(result.isCorrect()) {
             robot.look(Eyes.Look.HAPPY);
+
+            TextView correctText = (TextView) view.findViewById(R.id.translate_original_correct);
+
+            if(usersText == null || correctText == null) {
+                Log.e(TAG, "Unable to get views for displaying TRANSLATE results!");
+                return;
+            }
+
+            correctText.setText(response);
+            correctText.setAlpha(0f);
+            correctText.setVisibility(View.VISIBLE);
+
+            correctText.animate()
+                    .alpha(1f)
+                    .setDuration(duration)
+                    .setListener(null);
+
+            usersText.animate()
+                    .alpha(0f)
+                    .setDuration(duration)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            usersText.setVisibility(View.GONE);
+                        }
+                    });
         } else {
             robot.look(Eyes.Look.SAD);
+
+            if(result.hasBlame()) {
+                robot.showHint(result.getBlame());
+            }
+
+            TextView correctText = (TextView) view.findViewById(R.id.translate_correct_text);
+            TextView incorrectText = (TextView) view.findViewById(R.id.translate_incorrect_text);
+
+            if(usersText == null || correctText == null || incorrectText == null) {
+                Log.e(TAG, "Unable to get views for displaying TRANSLATE results!");
+                return;
+            }
+
+            correctText.setText(result.getSolutions().get(0));
+            correctText.setAlpha(0f);
+            correctText.setVisibility(View.VISIBLE);
+
+            correctText.animate()
+                    .alpha(1f)
+                    .setDuration(duration)
+                    .setListener(null);
+
+            incorrectText.setText(response);
+            incorrectText.setAlpha(0f);
+            incorrectText.setVisibility(View.VISIBLE);
+
+            incorrectText.animate()
+                    .alpha(1f)
+                    .setDuration(duration)
+                    .setListener(null);
+
+            usersText.animate()
+                    .alpha(0f)
+                    .setDuration(duration)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            usersText.setVisibility(View.GONE);
+                        }
+                    });
         }
     }
 }

@@ -3,12 +3,16 @@
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="gray">#e8e6e6</color>
+    <color name="green">#33cc33</color>
+    <color name="red">#EC0B1B</color>
     <color name="text_dark">#424242</color>
     <color name="progress">#1CAFF6</color>
     <color name="prompt_background">#ffffff</color>
     <color name="selected">#73C2EF</color>
     <color name="correct">#90CD94</color>
+    <color name="correct_faded">#8890CD94</color>
     <color name="incorrect">#D17F7F</color>
+    <color name="incorrect_faded">#88D17F7F</color>
     <color name="really_incorrect">#EC0B1B</color>
     <color name="hand">#73C2EF</color>
     <color name="hand_border">#7B6E76</color>
