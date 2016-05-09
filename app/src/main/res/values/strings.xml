@@ -36,4 +36,16 @@
     <string name="startup_device_name">Device Name</string>
     <string name="startup_button">Start KubiLingo</string>
     <string name="startup_error_text">Username and/or password are incorrect!</string>
+
+    <!-- Participant Activity Strings -->
+    <string name="participant_name">Name</string>
+    <string name="participant_phase">Study Phase</string>
+    <string name="participant_button">Begin Study</string>
+
+    <string-array name="study_phases">
+        <item>Dutch Before Computer</item>
+        <item>Dutch After Computer</item>
+        <item>Swedish Before Computer</item>
+        <item>Swedish After Computer</item>
+    </string-array>
 </resources>

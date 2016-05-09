@@ -23,7 +23,7 @@ public class SetupActivity extends Activity implements View.OnClickListener, Fir
 
         App app = (App) getApplication();
         if(app.authenticate()) {
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, ParticipantActivity.class);
             startActivity(intent);
             finish();
             return;
@@ -65,7 +65,7 @@ public class SetupActivity extends Activity implements View.OnClickListener, Fir
     public void onAuthenticated(AuthData authData) {
         progress.dismiss();
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ParticipantActivity.class);
         startActivity(intent);
         finish();
     }

@@ -65,6 +65,7 @@ public class Speech extends ASR {
 
     public void cleanup() {
         //TODO: Make sure we don't leak a TTS service...
+        tts.shutdown();
     }
 
     public void startup() {
