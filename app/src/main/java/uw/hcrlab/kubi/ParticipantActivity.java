@@ -13,6 +13,8 @@ import android.widget.Spinner;
 public class ParticipantActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     private static String TAG = ParticipantActivity.class.getSimpleName();
 
+    private String language = "dutch";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +32,13 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        Log.d(TAG, "Item selected: " + adapterView.getSelectedItem());
+        String selected = (String) adapterView.getSelectedItem();
+
+        if(selected.contains("Swedish")) {
+            language = "swedish";
+        } else {
+            language = "dutch";
+        }
     }
 
     @Override
@@ -40,6 +48,9 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
 
     @Override
     public void onClick(View view) {
+        App app = (App) getApplication();
+        app.loadAudio(language);
+
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

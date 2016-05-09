@@ -64,7 +64,6 @@ public class App extends Application implements Firebase.AuthResultHandler {
 
     public boolean authenticate(Firebase.AuthResultHandler callback) {
         if(fb.getAuth() != null) {
-            loadAudio();
             return true;
         }
 
@@ -143,8 +142,6 @@ public class App extends Application implements Firebase.AuthResultHandler {
     @Override
     public void onAuthenticated(AuthData authData) {
         Log.i(TAG, "Authenticated with Firebase!");
-
-        loadAudio();
     }
 
     @Override
@@ -153,14 +150,18 @@ public class App extends Application implements Firebase.AuthResultHandler {
         Log.e(TAG, firebaseError.toString());
     }
 
-    private void loadAudio() {
-        fb.child("audio").addListenerForSingleValueEvent(new ValueEventListener() {
+    public void loadAudio(String language) {
+        fb.child("audio").child(language).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snap) {
                 if(snap.hasChildren()) {
+                    mAudioURLs.clear();
+
                     for(DataSnapshot audio : snap.getChildren()) {
                         Log.d(TAG, "Got audio URL: " + audio.getValue(String.class));
-                        mAudioURLs.put(audio.getKey(), (String) audio.getValue());
+                        if(!mAudioURLs.containsKey(audio.getKey())) {
+                            mAudioURLs.put(audio.getKey(), (String) audio.getValue());
+                        }
                     }
                 }
             }
