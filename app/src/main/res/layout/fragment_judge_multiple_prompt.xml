@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    android:id="@+id/prompt"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/prompt_hand_width"
+    android:layout_height="@dimen/prompt_height"
+    android:layout_gravity="bottom|center"
+    android:layout_marginBottom="20dp">
+
+    <!-- Prompt Fragments should load here! -->
+    <FrameLayout
+        android:id="@+id/prompt_container"
+        android:layout_width="@dimen/prompt_width"
+        android:layout_height="@dimen/prompt_height"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/prompt_border" >
+
+            <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_margin="5dp"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:background="@color/prompt_background"-->
+                <!--android:layout_gravity="center"-->
+                <!--&gt;-->
+
+                <!--&lt;!&ndash; filled dynamically with word buttons &ndash;&gt;-->
+                <!--<TextView-->
+                    <!--android:id="@+id/l1_to_translate"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_width="0px"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:gravity="center"/>-->
+
+                <!--<LinearLayout-->
+                    <!--android:id="@+id/options_container"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_width="0px"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:orientation="horizontal"-->
+                    <!--/>-->
+            <!--</LinearLayout>-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="#000000"
+            >
+
+            <TextView
+                android:id="@+id/l1_to_translate"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:textSize="@dimen/card_text_size"
+                android:background="#999999"
+                android:gravity="right"
+                android:padding="10sp"
+                />
+
+            <!-- To be filled with checkboxes -->
+            <LinearLayout
+                android:id="@+id/options_container"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="#CCCCCC"
+                android:layout_gravity="left"
+                >
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- Left Hand -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="@dimen/finger_width"
+        android:layout_height="@dimen/hand_height"
+        android:layout_gravity="center|left">
+
+        <View
+            android:id="@+id/leftFingerOne"
+            android:layout_width="@dimen/finger_width"
+            android:layout_height="@dimen/finger_height"
+            android:background="@drawable/finger"/>
+
+    </LinearLayout>
+
+    <!-- Right Hand -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="@dimen/finger_width"
+        android:layout_height="@dimen/hand_height"
+        android:layout_gravity="center|right">
+
+        <View
+            android:id="@+id/rightFingerOne"
+            android:layout_width="@dimen/finger_width"
+            android:layout_height="@dimen/finger_height"
+            android:background="@drawable/finger"/>
+
+    </LinearLayout>
+
+</FrameLayout>

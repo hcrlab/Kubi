@@ -2,6 +2,7 @@ package uw.hcrlab.kubi;
 
 import uw.hcrlab.kubi.lesson.PromptData.HintCollection;
 import uw.hcrlab.kubi.lesson.Prompt;
+import uw.hcrlab.kubi.lesson.prompts.JudgeMultiplePrompt;
 import uw.hcrlab.kubi.lesson.prompts.JudgeSinglePrompt;
 import uw.hcrlab.kubi.lesson.prompts.ListenPrompt;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
@@ -90,11 +91,14 @@ public class DebugActivity extends FragmentActivity {
             case NAME:
                 prompt = new NamePrompt();
                 break;
-            case JUDGE:
+            case JUDGE_SINGLE:
                 prompt = new JudgeSinglePrompt();
                 break;
             case LISTEN:
                 prompt = new ListenPrompt();
+                break;
+            case JUDGE_MULTIPLE:
+                prompt = new JudgeMultiplePrompt();
                 break;
             default:
                 throw new IllegalArgumentException(
@@ -201,7 +205,7 @@ public class DebugActivity extends FragmentActivity {
                 loadPrompt(pd);
                 break;
             case (5):
-                pd.type = PromptTypes.JUDGE;
+                pd.type = PromptTypes.JUDGE_SINGLE;
                 pd.PromptText = "Select the missing word.";
                 pd.textBefore = "El niño";
                 pd.options.add(new PromptData.Option(1, "como"));
@@ -213,6 +217,14 @@ public class DebugActivity extends FragmentActivity {
             case (6):
                 pd.type = PromptTypes.LISTEN;
                 pd.PromptText = "una manzana";
+                loadPrompt(pd);
+                break;
+            case (7):
+                pd.type = PromptTypes.JUDGE_MULTIPLE;
+                pd.PromptText = "Mark all correct translations of “I eat an apple.”";
+                pd.options.add(new PromptData.Option(1, "Yo como una manzana."));
+                pd.options.add(new PromptData.Option(2, "Ella come una manzana."));
+                pd.options.add(new PromptData.Option(3, "Como una manzana."));
                 loadPrompt(pd);
                 break;
             default:
