@@ -69,4 +69,7 @@
     <dimen name="card_text_top_margin">10dp</dimen>
     <dimen name="card_image_bottom_margin">20dp</dimen>
 
+    <!-- JUDGE Prompt -->
+    <dimen name="spinner_item_margin">10sp</dimen>
+
 </resources>

@@ -36,4 +36,9 @@
     <string name="startup_device_name">Device Name</string>
     <string name="startup_button">Start KubiLingo</string>
     <string name="startup_error_text">Username and/or password are incorrect!</string>
+
+    <string-array name="test_dropdown">
+        <item>foo</item>
+        <item>bar</item>
+    </string-array>
 </resources>

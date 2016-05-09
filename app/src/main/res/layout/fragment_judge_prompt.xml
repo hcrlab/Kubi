@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    android:id="@+id/prompt"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/prompt_hand_width"
+    android:layout_height="@dimen/prompt_height"
+    android:layout_gravity="bottom|center"
+    android:layout_marginBottom="20dp">
+
+    <!-- Prompt Fragments should load here! -->
+    <FrameLayout
+        android:id="@+id/prompt_container"
+        android:layout_width="@dimen/prompt_width"
+        android:layout_height="@dimen/prompt_height"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/prompt_border" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|center"
+                >
+
+                <TextView
+                    android:id="@+id/text_before_dropdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="@dimen/card_text_size"
+                    />
+
+                <Spinner
+                    android:id="@+id/dropdown"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:drawSelectorOnTop="true"
+                    android:textSize="@dimen/card_text_size"
+                    android:textColor="#000000"
+                    />
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="vertical"-->
+                    <!--&gt;-->
+                    <!--<TextView-->
+                        <!--android:id="@+id/dropdown_selection"-->
+                        <!--android:layout_width="fill_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:padding="@dimen/spinner_item_margin"-->
+                        <!--android:textSize="@dimen/card_text_size"-->
+                        <!--/>-->
+                <!--</LinearLayout>-->
+                <TextView
+                    android:id="@+id/text_after_dropdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="@dimen/card_text_size"
+                    />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- Left Hand -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="@dimen/finger_width"
+        android:layout_height="@dimen/hand_height"
+        android:layout_gravity="center|left">
+
+        <View
+            android:id="@+id/leftFingerOne"
+            android:layout_width="@dimen/finger_width"
+            android:layout_height="@dimen/finger_height"
+            android:background="@drawable/finger"/>
+
+    </LinearLayout>
+
+    <!-- Right Hand -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="@dimen/finger_width"
+        android:layout_height="@dimen/hand_height"
+        android:layout_gravity="center|right">
+
+        <View
+            android:id="@+id/rightFingerOne"
+            android:layout_width="@dimen/finger_width"
+            android:layout_height="@dimen/finger_height"
+            android:background="@drawable/finger"/>
+
+    </LinearLayout>
+
+</FrameLayout>

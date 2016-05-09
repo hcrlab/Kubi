@@ -2,6 +2,7 @@ package uw.hcrlab.kubi;
 
 import uw.hcrlab.kubi.lesson.PromptData.HintCollection;
 import uw.hcrlab.kubi.lesson.Prompt;
+import uw.hcrlab.kubi.lesson.prompts.JudgePrompt;
 import uw.hcrlab.kubi.lesson.prompts.ListenPrompt;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
@@ -39,11 +40,6 @@ public class DebugActivity extends FragmentActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_debug);
-
-        // load eyes gif
-//        WebView eye_area = (WebView) findViewById(R.id.webview_eyes);
-//        eye_area.loadUrl("file:///android_asset/eyes.html");
-
 
         // make sure we have the permissions needed to connect bluetooth
         PermissionsManager.requestPermissionsDialogIfNecessary(this);
@@ -94,6 +90,9 @@ public class DebugActivity extends FragmentActivity {
                 break;
             case NAME:
                 prompt = new NamePrompt();
+                break;
+            case JUDGE:
+                prompt = new JudgePrompt();
                 break;
             case LISTEN:
                 prompt = new ListenPrompt();
@@ -174,10 +173,10 @@ public class DebugActivity extends FragmentActivity {
         switch (input) {
             case (1):
                 pd.type = PromptTypes.SELECT;
-                pd.PromptText = "apple";
-                pd.options.add(new PromptData.Option(1, "manzana").setDrawable("apple"));
-                pd.options.add(new PromptData.Option(2, "plátano").setDrawable("banana"));
-                pd.options.add(new PromptData.Option(3, "niña").setDrawable(("girl")));
+                pd.PromptText = "Select translation of \"an apple\"";
+                pd.options.add(new PromptData.Option(1, "una manzana").setDrawable("apple"));
+                pd.options.add(new PromptData.Option(2, "un plátano").setDrawable("banana"));
+                pd.options.add(new PromptData.Option(3, "una niña").setDrawable(("girl")));
                 loadPrompt(pd);
 
                 hd.details.add(new PromptData.Hint().setText("apple"));
@@ -186,6 +185,7 @@ public class DebugActivity extends FragmentActivity {
                 break;
             case (3):
                 pd.type = PromptTypes.TRANSLATE;
+                pd.PromptText = "Translate this text";//una manzana y un plátano";
                 pd.words.add(new PromptData.Word(0,"una").addHint("a").addHint("an"));
                 pd.words.add(new PromptData.Word(1, "manzana").addHint("apple"));
                 pd.words.add(new PromptData.Word(2, "y").addHint("and"));
@@ -195,10 +195,20 @@ public class DebugActivity extends FragmentActivity {
                 break;
             case (4):
                 pd.type = PromptTypes.NAME;
-                pd.PromptText = "apple";
+                pd.PromptText = "Translate \"an apple\"";
                 pd.images.add(new PromptData.Image("apple", false));
                 pd.images.add(new PromptData.Image("banana", false));
                 pd.images.add(new PromptData.Image("apple", false));
+                loadPrompt(pd);
+                break;
+            case (5):
+                pd.type = PromptTypes.JUDGE;
+                pd.PromptText = "Select the missing word.";
+                pd.textBefore = "El niño";
+                pd.options.add(new PromptData.Option(1, "como"));
+                pd.options.add(new PromptData.Option(2, "comes"));
+                pd.options.add(new PromptData.Option(3, "come"));
+                pd.textAfter = "un plátano.";
                 loadPrompt(pd);
                 break;
             case (6):
