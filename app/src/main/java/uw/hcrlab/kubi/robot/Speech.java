@@ -1,9 +1,11 @@
 package uw.hcrlab.kubi.robot;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 
@@ -18,7 +20,7 @@ import sandra.libs.asr.asrlib.ASR;
 import sandra.libs.tts.TTS;
 import sandra.libs.vpa.vpalib.Bot;
 import uw.hcrlab.kubi.App;
-import uw.hcrlab.kubi.speech.SpeechUtils;
+import uw.hcrlab.kubi.R;
 
 /**
  * Created by Alexander on 5/8/2016.
@@ -42,6 +44,23 @@ public class Speech extends ASR {
     private Random random = new Random();
 
     private boolean isSpeaking = false;
+
+    // Map containing key = simple questions and value = how the robot responds
+    private static Map<String, String> simpleResponses = new HashMap<String, String>();
+
+    static {
+        /*
+         Parse the simple questions and responses that the robot is able to move.
+         These responses are defined under res/values/arrays.xml
+          */
+        Resources res = App.getContext().getResources();
+        String[] stringArray = res.getStringArray(R.array.promptsAndResponses);
+
+        for (String entry : stringArray) {
+            String[] splitResult = entry.split("\\|", 2);
+            simpleResponses.put(splitResult[0], splitResult[1]);
+        }
+    }
 
     private Speech(Activity activity) {
         this.activity = activity;
@@ -228,7 +247,7 @@ public class Speech extends ASR {
         String speechInput = nBestList.get(0);
         Log.i(TAG, "Speech input: " + speechInput);
 
-        String response = SpeechUtils.getResponse(speechInput);
+        String response = getResponse(speechInput);
 
         try {
             if(response != null){
@@ -257,11 +276,52 @@ public class Speech extends ASR {
         //super.stopListening();
         super.cancel();
 
-        String errorMessage = SpeechUtils.getErrorMessage(errorCode);
+        String errorMessage = getErrorMessage(errorCode);
 
         // If there is an error, shows feedback to the user and writes it in the log
         Log.e(TAG, "Error: " + errorMessage);
         Robot.replaceCurrentToast(errorMessage);
     }
 
+    public static String getResponse(String speechInput) {
+        return simpleResponses.get(speechInput);
+    }
+
+    public static String getErrorMessage(int errorCode) {
+        String errorMessage = null;
+        switch (errorCode)
+        {
+            case SpeechRecognizer.ERROR_AUDIO:
+                errorMessage = "Audio recording error";
+                break;
+            case SpeechRecognizer.ERROR_CLIENT:
+                errorMessage = "Client side error";
+                break;
+            case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                errorMessage = "Insufficient permissions" ;
+                break;
+            case SpeechRecognizer.ERROR_NETWORK:
+                errorMessage = "Network related error" ;
+                break;
+            case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                errorMessage = "Network operation timeout";
+                break;
+            case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                errorMessage = "RecognitionServiceBusy" ;
+                break;
+            case SpeechRecognizer.ERROR_SERVER:
+                errorMessage = "Server sends error status";
+                break;
+            case SpeechRecognizer.ERROR_NO_MATCH:
+                errorMessage = "No matching message" ;
+                break;
+            case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                errorMessage = "Input not audible";
+                break;
+            default:
+                errorMessage = "ASR error";
+                break;
+        }
+        return errorMessage;
+    }
 }
