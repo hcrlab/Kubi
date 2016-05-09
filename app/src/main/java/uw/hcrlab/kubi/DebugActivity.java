@@ -2,7 +2,7 @@ package uw.hcrlab.kubi;
 
 import uw.hcrlab.kubi.lesson.PromptData.HintCollection;
 import uw.hcrlab.kubi.lesson.Prompt;
-import uw.hcrlab.kubi.lesson.prompts.JudgePrompt;
+import uw.hcrlab.kubi.lesson.prompts.JudgeSinglePrompt;
 import uw.hcrlab.kubi.lesson.prompts.ListenPrompt;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
@@ -20,7 +20,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,7 +91,7 @@ public class DebugActivity extends FragmentActivity {
                 prompt = new NamePrompt();
                 break;
             case JUDGE:
-                prompt = new JudgePrompt();
+                prompt = new JudgeSinglePrompt();
                 break;
             case LISTEN:
                 prompt = new ListenPrompt();

@@ -16,7 +16,7 @@ public class PromptData {
     // For prompts that display words with hints
     public ArrayList<Word> words;
 
-    // For JudgePrompt, the text before and after the dropdown
+    // For JudgeSinglePrompt, the text before and after the dropdown
     public String textBefore;
     public String textAfter;
 

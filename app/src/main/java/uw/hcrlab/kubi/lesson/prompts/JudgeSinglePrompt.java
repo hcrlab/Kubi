@@ -21,17 +21,14 @@ import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.results.NameResult;
 import uw.hcrlab.kubi.robot.FaceAction;
 
-public class JudgePrompt extends Prompt implements AdapterView.OnItemSelectedListener {
-    private static String TAG = JudgePrompt.class.getSimpleName();
-    // shows the selected option
-    private TextView selection;
-    private Spinner spinner;
+public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelectedListener {
+    private static String TAG = JudgeSinglePrompt.class.getSimpleName();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "Creating LISTEN prompt fragment from " + this.data);
-        View view = inflater.inflate(R.layout.fragment_judge_prompt, container, false);
+        View view = inflater.inflate(R.layout.fragment_judge_single_prompt, container, false);
         if (savedInstanceState != null) {
             return view;
         }
@@ -42,24 +39,17 @@ public class JudgePrompt extends Prompt implements AdapterView.OnItemSelectedLis
         TextView textAfter = (TextView) view.findViewById(R.id.text_after_dropdown);
         textAfter.setText(data.textAfter);
 
-        // dropdown selection
-        //selection = (TextView) view.findViewById(R.id.dropdown_selection);
-        //selection.setText("Select word");
-
         // make an ArrayList of the options as strings
-        ArrayList<String> optionStrings = new ArrayList();
+        ArrayList<String> optionStrings = new ArrayList<>();
         for (PromptData.Option option: data.options) {
             optionStrings.add(option.title);
         }
 
         // dropdown menu with options from prompt
-        spinner = (Spinner) view.findViewById(R.id.dropdown);
-        ArrayAdapter<String> adapter = new ArrayAdapter(App.getContext(),
+        Spinner spinner = (Spinner) view.findViewById(R.id.dropdown);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(App.getContext(),
                 R.layout.spinner_item, optionStrings);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-//        ArrayAdapter<CharSequence> adapter = new ArrayAdapter(App.getContext(),
-//                android.R.layout.simple_spinner_item, optionStrings);
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
