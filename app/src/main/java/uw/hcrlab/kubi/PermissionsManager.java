@@ -15,6 +15,7 @@ import uw.hcrlab.kubi.robot.Robot;
  */
 public class PermissionsManager {
     public static String TAG = Robot.class.getSimpleName();
+
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
     public static void requestPermissionsDialogIfNecessary(final Activity activity) {
@@ -29,7 +30,6 @@ public class PermissionsManager {
             }
         }
     }
-
 
     public static void onRequestPermissionsResult(Activity activity, int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -49,7 +49,6 @@ public class PermissionsManager {
                     });
                     builder.show();
                 }
-                return;
             }
         }
     }

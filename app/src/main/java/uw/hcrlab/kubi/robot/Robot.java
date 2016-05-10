@@ -287,7 +287,12 @@ public class Robot {
      * Stops the FaceThread
      */
     public void shutdown() {
-        Log.i(TAG, "Shutting down Main Thread ...");
+        Log.i(TAG, "Shutting down the robot ...");
+
+        if (!isStarted) {
+            Log.i(TAG, "Robot already shutdown ...");
+            return;
+        }
 
         if (bored != null) {
             bored.cancel();
@@ -300,6 +305,8 @@ public class Robot {
         if (App.InWizardMode()) {
             questions.Stop();
         }
+
+        isStarted = false;
     }
 
     /**
