@@ -36,13 +36,22 @@
         <activity android:name=".SetupActivity"
             android:screenOrientation="landscape" />
 
-        <activity android:name=".SplashScreen"
+        <!--<activity android:name=".SplashScreen"-->
+            <!--android:label="${kubiAppLabel}"-->
+            <!--android:screenOrientation="landscape"-->
+            <!--android:theme="@style/SplashScreen">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
+
+        <activity android:name=".DebugActivity"
             android:label="${kubiAppLabel}"
             android:screenOrientation="landscape"
-            android:theme="@style/SplashScreen">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

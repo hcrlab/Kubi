@@ -53,6 +53,8 @@ public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelec
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
+        // TODO: figure out why text is not showing up in the spinner once it has been selected.
+
         return view;
     }
 
