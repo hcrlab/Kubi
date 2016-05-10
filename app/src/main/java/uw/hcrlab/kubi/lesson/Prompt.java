@@ -1,6 +1,7 @@
 package uw.hcrlab.kubi.lesson;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
@@ -18,6 +19,17 @@ public abstract class Prompt extends Fragment {
     protected HttpProxyCacheServer proxy;
 
     protected String uid;
+
+    protected int confirmationDelay = 2000;
+
+    protected Handler handler = new Handler();
+
+    protected Runnable confirm = new Runnable() {
+        @Override
+        public void run() {
+            robot.speech.say("Is that your final answer?", "en");
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

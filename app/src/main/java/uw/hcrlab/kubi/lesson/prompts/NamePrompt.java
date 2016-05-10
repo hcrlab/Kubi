@@ -107,10 +107,11 @@ public class NamePrompt extends Prompt implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (robot != null) {
-            response = s.toString();
-            robot.setPromptResponse(response);
-        }
+        response = s.toString();
+        robot.setPromptResponse(response);
+
+        handler.removeCallbacks(confirm);
+        handler.postDelayed(confirm, confirmationDelay);
     }
 
     @Override

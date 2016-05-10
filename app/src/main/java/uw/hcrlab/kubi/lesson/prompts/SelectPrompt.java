@@ -30,15 +30,6 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
             Eyes.Look.LOOK_DOWN_RIGHT
     };
 
-    private Handler handler = new Handler();
-
-    private Runnable confirm = new Runnable() {
-        @Override
-        public void run() {
-            robot.speech.say("Is that your final answer?", "en");
-        }
-    };
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -92,12 +83,12 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
                     robot.showHint("\"" + parts[1] + "\"");
                 }
             }, 1000);
-            h.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    robot.hideHint();
-                }
-            }, 7000);
+//            h.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    robot.hideHint();
+//                }
+//            }, 7000);
         }
     }
 
@@ -139,7 +130,7 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
 
         if(card.isSelected() && !card.isComplete()) {
             handler.removeCallbacks(confirm);
-            handler.postDelayed(confirm, 3000);
+            handler.postDelayed(confirm, confirmationDelay);
         }
 
         robot.speech.pronounce(card.getOption().title);
