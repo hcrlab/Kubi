@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -14,8 +15,13 @@ import uw.hcrlab.kubi.robot.Robot;
 public class MainActivity extends FragmentActivity {
     private static String TAG = MainActivity.class.getSimpleName();
 
+    public static final String TEACHING_LANGUAGE = "TEACHING_LANGUAGE";
+    public static final String PARTICIPANT_NAME = "PARTICIPANT_NAME";
+
     /* Activity's Properties */
     private Robot robot;
+
+    private String language;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +32,22 @@ public class MainActivity extends FragmentActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
+
+        // Indicate what the current language is!
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            language = extras.getString(TEACHING_LANGUAGE);
+
+            if(language != null) {
+                View flag = findViewById(R.id.main_flag);
+
+                if(language.equals("swedish")) {
+                    flag.setBackground(getDrawable(R.drawable.swedish));
+                } else {
+                    flag.setBackground(getDrawable(R.drawable.dutch));
+                }
+            }
+        }
 
         // Initialize robot with UI components
         robot = Robot.Factory.create(this, R.id.main_eyes, R.id.prompt_placeholder, R.id.thought_bubble, R.id.leftCard, R.id.rightCard);

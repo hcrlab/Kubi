@@ -6,6 +6,15 @@
         android:gravity="center">
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
+            <solid android:color="@color/gray"/>
+        </shape>
+    </item>
+    <item
+        android:width="82dp"
+        android:height="82dp"
+        android:gravity="center">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
             <stroke
                 android:width="2dp"
                 android:color="@color/hand_border"/>

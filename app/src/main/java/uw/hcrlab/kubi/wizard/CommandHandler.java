@@ -309,7 +309,8 @@ public class CommandHandler extends WizardHandler {
 
                     pd.PromptText = (String) snap.child("prompt").getValue();
 
-                    // TODO: Hookup the audio urls...
+                    pd.normalAudio = snap.child("audio").getValue(String.class);
+                    pd.slowAudio = snap.child("audioSlow").getValue(String.class);
 
                     prompt = new ListenPrompt();
 

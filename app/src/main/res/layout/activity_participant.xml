@@ -32,6 +32,7 @@
             android:id="@+id/participant_phase_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
             android:text="@string/participant_phase"
             android:labelFor="@+id/participant_phase"/>
 
@@ -43,9 +44,10 @@
         <Button
             android:id="@+id/participant_submit_btn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/participant_button"/>
+            android:layout_height="60dp"
+            android:layout_marginTop="40dp"
+            android:text="@string/participant_button"
+            android:enabled="false"/>
 
     </LinearLayout>
 </FrameLayout>

@@ -19,6 +19,9 @@ public class PromptData {
     public String textBefore;
     public String textAfter;
 
+    public String normalAudio;
+    public String slowAudio;
+
     // The prompt displayed/spoken to the learner
     public String PromptText;
 

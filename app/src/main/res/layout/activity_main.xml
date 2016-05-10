@@ -44,6 +44,16 @@
 
     </RelativeLayout>
 
+    <!-- Country Flag -->
+    <RelativeLayout
+        android:id="@+id/main_flag"
+        android:layout_width="@dimen/main_flag_width"
+        android:layout_height="@dimen/main_flag_height"
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/main_flag_margin_top"
+        android:layout_marginEnd="@dimen/main_flag_margin_end"
+        android:background="@drawable/swedish"/>
+
     <!-- Progress Display -->
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="82dp"

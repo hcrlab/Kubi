@@ -3,17 +3,21 @@ package uw.hcrlab.kubi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 
-public class ParticipantActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class ParticipantActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener, TextWatcher {
     private static String TAG = ParticipantActivity.class.getSimpleName();
 
     private String language = "dutch";
+    private String participant = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +32,9 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
 
         Button btn = (Button) findViewById(R.id.participant_submit_btn);
         btn.setOnClickListener(this);
+
+        EditText editor = (EditText) findViewById(R.id.participant_name);
+        editor.addTextChangedListener(this);
     }
 
     @Override
@@ -52,6 +59,31 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
         app.loadAudio(language);
 
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(MainActivity.TEACHING_LANGUAGE, language);
+        intent.putExtra(MainActivity.PARTICIPANT_NAME, participant);
         startActivity(intent);
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        boolean enable = s.length() > 0;
+
+        Button btn = (Button) findViewById(R.id.participant_submit_btn);
+
+        if(btn != null) {
+            btn.setEnabled(enable);
+        }
+
+        participant = s.toString();
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 }

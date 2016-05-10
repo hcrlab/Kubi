@@ -91,12 +91,12 @@ public class NamePrompt extends Prompt implements TextWatcher {
                     robot.showHint("\"" + parts[1] + "\"");
                 }
             }, 1000);
-            h.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    robot.hideHint();
-                }
-            }, 7000);
+//            h.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    robot.hideHint();
+//                }
+//            }, 7000);
         }
     }
 
