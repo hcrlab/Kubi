@@ -15,11 +15,13 @@ import uw.hcrlab.kubi.lesson.PromptTypes;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.prompts.JudgeMultiplePrompt;
 import uw.hcrlab.kubi.lesson.prompts.JudgeSinglePrompt;
+import uw.hcrlab.kubi.lesson.prompts.ListenPrompt;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
 import uw.hcrlab.kubi.lesson.results.JudgeMultipleResult;
 import uw.hcrlab.kubi.lesson.results.JudgeSingleResult;
+import uw.hcrlab.kubi.lesson.results.ListenResult;
 import uw.hcrlab.kubi.lesson.results.NameResult;
 import uw.hcrlab.kubi.lesson.results.SelectResult;
 import uw.hcrlab.kubi.lesson.results.TranslateResult;
@@ -126,6 +128,30 @@ public class CommandHandler extends WizardHandler {
     }
 
     private boolean validateNameResult(DataSnapshot res) {
+        if(!res.child("correct").exists()) {
+            return false;
+        }
+
+        if(!res.child("solutions").exists()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validateListen(DataSnapshot snap) {
+        if(!snap.child("prompt").exists()) {
+            return false;
+        }
+
+        if(!snap.child("audio").exists() || !snap.child("audioSlow").exists()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validateListenResult(DataSnapshot res) {
         if(!res.child("correct").exists()) {
             return false;
         }
@@ -275,6 +301,20 @@ public class CommandHandler extends WizardHandler {
                     prompt = new NamePrompt();
                     break;
 
+                case LISTEN:
+                    if(!validateListen(snap)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    pd.PromptText = (String) snap.child("prompt").getValue();
+
+                    // TODO: Hookup the audio urls...
+
+                    prompt = new ListenPrompt();
+
+                    break;
+
                 case JUDGE_SINGLE:
                     if(!validateJudgeSingle(snap)) {
                         Log.e(TAG, "Data snap does not contain all required properties!");
@@ -408,6 +448,22 @@ public class CommandHandler extends WizardHandler {
                     }
 
                     result = nr;
+                    break;
+
+                case LISTEN:
+                    if(!validateListenResult(res)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    ListenResult lr = new ListenResult(res.child("correct").getValue(Boolean.class));
+
+                    for(DataSnapshot sol : res.child("solutions").getChildren()) {
+                        lr.setSource(sol.child("source").getValue(String.class));
+                        lr.setTranslation(sol.child("translation").getValue(String.class));
+                    }
+
+                    result = lr;
                     break;
 
                 case JUDGE_SINGLE:
