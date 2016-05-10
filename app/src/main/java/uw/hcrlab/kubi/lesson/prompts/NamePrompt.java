@@ -128,6 +128,8 @@ public class NamePrompt extends Prompt implements TextWatcher {
 
         NameResult result = (NameResult) res;
 
+        robot.hideHint();
+
         if(result.hasBlame()) {
             robot.showHint(result.getBlame());
         }

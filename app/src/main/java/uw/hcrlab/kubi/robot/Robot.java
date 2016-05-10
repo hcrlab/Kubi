@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -390,7 +391,7 @@ public class Robot {
     /**
      * Show a HintCollection, which can contain multiple hints, in the robot's thought bubble
      */
-    public void showHint(final PromptData.HintCollection hint) {
+    public void showHint(final ArrayList<PromptData.Hint> hints) {
         if(isHintOpen) {
             hideHint();
 
@@ -398,7 +399,7 @@ public class Robot {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    showHint(hint);
+                    showHint(hints);
                 }
             }, 800);
 
@@ -407,7 +408,7 @@ public class Robot {
 
         final View bubble = owner.findViewById(this.thoughtResId);
 
-        HintArrayAdapter adapter = new HintArrayAdapter(owner, hint.details);
+        HintArrayAdapter adapter = new HintArrayAdapter(owner, hints);
 
         TextView tv = (TextView) bubble.findViewById(R.id.thought_bubble_big);
         ListView lv = (ListView) bubble.findViewById(R.id.thought_bubble_list);

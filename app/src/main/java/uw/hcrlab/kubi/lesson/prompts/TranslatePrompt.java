@@ -154,6 +154,8 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
         TranslateResult result = (TranslateResult) res;
 
+        robot.hideHint();
+
         if(result.hasBlame()) {
             Toast toast = Toast.makeText(getActivity().getApplicationContext(), result.getBlame(), Toast.LENGTH_SHORT);
             toast.show();

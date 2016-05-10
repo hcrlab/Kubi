@@ -61,40 +61,20 @@ public class PromptData {
         }
     }
 
-    public static class HintCollection {
-        public ArrayList<Hint> details;
-
-        public HintCollection() {
-            this.details = new ArrayList<>();
-        }
-
-        public String toString() {
-            String detailString = "";
-            for (Hint detail: this.details) {
-                detailString += detail.toString() + ", ";
-            }
-            return String.format(Locale.US, "HintCollection {details=%s}", detailString);
-        }
-
-        public boolean isEmpty() {
-            return this.details.size() < 1;
-        }
-    }
-
     public static class Word {
         public int index;
         public String text;
-        public HintCollection hints;
+        public ArrayList<Hint> hints;
 
         public Word(String text) {
             this.text = text;
-            this.hints = new HintCollection();
+            this.hints = new ArrayList<>();
         }
 
         public Word(int index, String text) {
             this.index = index;
             this.text = text;
-            this.hints = new HintCollection();
+            this.hints = new ArrayList<>();
         }
 
         public boolean hasHint() {
@@ -102,7 +82,7 @@ public class PromptData {
         }
 
         public Word addHint(String hint) {
-            this.hints.details.add(new Hint().setText(hint));
+            this.hints.add(new Hint().setText(hint));
             return this;
         }
     }
