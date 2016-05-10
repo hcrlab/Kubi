@@ -13,9 +13,13 @@ import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.PromptTypes;
 import uw.hcrlab.kubi.lesson.Result;
+import uw.hcrlab.kubi.lesson.prompts.JudgeMultiplePrompt;
+import uw.hcrlab.kubi.lesson.prompts.JudgeSinglePrompt;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
+import uw.hcrlab.kubi.lesson.results.JudgeMultipleResult;
+import uw.hcrlab.kubi.lesson.results.JudgeSingleResult;
 import uw.hcrlab.kubi.lesson.results.NameResult;
 import uw.hcrlab.kubi.lesson.results.SelectResult;
 import uw.hcrlab.kubi.lesson.results.TranslateResult;
@@ -38,7 +42,7 @@ public class CommandHandler extends WizardHandler {
             throw new IllegalArgumentException("Data snapshot does not contain a property named `type`");
         }
 
-        return PromptTypes.valueOf(snap.child("type").getValue(String.class).toUpperCase());
+        return PromptTypes.valueOf(snap.child("type").getValue(String.class).replace('-', '_').toUpperCase());
     }
 
     private boolean validateSelect(DataSnapshot snap) {
@@ -122,6 +126,54 @@ public class CommandHandler extends WizardHandler {
     }
 
     private boolean validateNameResult(DataSnapshot res) {
+        if(!res.child("correct").exists()) {
+            return false;
+        }
+
+        if(!res.child("solutions").exists()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validateJudgeSingle(DataSnapshot snap) {
+        if(!snap.child("prompt").exists() || !snap.child("after").exists() || !snap.child("before").exists()) {
+            return false;
+        }
+
+        if(!snap.child("opts").exists() || !snap.child("opts").hasChildren()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validateJudgeSingleResult(DataSnapshot res) {
+        if(!res.child("correct").exists()) {
+            return false;
+        }
+
+        if(!res.child("solutions").exists()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validateJudgeMultiple(DataSnapshot snap) {
+        if(!snap.child("prompt").exists() || !snap.child("before").exists()) {
+            return false;
+        }
+
+        if(!snap.child("opts").exists() || !snap.child("opts").hasChildren()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validateJudgeMultipleResult(DataSnapshot res) {
         if(!res.child("correct").exists()) {
             return false;
         }
@@ -223,6 +275,47 @@ public class CommandHandler extends WizardHandler {
                     prompt = new NamePrompt();
                     break;
 
+                case JUDGE_SINGLE:
+                    if(!validateJudgeSingle(snap)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    pd.PromptText = (String) snap.child("prompt").getValue();
+                    pd.textBefore = (String) snap.child("before").getValue();
+                    pd.textAfter = (String) snap.child("after").getValue();
+
+                    DataSnapshot options2 = snap.child("opts");
+                    for(DataSnapshot option : options2.getChildren()) {
+                        int num = Integer.parseInt(option.getKey());
+                        String title = option.getValue(String.class);
+
+                        pd.options.add(new PromptData.Option(num, title));
+                    }
+
+                    prompt = new JudgeSinglePrompt();
+                    break;
+
+                case JUDGE_MULTIPLE:
+                    if(!validateJudgeMultiple(snap)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    pd.PromptText = (String) snap.child("prompt").getValue();
+                    pd.textBefore = (String) snap.child("before").getValue();
+
+                    DataSnapshot options3 = snap.child("opts");
+                    for(DataSnapshot option : options3.getChildren()) {
+                        int num = Integer.parseInt(option.getKey());
+                        String title = option.getValue(String.class);
+
+                        pd.options.add(new PromptData.Option(num, title));
+                    }
+
+                    prompt = new JudgeMultiplePrompt();
+                    break;
+
                 default:
                     // throw new IllegalArgumentException(String.format(Locale.US, "Prompt type not implemented: %s", promptData.type));
 
@@ -315,6 +408,37 @@ public class CommandHandler extends WizardHandler {
                     }
 
                     result = nr;
+                    break;
+
+                case JUDGE_SINGLE:
+                    if(!validateJudgeSingleResult(res)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    JudgeSingleResult jsr = new JudgeSingleResult(res.child("correct").getValue(Boolean.class));
+
+                    // We really only expect one item to be in this list... It probably shouldn't be a list at all
+                    for(DataSnapshot sol : res.child("solutions").getChildren()) {
+                        jsr.setSolution(sol.getValue(Integer.class));
+                    }
+
+                    result = jsr;
+                    break;
+
+                case JUDGE_MULTIPLE:
+                    if(!validateJudgeMultipleResult(res)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    JudgeMultipleResult jmr = new JudgeMultipleResult(res.child("correct").getValue(Boolean.class));
+
+                    for(DataSnapshot sol : res.child("solutions").getChildren()) {
+                        jmr.addSolution(sol.getValue(Integer.class));
+                    }
+
+                    result = jmr;
                     break;
 
                 default:

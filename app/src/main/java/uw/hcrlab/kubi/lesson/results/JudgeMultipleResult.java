@@ -12,6 +12,8 @@ public class JudgeMultipleResult extends Result {
 
     public JudgeMultipleResult(boolean correct) {
         super(correct);
+
+        solutions = new ArrayList<>();
     }
 
     public void addSolution(Integer sol) {

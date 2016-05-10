@@ -7,8 +7,6 @@ public enum PromptTypes {
     // Question Type 1
     SELECT,
 
-    // TODO: Do we need to distinguish between types 2 and 3?
-
     // Question Type 3
     TRANSLATE,
 
@@ -16,10 +14,11 @@ public enum PromptTypes {
     NAME,
 
     // Question Type 5
-    JUDGE,
+    JUDGE_SINGLE,
+
+    // Question Type 7
+    JUDGE_MULTIPLE,
 
     // Question Type 6
     LISTEN
-
-    // TODO: Add other question types as we discover them
 }
