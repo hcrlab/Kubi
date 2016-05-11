@@ -83,6 +83,7 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
                     robot.showHint("\"" + parts[1] + "\"");
                 }
             }, 1000);
+
 //            h.postDelayed(new Runnable() {
 //                @Override
 //                public void run() {

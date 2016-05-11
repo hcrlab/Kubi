@@ -48,4 +48,9 @@
         <item>Swedish Before Computer</item>
         <item>Swedish After Computer</item>
     </string-array>
+
+    <string-array name="test_dropdown">
+        <item>foo</item>
+        <item>bar</item>
+    </string-array>
 </resources>

@@ -238,7 +238,7 @@ public class Robot {
     }
 
     /**
-     * Starts the robot by starting the FaceThread if it has not already been started.
+     * Starts the robot.
      */
     public void startup() {
         if (isStarted) {
@@ -284,7 +284,7 @@ public class Robot {
     }
 
     /**
-     * Stops the FaceThread
+     * Stops the robot
      */
     public void shutdown() {
         Log.i(TAG, "Shutting down the robot ...");

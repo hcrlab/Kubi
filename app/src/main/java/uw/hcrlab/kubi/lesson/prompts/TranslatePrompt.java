@@ -65,7 +65,8 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
         // Setup the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
-        //resultText.setShowSoftInputOnFocus(false); // Never show soft keyboard. Forces use of bluetooth keyboard
+        // Never show soft keyboard. Forces use of bluetooth keyboard
+        resultText.setShowSoftInputOnFocus(false);
         resultText.requestFocus();
         resultText.addTextChangedListener(this);
 
@@ -77,14 +78,12 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
     @Override
     public void onStart() {
         super.onStart();
-
         robot.speech.loadPronunciation(PromptData.combineWords(this.data.words));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
         robot.speech.pronounceAfterSpeech(PromptData.combineWords(this.data.words));
     }
 

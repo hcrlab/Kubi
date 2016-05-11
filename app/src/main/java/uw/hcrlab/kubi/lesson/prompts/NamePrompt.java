@@ -67,7 +67,8 @@ public class NamePrompt extends Prompt implements TextWatcher {
 
         // focus on the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
-        //resultText.setShowSoftInputOnFocus(false); // Make sure the on-screen keyboard never shows. Forces the use of the bluetooth keyboard
+        // Make sure the on-screen keyboard never shows. Forces the use of the bluetooth keyboard
+        resultText.setShowSoftInputOnFocus(false);
         resultText.requestFocus();
         resultText.addTextChangedListener(this);
 

@@ -1,6 +1,9 @@
 package uw.hcrlab.kubi;
 
 import uw.hcrlab.kubi.lesson.Prompt;
+import uw.hcrlab.kubi.lesson.prompts.JudgeMultiplePrompt;
+import uw.hcrlab.kubi.lesson.prompts.JudgeSinglePrompt;
+import uw.hcrlab.kubi.lesson.prompts.ListenPrompt;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
 import uw.hcrlab.kubi.lesson.prompts.TranslatePrompt;
@@ -14,8 +17,8 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,40 +34,36 @@ public class DebugActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "Creating Debug Activity ...");
 
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_debug);
-
-        // load eyes gif
-        WebView eye_area = (WebView) findViewById(R.id.webview_eyes);
-        eye_area.loadUrl("file:///android_asset/eyes.html");
 
         // make sure we have the permissions needed to connect bluetooth
         PermissionsManager.requestPermissionsDialogIfNecessary(this);
 
         // load robot face into layout
-        robot = Robot.Factory.create(this, R.id.robot_face_view, R.id.prompt_container, R.id.thought_bubble);
-
-        // do not show the virtual keyboard on the debug prompt
-        getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        // focus on the debug prompt
-        final EditText debugPrompt = (EditText) findViewById(R.id.debug_prompt);
-        debugPrompt.setShowSoftInputOnFocus(false);
+        robot = Robot.Factory.create(this, R.id.main_eyes, R.id.prompt, R.id.thought_bubble);
 
         // set up the debug prompt
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        final EditText debugPrompt = (EditText) findViewById(R.id.debug_prompt);
+        //debugPrompt.setShowSoftInputOnFocus(false);
         debugPrompt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
-                if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
-                        && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    Log.i(TAG, "enter key pressed");
-                    interpretDebugPrompt(debugPrompt);
-                    handled = true;
-                }
-                return handled;
+                showSamplePrompt("7");
+                return true;
+//                if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+//                        && event.getAction() == KeyEvent.ACTION_DOWN) {
+//                    Log.i(TAG, "enter key pressed");
+//                    interpretDebugPrompt(debugPrompt);
+//                    handled = true;
+//                }
+//                return handled;
             }
         });
         debugPrompt.requestFocus();
@@ -73,8 +72,6 @@ public class DebugActivity extends FragmentActivity {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        // TODO: send key event to proper fragment
-
         // Returns true to stop propagation of the key event (i.e. signal the event was handled)
         return true;
     }
@@ -95,6 +92,15 @@ public class DebugActivity extends FragmentActivity {
             case NAME:
                 prompt = new NamePrompt();
                 break;
+            case JUDGE_SINGLE:
+                prompt = new JudgeSinglePrompt();
+                break;
+            case LISTEN:
+                prompt = new ListenPrompt();
+                break;
+            case JUDGE_MULTIPLE:
+                prompt = new JudgeMultiplePrompt();
+                break;
             default:
                 throw new IllegalArgumentException(
                         String.format(Locale.US, "Prompt type not implemented: %s", promptData.type));
@@ -103,9 +109,7 @@ public class DebugActivity extends FragmentActivity {
         prompt.setUid("testID-notUnique");
         prompt.setData(promptData);
 
-        // add the prompt fragment to the container (replacing last one, if applicable)
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.prompt_container, prompt).commit();
+        robot.setPrompt(prompt);
     }
 
     // Render the given HintCollection to the user
@@ -119,10 +123,15 @@ public class DebugActivity extends FragmentActivity {
         String text = editText.getText().toString();
         Log.i(TAG, String.format("edit text '%s'", text));
 
-        // showSamplePrompt(text);
+        showSamplePrompt(text);
         // executeEnumAction(text);
         // robot.say(text, "en");
+        // moveHead(text);
 
+        editText.getText().clear();
+    }
+
+    private void moveHead(String text) {
         String[] strings = text.split(" ");
         boolean invalid = false;
         if (strings.length == 2) {
@@ -140,8 +149,6 @@ public class DebugActivity extends FragmentActivity {
         if (invalid) {
             Toast.makeText(getApplicationContext(), "invalid", Toast.LENGTH_SHORT).show();
         }
-
-        editText.getText().clear();
     }
 
     private void executeEnumAction(String text) {
@@ -153,7 +160,6 @@ public class DebugActivity extends FragmentActivity {
             Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
         }
     }
-
 
     private void showSamplePrompt(String text) {
         Log.i(TAG, "show sample prompt");
@@ -171,10 +177,10 @@ public class DebugActivity extends FragmentActivity {
         switch (input) {
             case (1):
                 pd.type = PromptTypes.SELECT;
-                pd.PromptText = "apple";
-                pd.options.add(new PromptData.Option(1, "manzana").setDrawable("apple"));
-                pd.options.add(new PromptData.Option(2, "plátano").setDrawable("banana"));
-                pd.options.add(new PromptData.Option(3, "niña").setDrawable(("girl")));
+                pd.PromptText = "Select translation of \"an apple\"";
+                pd.options.add(new PromptData.Option(1, "una manzana").setDrawable("apple"));
+                pd.options.add(new PromptData.Option(2, "un plátano").setDrawable("banana"));
+                pd.options.add(new PromptData.Option(3, "una niña").setDrawable(("girl")));
                 loadPrompt(pd);
 
                 hd.add(new PromptData.Hint().setText("apple"));
@@ -183,6 +189,7 @@ public class DebugActivity extends FragmentActivity {
                 break;
             case (3):
                 pd.type = PromptTypes.TRANSLATE;
+                pd.PromptText = "Translate this text";//una manzana y un plátano";
                 pd.words.add(new PromptData.Word(0,"una").addHint("a").addHint("an"));
                 pd.words.add(new PromptData.Word(1, "manzana").addHint("apple"));
                 pd.words.add(new PromptData.Word(2, "y").addHint("and"));
@@ -192,10 +199,33 @@ public class DebugActivity extends FragmentActivity {
                 break;
             case (4):
                 pd.type = PromptTypes.NAME;
-                pd.PromptText = "apple";
+                pd.PromptText = "Translate \"an apple\"";
                 pd.images.add(new PromptData.Image("apple", false));
                 pd.images.add(new PromptData.Image("banana", false));
                 pd.images.add(new PromptData.Image("apple", false));
+                loadPrompt(pd);
+                break;
+            case (5):
+                pd.type = PromptTypes.JUDGE_SINGLE;
+                pd.PromptText = "Select the missing word.";
+                pd.textBefore = "El niño";
+                pd.options.add(new PromptData.Option(1, "como"));
+                pd.options.add(new PromptData.Option(2, "comes"));
+                pd.options.add(new PromptData.Option(3, "come"));
+                pd.textAfter = "un plátano.";
+                loadPrompt(pd);
+                break;
+            case (6):
+                pd.type = PromptTypes.LISTEN;
+                pd.PromptText = "una manzana";
+                loadPrompt(pd);
+                break;
+            case (7):
+                pd.type = PromptTypes.JUDGE_MULTIPLE;
+                pd.PromptText = "Mark all correct translations of “I eat an apple.”";
+                pd.options.add(new PromptData.Option(1, "Yo como una manzana."));
+                pd.options.add(new PromptData.Option(2, "Ella come una manzana."));
+                pd.options.add(new PromptData.Option(3, "Como una manzana."));
                 loadPrompt(pd);
                 break;
             default:
