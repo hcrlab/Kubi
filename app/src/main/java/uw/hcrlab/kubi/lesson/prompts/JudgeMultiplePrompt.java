@@ -51,15 +51,17 @@ public class JudgeMultiplePrompt extends Prompt implements AdapterView.OnItemSel
             Log.i(TAG, "title " + option.title);
             optionStrings.add(option.title);
 
+            CheckBox cb = (CheckBox) inflater.inflate(R.layout.check_box_item, optionsContainer, false);
+            cb.setText("Yay!");
+            optionsContainer.addView(cb);
+
             // TODO: figure out why the text is not showing up alongside the checkboxes
             // do we need to use a list adapter?
-            CheckBox checkBox = new CheckBox(App.getContext());
-            //checkBox.setText(option.title);
-            checkBox.setText("TEST OPTION TEXT");
-            checkBox.setTextSize(R.dimen.card_text_size);
-            checkBox.setTextColor(getResources().getColor(R.color.black));
-            checkBox.setBackgroundColor(getResources().getColor(R.color.gray));  // for debugging
-            optionsContainer.addView(checkBox);
+//            CheckBox checkBox = new CheckBox(this.getContext());
+//            //checkBox.setText(option.title);
+//            checkBox.setText("TEST OPTION TEXT");
+//            checkBox.setTextSize(R.dimen.card_text_size);
+//            optionsContainer.addView(checkBox);
         }
 
         return view;

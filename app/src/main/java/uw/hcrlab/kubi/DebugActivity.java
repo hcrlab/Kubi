@@ -56,7 +56,7 @@ public class DebugActivity extends FragmentActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
-                showSamplePrompt("5");
+                showSamplePrompt("7");
                 return true;
 //                if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
 //                        && event.getAction() == KeyEvent.ACTION_DOWN) {
