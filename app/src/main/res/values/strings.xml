@@ -38,7 +38,7 @@
     <string name="startup_error_text">Username and/or password are incorrect!</string>
 
     <!-- Participant Activity Strings -->
-    <string name="participant_name">Name</string>
+    <string name="participant_name">Participant ID</string>
     <string name="participant_phase">Study Phase</string>
     <string name="participant_button">Begin Study</string>
 
