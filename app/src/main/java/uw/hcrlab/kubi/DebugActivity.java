@@ -51,18 +51,20 @@ public class DebugActivity extends FragmentActivity {
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         final EditText debugPrompt = (EditText) findViewById(R.id.debug_prompt);
-        debugPrompt.setShowSoftInputOnFocus(false);
+        //debugPrompt.setShowSoftInputOnFocus(false);
         debugPrompt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
-                if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
-                        && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    Log.i(TAG, "enter key pressed");
-                    interpretDebugPrompt(debugPrompt);
-                    handled = true;
-                }
-                return handled;
+                showSamplePrompt("5");
+                return true;
+//                if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+//                        && event.getAction() == KeyEvent.ACTION_DOWN) {
+//                    Log.i(TAG, "enter key pressed");
+//                    interpretDebugPrompt(debugPrompt);
+//                    handled = true;
+//                }
+//                return handled;
             }
         });
         debugPrompt.requestFocus();

@@ -6,4 +6,4 @@
     android:layout_height="wrap_content"
     android:textSize="@dimen/card_text_size"
     android:padding="@dimen/spinner_item_margin"
-    />
+    android:gravity="center" />
