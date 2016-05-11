@@ -66,7 +66,7 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
         // Setup the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
         // Never show soft keyboard. Forces use of bluetooth keyboard
-        resultText.setShowSoftInputOnFocus(false);
+        //resultText.setShowSoftInputOnFocus(false);
         resultText.requestFocus();
         resultText.addTextChangedListener(this);
 
