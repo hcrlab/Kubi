@@ -22,21 +22,18 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|center"
             android:orientation="horizontal"
-            android:gravity="center"
-            android:background="#666666"
-            >
+            android:gravity="center">
 
             <TextView
                 android:id="@+id/l1_to_translate"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_gravity="center"
                 android:textSize="@dimen/card_text_size"
-                android:background="#999999"
-                android:gravity="right"
+                android:gravity="center"
                 android:padding="10sp"
-                />
+                tools:text="Some prompt"/>
 
             <!-- To be filled with checkboxes -->
             <LinearLayout
@@ -45,9 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:background="#CCCCCC"
-                android:layout_gravity="left"
-                >
+                android:layout_gravity="left" >
             </LinearLayout>
 
         </LinearLayout>

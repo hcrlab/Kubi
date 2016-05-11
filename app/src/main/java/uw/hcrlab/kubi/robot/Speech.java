@@ -40,6 +40,7 @@ public class Speech extends ASR {
     protected HttpProxyCacheServer proxy;
     private HashMap<String, MediaPlayer> mPronunciations;
     private String delayedPronunciation;
+    private String delayedPronunciationUrl;
 
     private Random random = new Random();
 
@@ -99,6 +100,9 @@ public class Speech extends ASR {
                 if(delayedPronunciation != null) {
                     pronounce(delayedPronunciation);
                     delayedPronunciation = null;
+                } else if (delayedPronunciationUrl != null) {
+                    pronounceUrl(delayedPronunciationUrl);
+                    delayedPronunciationUrl = null;
                 }
 
                 isSpeaking = false;
@@ -160,6 +164,10 @@ public class Speech extends ASR {
         delayedPronunciation = text;
     }
 
+    public void pronounceUrlAfterSpeech(String url) {
+        delayedPronunciationUrl = url;
+    }
+
     public boolean pronounce(String text) {
         text = normalizeText(text);
 
@@ -179,6 +187,20 @@ public class Speech extends ASR {
             say(text, "EN");
             return false;
         }
+    }
+
+    public void pronounceUrl(String audioUri) {
+        String audioUrl = proxy.getProxyUrl(audioUri);
+        MediaPlayer mp = MediaPlayer.create(activity, Uri.parse(audioUrl));
+
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mediaPlayer.release();
+            }
+        });
+
+        mp.start();
     }
 
     public String getDefaultLanguage() {

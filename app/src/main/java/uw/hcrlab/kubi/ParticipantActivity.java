@@ -48,6 +48,7 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
 
         EditText editor = (EditText) findViewById(R.id.participant_name);
         editor.addTextChangedListener(this);
+        editor.setShowSoftInputOnFocus(false);
     }
 
     /**

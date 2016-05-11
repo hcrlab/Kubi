@@ -44,9 +44,20 @@ public class ListenPrompt extends Prompt implements TextWatcher {
         // Repeat buttons
         // TODO: implement the ability to pronounce the same text at different speeds
         Button repeat_button = (Button) view.findViewById(R.id.repeat_button);
-        repeat_button.setOnClickListener(repeatClickListener);
+        repeat_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                robot.speech.pronounceUrl(data.normalAudio);
+            }
+        });
+
         Button repeat_slow_button = (Button) view.findViewById(R.id.repeat_slow_button);
-        repeat_slow_button.setOnClickListener(repeatClickListener);
+        repeat_slow_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                robot.speech.pronounceUrl(data.slowAudio);
+            }
+        });
 
         // focus on the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
@@ -59,17 +70,10 @@ public class ListenPrompt extends Prompt implements TextWatcher {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        robot.speech.loadPronunciation(PromptData.combineWords(this.data.words));
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
-        robot.speech.pronounceAfterSpeech(PromptData.combineWords(this.data.words));
+        robot.speech.pronounceUrlAfterSpeech(data.slowAudio);
     }
 
     @Override

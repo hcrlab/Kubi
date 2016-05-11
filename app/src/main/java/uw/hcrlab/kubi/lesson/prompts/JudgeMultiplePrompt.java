@@ -7,21 +7,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import uw.hcrlab.kubi.App;
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
+import uw.hcrlab.kubi.lesson.results.JudgeMultipleResult;
 import uw.hcrlab.kubi.lesson.results.NameResult;
 import uw.hcrlab.kubi.robot.Eyes;
 
-public class JudgeMultiplePrompt extends Prompt implements AdapterView.OnItemSelectedListener {
+public class JudgeMultiplePrompt extends Prompt implements CompoundButton.OnCheckedChangeListener {
     private static String TAG = JudgeSinglePrompt.class.getSimpleName();
+
+    private HashMap<Integer, PromptData.Option> optionIDs = new HashMap<>();
+    private ArrayList<Integer> checked = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,46 +38,27 @@ public class JudgeMultiplePrompt extends Prompt implements AdapterView.OnItemSel
             return view;
         }
 
-        // L1 text to translate
-        String[] parts = this.data.PromptText.split("[“”]");
-        String l1String = "TEST L1 STRING";
-        if (parts.length > 1) {
-            l1String = parts[1];
-        }
         TextView l1Text = (TextView) view.findViewById(R.id.l1_to_translate);
-        l1Text.setText(l1String);
+        l1Text.setText(data.textBefore);
 
         // checkboxes for the options
         ViewGroup optionsContainer = (ViewGroup) view.findViewById(R.id.options_container);
-        ArrayList<String> optionStrings = new ArrayList<>();
-        for (PromptData.Option option: data.options) {
-            Log.i(TAG, "option " + option);
-            Log.i(TAG, "title " + option.title);
-            optionStrings.add(option.title);
+        for (PromptData.Option option : data.options) {
+            Integer id = View.generateViewId();
+            optionIDs.put(id, option);
 
             CheckBox cb = (CheckBox) inflater.inflate(R.layout.check_box_item, optionsContainer, false);
-            cb.setText("Yay!");
+            cb.setId(id);
+            cb.setText(option.title);
+            cb.setOnCheckedChangeListener(this);
             optionsContainer.addView(cb);
-
-            // TODO: figure out why the text is not showing up alongside the checkboxes
-            // do we need to use a list adapter?
-//            CheckBox checkBox = new CheckBox(this.getContext());
-//            //checkBox.setText(option.title);
-//            checkBox.setText("TEST OPTION TEXT");
-//            checkBox.setTextSize(R.dimen.card_text_size);
-//            optionsContainer.addView(checkBox);
         }
 
         return view;
     }
 
     public void handleResults(Result res) {
-        NameResult result = (NameResult) res;
-
-        if(result.hasBlame()) {
-            Toast toast = Toast.makeText(getActivity().getApplicationContext(), result.getBlame(), Toast.LENGTH_SHORT);
-            toast.show();
-        }
+        JudgeMultipleResult result = (JudgeMultipleResult) res;
 
         if(result.isCorrect()) {
             robot.look(Eyes.Look.HAPPY);
@@ -80,21 +67,22 @@ public class JudgeMultiplePrompt extends Prompt implements AdapterView.OnItemSel
         }
     }
 
-
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view,
-                               int pos, long id) {
-//        Toast.makeText(parent.getContext(),
-//        "OnItemSelectedListener : " + parent.getItemAtPosition(pos).toString(),
-//        Toast.LENGTH_SHORT).show();
-        //String selectedText = (String)parent.getItemAtPosition(pos);
-        //selection.setText(selectedText);
+    public void onCheckedChanged(CompoundButton cb, boolean isChecked) {
+        Integer id = cb.getId();
+        Integer idx = optionIDs.get(id).idx;
 
+        if(isChecked && !checked.contains(idx)) {
+            checked.add(idx);
+        } else if(!isChecked && checked.contains(idx)){
+            checked.remove(checked.indexOf(idx));
+        }
 
-    }
+        Integer[] response = new Integer[checked.size()];
 
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        // Another interface callback
+        robot.setPromptResponse(checked.toArray(response));
+
+        handler.removeCallbacks(confirm);
+        handler.postDelayed(confirm, confirmationDelay);
     }
 }

@@ -9,7 +9,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -18,7 +17,7 @@ import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
-import uw.hcrlab.kubi.lesson.results.NameResult;
+import uw.hcrlab.kubi.lesson.results.JudgeSingleResult;
 import uw.hcrlab.kubi.robot.Eyes;
 
 public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelectedListener {
@@ -53,18 +52,11 @@ public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelec
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
-        // TODO: figure out why text is not showing up in the spinner once it has been selected.
-
         return view;
     }
 
     public void handleResults(Result res) {
-        NameResult result = (NameResult) res;
-
-        if(result.hasBlame()) {
-            Toast toast = Toast.makeText(getActivity().getApplicationContext(), result.getBlame(), Toast.LENGTH_SHORT);
-            toast.show();
-        }
+        JudgeSingleResult result = (JudgeSingleResult) res;
 
         if(result.isCorrect()) {
             robot.look(Eyes.Look.HAPPY);
@@ -75,15 +67,11 @@ public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelec
 
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view,
-                               int pos, long id) {
-//        Toast.makeText(parent.getContext(),
-//        "OnItemSelectedListener : " + parent.getItemAtPosition(pos).toString(),
-//        Toast.LENGTH_SHORT).show();
-        //String selectedText = (String)parent.getItemAtPosition(pos);
-        //selection.setText(selectedText);
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        robot.setPromptResponse(pos);
 
-
+        handler.removeCallbacks(confirm);
+        handler.postDelayed(confirm, confirmationDelay);
     }
 
     @Override
