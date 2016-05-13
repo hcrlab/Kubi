@@ -1,8 +1,6 @@
 package uw.hcrlab.kubi.lesson.prompts;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.TextViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,9 +47,9 @@ public class LessonCompletePrompt extends Prompt {
         super.onResume();
 
         if(lesson == 1) {
-            robot.speech.say("Yay! You finished the first lesson. Two more to go", "en");
+            robot.speech.say("Yay! You finished the first lesson. Two more to go. Let me get the next lesson ready.", "en");
         } else if(lesson == 2) {
-            robot.speech.say("Yay! You finished the second lesson. One more to go", "en");
+            robot.speech.say("Yay! You finished the second lesson. One more to go. Let me get the next lesson ready.", "en");
         } else {
             robot.speech.say("Great work! That's the end of the lessons!", "en");
             robot.showHint("Thanks!");
