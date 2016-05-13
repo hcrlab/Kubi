@@ -137,7 +137,7 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
         robot.setPromptResponse(response);
 
         handler.removeCallbacks(confirm);
-        handler.postDelayed(confirm, confirmationDelay);
+        handler.postDelayed(confirm, confirmationDelayLong);
     }
 
     @Override
@@ -146,6 +146,8 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
     }
 
     public void handleResults(Result res) {
+        cancelConfirm();
+
         View view = getView();
 
         if(view == null) {

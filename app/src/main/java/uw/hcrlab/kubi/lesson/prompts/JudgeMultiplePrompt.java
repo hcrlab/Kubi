@@ -60,6 +60,8 @@ public class JudgeMultiplePrompt extends Prompt implements CompoundButton.OnChec
     }
 
     public void handleResults(Result res) {
+        cancelConfirm();
+
         View view = getView();
 
         if(view == null) {

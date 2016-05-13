@@ -91,13 +91,15 @@ public class ListenPrompt extends Prompt implements TextWatcher {
         robot.setPromptResponse(response);
 
         handler.removeCallbacks(confirm);
-        handler.postDelayed(confirm, confirmationDelay);
+        handler.postDelayed(confirm, confirmationDelayLong);
     }
 
     @Override
     public void afterTextChanged(Editable s) {}
 
     public void handleResults(Result res) {
+        cancelConfirm();
+
         View view = getView();
 
         if(view == null) {

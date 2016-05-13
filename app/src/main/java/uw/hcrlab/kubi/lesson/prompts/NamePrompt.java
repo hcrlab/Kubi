@@ -121,6 +121,8 @@ public class NamePrompt extends Prompt implements TextWatcher {
     }
 
     public void handleResults(Result res) {
+        cancelConfirm();
+
         View view = getView();
 
         if(view == null) {

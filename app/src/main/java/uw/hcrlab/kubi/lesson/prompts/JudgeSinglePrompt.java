@@ -61,6 +61,8 @@ public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelec
     }
 
     public void handleResults(Result res) {
+        cancelConfirm();
+
         View view = getView();
 
         if(view == null) {

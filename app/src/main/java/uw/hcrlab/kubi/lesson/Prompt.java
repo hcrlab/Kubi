@@ -20,6 +20,7 @@ public abstract class Prompt extends Fragment {
 
     protected String uid;
 
+    protected int confirmationDelayLong = 2500;
     protected int confirmationDelay = 2000;
 
     protected Handler handler = new Handler();
@@ -30,6 +31,11 @@ public abstract class Prompt extends Fragment {
             robot.speech.say("Is that your final answer?", "en");
         }
     };
+
+    protected void cancelConfirm() {
+        handler.removeCallbacks(confirm);
+        //robot.speech.shutup();
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
