@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    android:id="@+id/prompt"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/prompt_hand_width"
+    android:layout_height="@dimen/prompt_height"
+    android:layout_gravity="bottom|center"
+    android:layout_marginBottom="20dp">
+
+    <!-- Prompt Fragments should load here! -->
+    <LinearLayout
+        android:id="@+id/prompt_container"
+        android:layout_width="@dimen/prompt_width"
+        android:layout_height="@dimen/prompt_height"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/prompt_border"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lesson Complete!"
+            android:textSize="48dp"
+            android:layout_gravity="center"/>
+
+
+        <TextView
+            android:id="@+id/complete_remaining_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="2 more lessons remaining"
+            android:textSize="32dp"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+    <!-- Left Hand -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="@dimen/finger_width"
+        android:layout_height="@dimen/hand_height"
+        android:layout_gravity="center|left">
+
+        <View
+            android:id="@+id/leftFingerOne"
+            android:layout_width="@dimen/finger_width"
+            android:layout_height="@dimen/finger_height"
+            android:background="@drawable/finger"/>
+
+    </LinearLayout>
+
+    <!-- Right Hand -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="@dimen/finger_width"
+        android:layout_height="@dimen/hand_height"
+        android:layout_gravity="center|right">
+
+        <View
+            android:id="@+id/rightFingerOne"
+            android:layout_width="@dimen/finger_width"
+            android:layout_height="@dimen/finger_height"
+            android:background="@drawable/finger"/>
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -61,6 +61,11 @@
         android:layout_gravity="end"
         android:layout_margin="10dp">
 
+        <FrameLayout
+            android:layout_width="82dp"
+            android:layout_height="82dp"
+            android:background="@drawable/progress_background"/>
+
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
@@ -72,11 +77,6 @@
             android:max="100"
             android:progress="90"
             android:progressDrawable="@drawable/progress_circle"/>
-
-        <FrameLayout
-            android:layout_width="82dp"
-            android:layout_height="82dp"
-            android:background="@drawable/progress_background"/>
 
         <TextSwitcher
             android:id="@+id/progressText"

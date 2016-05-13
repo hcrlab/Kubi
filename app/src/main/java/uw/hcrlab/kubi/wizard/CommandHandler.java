@@ -15,6 +15,7 @@ import uw.hcrlab.kubi.lesson.PromptTypes;
 import uw.hcrlab.kubi.lesson.Result;
 import uw.hcrlab.kubi.lesson.prompts.JudgeMultiplePrompt;
 import uw.hcrlab.kubi.lesson.prompts.JudgeSinglePrompt;
+import uw.hcrlab.kubi.lesson.prompts.LessonCompletePrompt;
 import uw.hcrlab.kubi.lesson.prompts.ListenPrompt;
 import uw.hcrlab.kubi.lesson.prompts.NamePrompt;
 import uw.hcrlab.kubi.lesson.prompts.SelectPrompt;
@@ -211,6 +212,14 @@ public class CommandHandler extends WizardHandler {
         return true;
     }
 
+    private boolean validateComplete(DataSnapshot snap) {
+        if(!snap.child("lesson").exists()) {
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     public void onChildAdded(DataSnapshot snap, String s) {
         if(!snap.hasChild("handled") || !snap.child("handled").getValue(Boolean.class)) {
@@ -355,6 +364,20 @@ public class CommandHandler extends WizardHandler {
                     }
 
                     prompt = new JudgeMultiplePrompt();
+                    break;
+
+                case LESSON_COMPLETE:
+                    if(!validateComplete(snap)) {
+                        Log.e(TAG, "Data snap does not contain all required properties!");
+                        return;
+                    }
+
+                    String lesson = snap.child("lesson").getValue(String.class);
+                    String[] parts = lesson.split("/");
+
+                    prompt = new LessonCompletePrompt();
+                    ((LessonCompletePrompt)prompt).setLesson(Integer.parseInt(parts[2]));
+
                     break;
 
                 default:

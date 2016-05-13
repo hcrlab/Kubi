@@ -20,5 +20,8 @@ public enum PromptTypes {
     JUDGE_MULTIPLE,
 
     // Question Type 6
-    LISTEN
+    LISTEN,
+
+    // Indicates that a lesson is done
+    LESSON_COMPLETE
 }
