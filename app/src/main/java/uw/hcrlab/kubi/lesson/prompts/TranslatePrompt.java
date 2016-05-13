@@ -21,6 +21,7 @@ import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
+import uw.hcrlab.kubi.lesson.ResultsDisplayHelper;
 import uw.hcrlab.kubi.lesson.results.TranslateResult;
 import uw.hcrlab.kubi.robot.Eyes;
 
@@ -30,7 +31,6 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
     private HashMap<Integer, PromptData.Word> wordsById;
 
     private String response;
-    private int duration;
 
     private View.OnClickListener hintClickListener = new View.OnClickListener() {
         @Override
@@ -66,11 +66,10 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
         // Setup the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
         // Never show soft keyboard. Forces use of bluetooth keyboard
-        resultText.setShowSoftInputOnFocus(false);
+        //resultText.setShowSoftInputOnFocus(false);
         resultText.requestFocus();
         resultText.addTextChangedListener(this);
 
-        duration = getResources().getInteger(android.R.integer.config_longAnimTime);
 
         return view;
     }
@@ -158,11 +157,6 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
         robot.hideHint();
 
-        if(result.hasBlame()) {
-            Toast toast = Toast.makeText(getActivity().getApplicationContext(), result.getBlame(), Toast.LENGTH_SHORT);
-            toast.show();
-        }
-
         final View usersText = view.findViewById(R.id.l1_result_text);
 
         if(result.isCorrect()) {
@@ -170,29 +164,7 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
             TextView correctText = (TextView) view.findViewById(R.id.translate_original_correct);
 
-            if(usersText == null || correctText == null) {
-                Log.e(TAG, "Unable to get views for displaying TRANSLATE results!");
-                return;
-            }
-
-            correctText.setText(response);
-            correctText.setAlpha(0f);
-            correctText.setVisibility(View.VISIBLE);
-
-            correctText.animate()
-                    .alpha(1f)
-                    .setDuration(duration)
-                    .setListener(null);
-
-            usersText.animate()
-                    .alpha(0f)
-                    .setDuration(duration)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            usersText.setVisibility(View.GONE);
-                        }
-                    });
+            ResultsDisplayHelper.showCorrectResult(correctText, response, usersText);
         } else {
             robot.look(Eyes.Look.SAD);
 
@@ -203,38 +175,7 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
             TextView correctText = (TextView) view.findViewById(R.id.translate_correct_text);
             TextView incorrectText = (TextView) view.findViewById(R.id.translate_incorrect_text);
 
-            if(usersText == null || correctText == null || incorrectText == null) {
-                Log.e(TAG, "Unable to get views for displaying TRANSLATE results!");
-                return;
-            }
-
-            correctText.setText(result.getSolutions().get(0));
-            correctText.setAlpha(0f);
-            correctText.setVisibility(View.VISIBLE);
-
-            correctText.animate()
-                    .alpha(1f)
-                    .setDuration(duration)
-                    .setListener(null);
-
-            incorrectText.setText(response);
-            incorrectText.setAlpha(0f);
-            incorrectText.setVisibility(View.VISIBLE);
-
-            incorrectText.animate()
-                    .alpha(1f)
-                    .setDuration(duration)
-                    .setListener(null);
-
-            usersText.animate()
-                    .alpha(0f)
-                    .setDuration(duration)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            usersText.setVisibility(View.GONE);
-                        }
-                    });
+            ResultsDisplayHelper.showIncorrectResult(correctText, result.getSolutions().get(0), incorrectText, response, usersText);
         }
     }
 }

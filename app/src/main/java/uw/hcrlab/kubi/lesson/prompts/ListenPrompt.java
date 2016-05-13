@@ -9,17 +9,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
+import uw.hcrlab.kubi.lesson.ResultsDisplayHelper;
+import uw.hcrlab.kubi.lesson.results.JudgeSingleResult;
+import uw.hcrlab.kubi.lesson.results.ListenResult;
 import uw.hcrlab.kubi.lesson.results.NameResult;
 import uw.hcrlab.kubi.robot.Eyes;
 
 public class ListenPrompt extends Prompt implements TextWatcher {
     private static String TAG = ListenPrompt.class.getSimpleName();
+
+    private String response;
 
     private View.OnClickListener repeatClickListener = new View.OnClickListener() {
         @Override
@@ -62,7 +68,7 @@ public class ListenPrompt extends Prompt implements TextWatcher {
         // focus on the text input
         EditText resultText = (EditText) view.findViewById(R.id.l1_result_text);
         // Make sure the on-screen keyboard never shows. Forces the use of the bluetooth keyboard
-        resultText.setShowSoftInputOnFocus(false);
+        //resultText.setShowSoftInputOnFocus(false);
         resultText.requestFocus();
         resultText.addTextChangedListener(this);
 
@@ -81,26 +87,45 @@ public class ListenPrompt extends Prompt implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (robot != null) {
-            robot.setPromptResponse(s.toString());
-        }
+        response = s.toString();
+        robot.setPromptResponse(response);
+
+        handler.removeCallbacks(confirm);
+        handler.postDelayed(confirm, confirmationDelay);
     }
 
     @Override
     public void afterTextChanged(Editable s) {}
 
     public void handleResults(Result res) {
-        NameResult result = (NameResult) res;
+        View view = getView();
 
-        if(result.hasBlame()) {
-            Toast toast = Toast.makeText(getActivity().getApplicationContext(), result.getBlame(), Toast.LENGTH_SHORT);
-            toast.show();
+        if(view == null) {
+            Log.e(TAG, "Unable to get JUDGE_SINGLE prompt view!");
+            return;
         }
+
+        ListenResult result = (ListenResult) res;
+
+        final View usersText = view.findViewById(R.id.l1_result_text);
+
+        robot.hideHint();
 
         if(result.isCorrect()) {
             robot.look(Eyes.Look.HAPPY);
+
+            TextView correctText = (TextView) view.findViewById(R.id.listen_original_correct);
+
+            ResultsDisplayHelper.showCorrectResult(correctText, response, usersText);
         } else {
             robot.look(Eyes.Look.LOOK_DOWN);
+
+            TextView correctText = (TextView) view.findViewById(R.id.listen_correct_text);
+            TextView incorrectText = (TextView) view.findViewById(R.id.listen_incorrect_text);
+
+            ResultsDisplayHelper.showIncorrectResult(correctText, result.getSource(), incorrectText, response, usersText);
+
+            robot.showHint("Translation: " + result.getTranslation());
         }
     }
 }

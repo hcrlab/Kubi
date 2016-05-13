@@ -17,6 +17,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.HashMap;
 
+import uw.hcrlab.kubi.lesson.ResultsDisplayHelper;
+
 /**
  * Created by Alexander on 4/9/2015.
  */
@@ -49,6 +51,8 @@ public class App extends Application implements Firebase.AuthResultHandler {
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         initImageLoader(getApplicationContext());
+
+        ResultsDisplayHelper.init(this);
     }
 
     public void saveCredentials(String username, String password, String name) {

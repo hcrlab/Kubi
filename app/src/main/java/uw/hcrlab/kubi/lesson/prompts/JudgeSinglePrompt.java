@@ -17,11 +17,16 @@ import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
+import uw.hcrlab.kubi.lesson.ResultsDisplayHelper;
 import uw.hcrlab.kubi.lesson.results.JudgeSingleResult;
+import uw.hcrlab.kubi.lesson.results.TranslateResult;
 import uw.hcrlab.kubi.robot.Eyes;
 
 public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelectedListener {
     private static String TAG = JudgeSinglePrompt.class.getSimpleName();
+
+    private String response;
+    private ArrayList<String> optionStrings;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,7 +44,7 @@ public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelec
         textAfter.setText(data.textAfter);
 
         // make an ArrayList of the options as strings
-        ArrayList<String> optionStrings = new ArrayList<>();
+        optionStrings = new ArrayList<>();
         for (PromptData.Option option: data.options) {
             optionStrings.add(option.title);
         }
@@ -56,18 +61,39 @@ public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelec
     }
 
     public void handleResults(Result res) {
+        View view = getView();
+
+        if(view == null) {
+            Log.e(TAG, "Unable to get JUDGE_SINGLE prompt view!");
+            return;
+        }
+
         JudgeSingleResult result = (JudgeSingleResult) res;
+
+        final View usersText = view.findViewById(R.id.dropdown);
+
+        robot.hideHint();
 
         if(result.isCorrect()) {
             robot.look(Eyes.Look.HAPPY);
+
+            TextView correctText = (TextView) view.findViewById(R.id.judge_original_correct);
+
+            ResultsDisplayHelper.showCorrectResult(correctText, response, usersText);
         } else {
             robot.look(Eyes.Look.LOOK_DOWN);
+
+            TextView correctText = (TextView) view.findViewById(R.id.judge_correct_text);
+            TextView incorrectText = (TextView) view.findViewById(R.id.judge_incorrect_text);
+
+            ResultsDisplayHelper.showIncorrectResult(correctText, optionStrings.get(result.getSolution()), incorrectText, response, usersText);
         }
     }
 
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        response = (String) parent.getSelectedItem();
         robot.setPromptResponse(pos);
 
         handler.removeCallbacks(confirm);

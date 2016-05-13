@@ -19,7 +19,9 @@ import uw.hcrlab.kubi.R;
 import uw.hcrlab.kubi.lesson.Prompt;
 import uw.hcrlab.kubi.lesson.PromptData;
 import uw.hcrlab.kubi.lesson.Result;
+import uw.hcrlab.kubi.lesson.ResultsDisplayHelper;
 import uw.hcrlab.kubi.lesson.results.JudgeMultipleResult;
+import uw.hcrlab.kubi.lesson.results.JudgeSingleResult;
 import uw.hcrlab.kubi.lesson.results.NameResult;
 import uw.hcrlab.kubi.robot.Eyes;
 
@@ -58,12 +60,43 @@ public class JudgeMultiplePrompt extends Prompt implements CompoundButton.OnChec
     }
 
     public void handleResults(Result res) {
+        View view = getView();
+
+        if(view == null) {
+            Log.e(TAG, "Unable to get JUDGE_SINGLE prompt view!");
+            return;
+        }
+
         JudgeMultipleResult result = (JudgeMultipleResult) res;
+
+        robot.hideHint();
 
         if(result.isCorrect()) {
             robot.look(Eyes.Look.HAPPY);
+
+            for(Integer id : optionIDs.keySet()) {
+                PromptData.Option opt = optionIDs.get(id);
+
+                if(result.getSolutions().contains(opt.idx)) {
+                    CheckBox cb = (CheckBox)view.findViewById(id);
+                    cb.setBackground(view.getResources().getDrawable(R.drawable.text_correct, getContext().getTheme()));
+                }
+            }
+
         } else {
             robot.look(Eyes.Look.LOOK_DOWN);
+
+            for(Integer id : optionIDs.keySet()) {
+                PromptData.Option opt = optionIDs.get(id);
+
+                CheckBox cb = (CheckBox)view.findViewById(id);
+
+                if(result.getSolutions().contains(opt.idx)) {
+                    cb.setBackground(view.getResources().getDrawable(R.drawable.text_correct, getContext().getTheme()));
+                } else if( cb.isChecked()) {
+                    cb.setBackground(view.getResources().getDrawable(R.drawable.text_incorrect, getContext().getTheme()));
+                }
+            }
         }
     }
 
