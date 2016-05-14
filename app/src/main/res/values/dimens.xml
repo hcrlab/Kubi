@@ -29,7 +29,7 @@
 
     <!-- Prompt Dimensions -->
     <dimen name="prompt_margin_btm_init">-310dp</dimen>
-    <dimen name="prompt_width">700dp</dimen>
+    <dimen name="prompt_width">730dp</dimen>
     <dimen name="prompt_height">300dp</dimen>
     <dimen name="prompt_content_margin">10dp</dimen>
     <dimen name="prompt_hand_width">820dp</dimen>

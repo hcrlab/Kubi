@@ -139,33 +139,19 @@
     </FrameLayout>
 
     <!-- Left Hand -->
-    <LinearLayout
-        android:orientation="vertical"
+    <View
+        android:id="@+id/left_hand"
         android:layout_width="@dimen/finger_width"
         android:layout_height="@dimen/hand_height"
-        android:layout_gravity="center|left">
-
-        <View
-            android:id="@+id/leftFingerOne"
-            android:layout_width="@dimen/finger_width"
-            android:layout_height="@dimen/finger_height"
-            android:background="@drawable/finger"/>
-
-    </LinearLayout>
+        android:layout_gravity="center|start"
+        android:background="@drawable/left_hand"/>
 
     <!-- Right Hand -->
-    <LinearLayout
-        android:orientation="vertical"
+    <View
+        android:id="@+id/right_hand"
         android:layout_width="@dimen/finger_width"
         android:layout_height="@dimen/hand_height"
-        android:layout_gravity="center|right">
-
-        <View
-            android:id="@+id/rightFingerOne"
-            android:layout_width="@dimen/finger_width"
-            android:layout_height="@dimen/finger_height"
-            android:background="@drawable/finger"/>
-
-    </LinearLayout>
+        android:layout_gravity="center|end"
+        android:background="@drawable/right_hand"/>
 
 </FrameLayout>

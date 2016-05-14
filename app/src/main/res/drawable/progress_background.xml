@@ -10,6 +10,15 @@
         </shape>
     </item>
     <item
+        android:width="65dp"
+        android:height="65dp"
+        android:gravity="center">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+            <solid android:color="@color/background"/>
+        </shape>
+    </item>
+    <item
         android:width="82dp"
         android:height="82dp"
         android:gravity="center">
@@ -17,7 +26,7 @@
             android:shape="oval">
             <stroke
                 android:width="2dp"
-                android:color="@color/hand_border"/>
+                android:color="@color/card_border"/>
         </shape>
     </item>
     <item
@@ -28,7 +37,7 @@
             android:shape="oval">
             <stroke
                 android:width="2dp"
-                android:color="@color/hand_border"/>
+                android:color="@color/card_border"/>
         </shape>
     </item>
 </layer-list>

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray"
+    android:background="@color/background"
     android:orientation="horizontal"
     android:screenOrientation="landscape"
     tools:context=".MainActivity">
@@ -86,7 +86,7 @@
             android:layout_alignStart="@id/progressBar"
             android:layout_alignTop="@id/progressBar"
             android:layout_alignEnd="@id/progressBar"
-            android:layout_alignBottom="@id/progressBar" />
+            android:layout_alignBottom="@id/progressBar"/>
 
     </RelativeLayout>
 
