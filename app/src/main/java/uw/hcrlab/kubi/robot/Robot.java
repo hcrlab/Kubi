@@ -213,7 +213,7 @@ public class Robot {
          * Post-setup actions that are taken for all versions of the create function
          */
         private static void postSetup() {
-            instance.body = Body.getInstance();
+            instance.body = Body.getInstance((App) instance.owner.getApplication());
             instance.speech = Speech.getInstance(instance.owner);
 
             if (App.InWizardMode()) {

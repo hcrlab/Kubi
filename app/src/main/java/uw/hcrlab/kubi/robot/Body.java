@@ -16,7 +16,7 @@ import uw.hcrlab.kubi.App;
 /**
  * Created by Alexander on 5/8/2016.
  */
-public class Body implements IKubiManagerDelegate {
+public class Body {
     public static String TAG = Body.class.getSimpleName();
 
     private static Body instance;
@@ -34,102 +34,26 @@ public class Body implements IKubiManagerDelegate {
     }
 
     private KubiManager kubiManager;
-    Handler connectionHandler = new Handler();
-    private int numAttempts = 0;
 
     /**
      * Private constructor for the Body class. This class implements the Singleton pattern - preventing
      * the creation of multiple instances of Body objects.
      */
-    private Body() {
-        kubiManager = new KubiManager(this, true);
-        kubiManager.findAllKubis();
+    private Body(App app) {
+        kubiManager = app.getKubiManager();
     }
 
-    public static Body getInstance() {
+    public static Body getInstance(App app) {
         if(instance == null) {
-            instance = new Body();
+            instance = new Body(app);
         }
 
         return instance;
     }
 
     public void cleanup() {
-        kubiManager.disconnect();
-    }
-
-    private Runnable retry = new Runnable() {
-        @Override
-        public void run() {
-            if(numAttempts < 9) {
-                numAttempts += 1;
-                Robot.replaceCurrentToast("Attempt " + (numAttempts + 1) + " to connect to kubi base...");
-                kubiManager.findAllKubis();
-            } else {
-                connectionHandler.removeCallbacks(retry);
-                Robot.replaceCurrentToast("Max attempts exceeded. Could not connect to a Kubi robot!");
-                Log.d(TAG, "Could not connect to a Kubi!");
-            }
-        }
-    };
-
-    /*
-    Handles retry logic for connecting to Kubi via bluetooth.
-    If we're within the time limit for retrying, wait the right amount of time then retry.
-    Callbacks detecting a failure to connect should call this method directly.
-    */
-    private void attemptKubiConnect() {
-        if(numAttempts > 9 || kubiManager.getKubi() != null) {
-            Robot.replaceCurrentToast("Kubi already connected!");
-            return;
-        }
-
-        connectionHandler.removeCallbacks(retry);
-        connectionHandler.postDelayed(retry, 3000);
-    }
-
-    /* IKubiManagerDelegate methods */
-
-    @Override
-    public void kubiDeviceFound(KubiManager manager, KubiSearchResult result) {
-        Log.i(TAG, "A kubi device was found");
-        connectionHandler.removeCallbacks(retry);
-        // Attempt to connect to the kubi
-        manager.connectToKubi(result);
-    }
-
-    @Override
-    public void kubiManagerFailed(KubiManager manager, int reason) {
-        Log.i(TAG, "Kubi Manager Failed: " + reason);
-        attemptKubiConnect();  // engage retry logic
-    }
-
-    @Override
-    public void kubiManagerStatusChanged(KubiManager manager, int oldStatus, int newStatus) {
-        // When the Kubi has successfully connected, nod as a sign of success
-        if (newStatus == KubiManager.STATUS_CONNECTED && oldStatus == KubiManager.STATUS_CONNECTING) {
-            connectionHandler.removeCallbacks(retry);
-
-            Kubi kubi = manager.getKubi();
-            kubi.performGesture(Kubi.GESTURE_NOD);
-            
-            Robot.replaceCurrentToast("Successfully connected to Kubi base");
-        }
-    }
-
-    @Override
-    public void kubiScanComplete(KubiManager manager, ArrayList<KubiSearchResult> result) {
-        Log.i(TAG, "Kubi scan completed");
-        Log.i(TAG, "Size of result is " + result.size());
-        if(result.size() > 0) {
-            connectionHandler.removeCallbacks(retry);
-            manager.stopFinding();
-            // Attempt to connect to the kubi
-            manager.connectToKubi(result.get(0));
-        } else {
-            Log.e(TAG, "No Kubi's detected... Retrying scan...");
-            attemptKubiConnect();  // engage retry logic
-        }
+        // App should handle this
+        //kubiManager.disconnect();
     }
 
     public void moveTo(int x, int y) {

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import sandra.libs.asr.asrlib.ASR;
 import sandra.libs.tts.TTS;
@@ -48,6 +49,8 @@ public class Speech extends ASR {
 
     // Map containing key = simple questions and value = how the robot responds
     private static Map<String, String> simpleResponses = new HashMap<String, String>();
+
+    ArrayBlockingQueue<String> speechQueue = new ArrayBlockingQueue<String>(10);
 
     static {
         /*
@@ -97,6 +100,14 @@ public class Speech extends ASR {
 
             @Override
             public void onDone(String s) {
+                isSpeaking = false;
+
+                if(speechQueue.size() > 0) {
+                    String next = speechQueue.remove();
+                    say(next, "en");
+                    return;
+                }
+
                 if(delayedPronunciation != null) {
                     pronounce(delayedPronunciation);
                     delayedPronunciation = null;
@@ -104,8 +115,6 @@ public class Speech extends ASR {
                     pronounceUrl(delayedPronunciationUrl);
                     delayedPronunciationUrl = null;
                 }
-
-                isSpeaking = false;
             }
 
             @Override
@@ -217,17 +226,13 @@ public class Speech extends ASR {
      * @param msg Message to speak
      */
     public void say(String msg, String language) {
-        try {
-            tts.speak(msg, language);
-        } catch (Exception e) {
-            Log.e(TAG, language + " not available for TTS, default language used instead");
+        if(isSpeaking) {
+            speechQueue.add(msg);
+            return;
         }
-    }
 
-    public void say(String msg, String language, int speed) {
         try {
-            Log.i(TAG, "Say: " + msg);
-            //tts.setRate(speed / 100.0f);
+            isSpeaking = true;
             tts.speak(msg, language);
         } catch (Exception e) {
             Log.e(TAG, language + " not available for TTS, default language used instead");
@@ -248,7 +253,6 @@ public class Speech extends ASR {
         say(selection, "en");
         return selection;
     }
-
 
     public void shutup() {
         tts.stop();
