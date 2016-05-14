@@ -31,6 +31,8 @@ public class JudgeMultiplePrompt extends Prompt implements CompoundButton.OnChec
     private HashMap<Integer, PromptData.Option> optionIDs = new HashMap<>();
     private ArrayList<Integer> checked = new ArrayList<>();
 
+    protected static boolean firstRun = true;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,6 +59,16 @@ public class JudgeMultiplePrompt extends Prompt implements CompoundButton.OnChec
         }
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        if(firstRun) {
+            robot.speech.say("For this type of question, touch the boxes to select the correct translations.", "en");
+            firstRun = false;
+        }
+
+        super.onResume();
     }
 
     public void handleResults(Result res) {

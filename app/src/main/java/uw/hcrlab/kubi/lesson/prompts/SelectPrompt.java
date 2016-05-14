@@ -22,6 +22,8 @@ import uw.hcrlab.kubi.robot.Eyes;
 public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener {
     private static String TAG = SelectPrompt.class.getSimpleName();
 
+    protected static boolean firstRun = true;
+
     private ArrayList<Integer> flashCardIds;
 
     private Eyes.Look[] lookDirections = {
@@ -70,6 +72,11 @@ public class SelectPrompt extends Prompt implements FlashCard.FlashCardListener 
 
     @Override
     public void onResume() {
+        if(firstRun) {
+            robot.speech.say("For this type of question, touch the image that matched the word.", "en");
+            firstRun = false;
+        }
+
         super.onResume();
 
         final String[] parts = this.data.PromptText.split("[“”]");

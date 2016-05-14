@@ -30,6 +30,8 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
     private HashMap<Integer, PromptData.Word> wordsById;
 
+    protected static boolean firstRun = true;
+
     private String response;
 
     private View.OnClickListener hintClickListener = new View.OnClickListener() {
@@ -82,6 +84,11 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
     @Override
     public void onResume() {
+        if(firstRun) {
+            robot.speech.say("For this type of question, type the translation of the sentence using my keyboard below.", "en");
+            firstRun = false;
+        }
+
         super.onResume();
         robot.speech.pronounceAfterSpeech(PromptData.combineWords(this.data.words));
     }

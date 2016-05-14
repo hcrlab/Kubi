@@ -3,6 +3,7 @@ package uw.hcrlab.kubi;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -14,15 +15,21 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.revolverobotics.kubiapi.IKubiManagerDelegate;
+import com.revolverobotics.kubiapi.Kubi;
+import com.revolverobotics.kubiapi.KubiManager;
+import com.revolverobotics.kubiapi.KubiSearchResult;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import uw.hcrlab.kubi.lesson.ResultsDisplayHelper;
+import uw.hcrlab.kubi.robot.Robot;
 
 /**
  * Created by Alexander on 4/9/2015.
  */
-public class App extends Application implements Firebase.AuthResultHandler {
+public class App extends Application implements Firebase.AuthResultHandler, IKubiManagerDelegate {
     public static String TAG = App.class.getSimpleName();
 
     public static final int DEVICE_SETUP_CODE = 1;
@@ -37,22 +44,26 @@ public class App extends Application implements Firebase.AuthResultHandler {
 
     private static HashMap<String, String> mAudioURLs;
 
+    private KubiManager kubiManager;
+    Handler connectionHandler = new Handler();
+    private int numAttempts = 0;
+
     @Override
     public void onCreate() {
         super.onCreate();
         mContext = this;
 
-        Firebase.setAndroidContext(this);
-
         mAudioURLs = new HashMap<>();
 
+        Firebase.setAndroidContext(this);
         fb = new Firebase("https://hcrkubi.firebaseio.com");
-
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         initImageLoader(getApplicationContext());
 
         ResultsDisplayHelper.init(this);
+
+        connectToKubi();
     }
 
     public void saveCredentials(String username, String password, String name) {
@@ -183,5 +194,97 @@ public class App extends Application implements Firebase.AuthResultHandler {
         }
 
         return null;
+    }
+
+    public void connectToKubi() {
+        if(kubiManager == null) {
+            kubiManager = new KubiManager(this, true);
+            kubiManager.findAllKubis();
+        }
+    }
+
+    public void disconnectFromKubi() {
+        if(kubiManager != null) {
+            kubiManager.disconnect();
+            kubiManager = null;
+        }
+    }
+
+    public KubiManager getKubiManager() {
+        return kubiManager;
+    }
+
+    private Runnable retry = new Runnable() {
+        @Override
+        public void run() {
+            if(numAttempts < 9) {
+                numAttempts += 1;
+                Robot.replaceCurrentToast("Attempt " + (numAttempts + 1) + " to connect to kubi base...");
+                kubiManager.findAllKubis();
+            } else {
+                connectionHandler.removeCallbacks(retry);
+                Robot.replaceCurrentToast("Max attempts exceeded. Could not connect to a Kubi robot!");
+                Log.d(TAG, "Could not connect to a Kubi!");
+            }
+        }
+    };
+
+    /*
+    Handles retry logic for connecting to Kubi via bluetooth.
+    If we're within the time limit for retrying, wait the right amount of time then retry.
+    Callbacks detecting a failure to connect should call this method directly.
+    */
+    private void attemptKubiConnect() {
+        if(numAttempts > 9 || kubiManager.getKubi() != null) {
+            Robot.replaceCurrentToast("Kubi already connected!");
+            return;
+        }
+
+        connectionHandler.removeCallbacks(retry);
+        connectionHandler.postDelayed(retry, 3000);
+    }
+
+    /* IKubiManagerDelegate methods */
+
+    @Override
+    public void kubiDeviceFound(KubiManager manager, KubiSearchResult result) {
+        Log.i(TAG, "A kubi device was found");
+        connectionHandler.removeCallbacks(retry);
+        // Attempt to connect to the kubi
+        manager.connectToKubi(result);
+    }
+
+    @Override
+    public void kubiManagerFailed(KubiManager manager, int reason) {
+        Log.i(TAG, "Kubi Manager Failed: " + reason);
+        attemptKubiConnect();  // engage retry logic
+    }
+
+    @Override
+    public void kubiManagerStatusChanged(KubiManager manager, int oldStatus, int newStatus) {
+        // When the Kubi has successfully connected, nod as a sign of success
+        if (newStatus == KubiManager.STATUS_CONNECTED && oldStatus == KubiManager.STATUS_CONNECTING) {
+            connectionHandler.removeCallbacks(retry);
+
+            Kubi kubi = manager.getKubi();
+            kubi.performGesture(Kubi.GESTURE_NOD);
+
+            Robot.replaceCurrentToast("Successfully connected to Kubi base");
+        }
+    }
+
+    @Override
+    public void kubiScanComplete(KubiManager manager, ArrayList<KubiSearchResult> result) {
+        Log.i(TAG, "Kubi scan completed");
+        Log.i(TAG, "Size of result is " + result.size());
+        if(result.size() > 0) {
+            connectionHandler.removeCallbacks(retry);
+            manager.stopFinding();
+            // Attempt to connect to the kubi
+            manager.connectToKubi(result.get(0));
+        } else {
+            Log.e(TAG, "No Kubi's detected... Retrying scan...");
+            attemptKubiConnect();  // engage retry logic
+        }
     }
 }

@@ -28,6 +28,8 @@ public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelec
     private String response;
     private ArrayList<String> optionStrings;
 
+    protected static boolean firstRun = true;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,6 +60,16 @@ public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelec
         spinner.setOnItemSelectedListener(this);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        if(firstRun) {
+            robot.speech.say("For this type of question, select the correct word by touching the dropdown in the middle of the sentence.", "en");
+            firstRun = false;
+        }
+
+        super.onResume();
     }
 
     public void handleResults(Result res) {

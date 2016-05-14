@@ -27,6 +27,8 @@ public class ListenPrompt extends Prompt implements TextWatcher {
 
     private String response;
 
+    protected static boolean firstRun = true;
+
     private View.OnClickListener repeatClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -77,6 +79,11 @@ public class ListenPrompt extends Prompt implements TextWatcher {
 
     @Override
     public void onResume() {
+        if(firstRun) {
+            robot.speech.say("For this type of question, type what you hear on my keyboard below.", "en");
+            firstRun = false;
+        }
+
         super.onResume();
 
         robot.speech.pronounceUrlAfterSpeech(data.slowAudio);

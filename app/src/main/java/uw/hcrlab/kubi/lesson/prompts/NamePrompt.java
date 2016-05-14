@@ -34,6 +34,8 @@ public class NamePrompt extends Prompt implements TextWatcher {
     private String response;
     private int duration;
 
+    protected static boolean firstRun = true;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -79,6 +81,11 @@ public class NamePrompt extends Prompt implements TextWatcher {
 
     @Override
     public void onResume() {
+        if(firstRun) {
+            robot.speech.say("For this type of question, type the translation of the word using my keyboard below.", "en");
+            firstRun = false;
+        }
+
         super.onResume();
 
         final String[] parts = this.data.PromptText.split("[“”]");

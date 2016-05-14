@@ -51,6 +51,14 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
         editor.setShowSoftInputOnFocus(false);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        App app = (App) getApplication();
+        app.connectToKubi();
+    }
+
     /**
      * Callback for when a study phase has been selected
      *
