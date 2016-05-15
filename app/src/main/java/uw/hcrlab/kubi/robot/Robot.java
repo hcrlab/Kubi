@@ -91,13 +91,36 @@ public class Robot {
             "You are correct.",
             "Good job!",
             "Well done.",
+            "You got it!",
+            "Nice work!",
+            "That's it! Keep up the good work!",
+            "Woohoo!",
+            "You are doing great!",
+            "Way to go! You got it!"
     };
     private String lastIncorrectResponse = "";
     private String[] incorrectResponses = {
+            "Oops! There is a mistake.",
             "Oops! That\'s not the correct answer.",
-            "Nope.",
-            "Sorry, you are incorrect.",
-            "Incorrect.",
+            "Ut oh. That's not it",
+            "Sorry, that's incorrect.",
+            "Almost. Let's try another question.",
+            "So close!",
+            "Almost. Let's keep working at it!",
+            "Dang, you almost got it."
+    };
+
+    private Body.Action lastHappyMove = null;
+    private Body.Action[] happyMoves = {
+            Body.Action.EXCELLENT_GESTURE,
+            Body.Action.YAY_GESTURE,
+            Body.Action.NOD
+    };
+
+    private Body.Action lastSadMove = null;
+    private Body.Action[] sadMoves = {
+            Body.Action.OOPS_GESTURE,
+            Body.Action.SHAKE
     };
 
     /**
@@ -271,6 +294,7 @@ public class Robot {
         });
 
         speech.startup();
+        body.startSubtleMovement();
 
         progress = ProgressIndicator.getInstance(this.owner, R.id.progressBar, R.id.progressText);
 
@@ -612,10 +636,10 @@ public class Robot {
     public void showResult(Result res) {
         if(res.isCorrect()) {
             lastCorrectResponse = speech.sayRandomResponse(correctResponses, lastCorrectResponse);
-            body.move(Body.Action.NOD);
+            lastHappyMove = body.doRandomMove(happyMoves, lastHappyMove);
         } else {
             lastIncorrectResponse = speech.sayRandomResponse(incorrectResponses, lastIncorrectResponse);
-            body.move(Body.Action.SHAKE);
+            lastSadMove = body.doRandomMove(sadMoves, lastSadMove);
         }
 
         prompt.handleResults(res);

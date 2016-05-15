@@ -10,6 +10,7 @@ import com.revolverobotics.kubiapi.KubiManager;
 import com.revolverobotics.kubiapi.KubiSearchResult;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import uw.hcrlab.kubi.App;
 
@@ -35,6 +36,10 @@ public class Body {
 
     private KubiManager kubiManager;
 
+    private Handler handler = new Handler();
+
+    private Random random = new Random();
+
     /**
      * Private constructor for the Body class. This class implements the Singleton pattern - preventing
      * the creation of multiple instances of Body objects.
@@ -56,7 +61,7 @@ public class Body {
         //kubiManager.disconnect();
     }
 
-    public void moveTo(int x, int y) {
+    public void moveTo(float x, float y) {
         Kubi kubi = kubiManager.getKubi();
 
         if(kubi != null) {
@@ -71,6 +76,8 @@ public class Body {
             Log.i(TAG, "perform " + action.toString());
 
             if (kubiManager.getKubi() != null) {
+                handler.removeCallbacks(subtleMovement);
+
                 switch (action) {
                     case SLEEP:
                         kubiManager.getKubi().performGesture(Kubi.GESTURE_FACE_DOWN);
@@ -88,7 +95,7 @@ public class Body {
                         kubiManager.getKubi().performGesture(Kubi.GESTURE_SHAKE);
                         break;
                     case FACE_FORWARD:
-                        kubiManager.getKubi().moveTo(0, 0);
+                        kubiManager.getKubi().moveTo(5.0f, 0);
                         break;
                     case YAY_GESTURE:
                         yay();
@@ -100,6 +107,8 @@ public class Body {
                         excellent();
                         break;
                 }
+
+                startSubtleMovement();
             }
         }
     }
@@ -171,5 +180,39 @@ public class Body {
                 kubi.moveTo(0, 0, 1.0f, false);
             }
         }, 1400);
+    }
+    /**
+     * Do a random move from the given collection of choices.
+     *
+     * @param choices - collection to choose a random action from
+     * @param dontDo - if an action matching this is selected, pick again
+     * @return - the action that was taken
+     */
+    public Action doRandomMove(Action[] choices, Action dontDo) {
+        Action selection;
+
+        do {
+            selection = choices[random.nextInt(choices.length)];
+        } while (selection.equals(dontDo));
+
+        move(selection);
+
+        return selection;
+    }
+
+    private Runnable subtleMovement = new Runnable() {
+        @Override
+        public void run() {
+            float pan = random.nextFloat() * 10 - 5;
+            float tilt = random.nextFloat() * 10 - 5;
+
+            moveTo(pan, tilt);
+
+            handler.postDelayed(subtleMovement, (int)(2500 + random.nextFloat() * 3000));
+        }
+    };
+
+    public void startSubtleMovement() {
+        handler.postDelayed(subtleMovement, 6000);
     }
 }

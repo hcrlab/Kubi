@@ -255,6 +255,8 @@ public class Speech extends ASR {
     }
 
     public void shutup() {
+        isSpeaking = false;
+        speechQueue.clear();
         tts.stop();
     }
 

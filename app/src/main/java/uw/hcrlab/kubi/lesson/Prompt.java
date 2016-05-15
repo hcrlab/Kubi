@@ -9,6 +9,7 @@ import com.danikula.videocache.HttpProxyCacheServer;
 import com.fasterxml.jackson.databind.deser.impl.NullProvider;
 
 import uw.hcrlab.kubi.App;
+import uw.hcrlab.kubi.robot.Body;
 import uw.hcrlab.kubi.robot.Robot;
 
 public abstract class Prompt extends Fragment {
@@ -59,6 +60,7 @@ public abstract class Prompt extends Fragment {
         super.onResume();
 
         if (robot != null && this.data != null && this.data.PromptText != null) {
+            robot.body.move(Body.Action.FACE_FORWARD);
             robot.speech.say(this.data.PromptText, "en");
         }
 

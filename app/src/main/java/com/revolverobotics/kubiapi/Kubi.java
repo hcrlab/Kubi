@@ -98,7 +98,7 @@ public class Kubi extends GattInterface {
 	private BluetoothGattCharacteristic button;
 	
 	private float lastPan = 0;
-	private float lastTilt = 0;
+	private float lastTilt = 5.0f;
 	private float nodTemp = 0;
 	private float shakeTemp = 0;
 	
@@ -354,7 +354,7 @@ public class Kubi extends GattInterface {
 		this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            	moveTo(0, 0);
+            	moveTo(0, 5.0f);
             }
 		}, 200);
 	}
@@ -375,7 +375,7 @@ public class Kubi extends GattInterface {
         this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            	moveTo(lastPan, 10, DEFAULT_SPEED, false);
+            	moveTo(lastPan, 15.0f, DEFAULT_SPEED, false);
             }
         }, 200);
         
@@ -389,7 +389,7 @@ public class Kubi extends GattInterface {
         this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            	moveTo(lastPan, 0, DEFAULT_SPEED, false);
+            	moveTo(lastPan, 5.0f, DEFAULT_SPEED, false);
             }
         }, 1650);
 	}
@@ -429,7 +429,7 @@ public class Kubi extends GattInterface {
         this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            	moveTo(lastPan, 0, DEFAULT_SPEED, false);
+            	moveTo(lastPan, 5.0f, DEFAULT_SPEED, false);
             }
         }, 500);
         this.mHandler.postDelayed(new Runnable() {
@@ -451,37 +451,37 @@ public class Kubi extends GattInterface {
 		this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            	moveTo(-120, 0, DEFAULT_SPEED, false);
+            	moveTo(-120, 5.0f, DEFAULT_SPEED, false);
             }
         }, 200);
 		this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            	moveTo(-60, 0, DEFAULT_SPEED, false);
+            	moveTo(-60, 5.0f, DEFAULT_SPEED, false);
             }
         }, 3000);
 		this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            	moveTo(0, 0, DEFAULT_SPEED, false);
+            	moveTo(0, 5.0f, DEFAULT_SPEED, false);
             }
         }, 5000);
 		this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            	moveTo(60, 0, DEFAULT_SPEED, false);
+            	moveTo(60, 5.0f, DEFAULT_SPEED, false);
             }
         }, 7000);
 		this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            	moveTo(120, 0, DEFAULT_SPEED, false);
+            	moveTo(120, 5.0f, DEFAULT_SPEED, false);
             }
         }, 9000);
 		this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            	moveTo(0, 0, DEFAULT_SPEED, false);
+            	moveTo(0, 5.0f, DEFAULT_SPEED, false);
             }
         }, 11000);
 	}
@@ -490,7 +490,7 @@ public class Kubi extends GattInterface {
 		this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            	moveTo(lastPan + 60, 0, DEFAULT_SPEED, false);
+            	moveTo(lastPan + 60, 5.0f, DEFAULT_SPEED, false);
             }
         }, 200);
 	}
@@ -499,7 +499,7 @@ public class Kubi extends GattInterface {
 		this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-            	moveTo(lastPan - 60, 0, DEFAULT_SPEED, false);
+            	moveTo(lastPan - 60, 5.0f, DEFAULT_SPEED, false);
             }
         }, 200);
 	}
