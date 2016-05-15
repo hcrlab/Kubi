@@ -634,6 +634,8 @@ public class Robot {
      * @param res The result of the user's answer to the current prompt (indicating if the user's answer was correct or not)
      */
     public void showResult(Result res) {
+        speech.shutup();
+
         if(res.isCorrect()) {
             lastCorrectResponse = speech.sayRandomResponse(correctResponses, lastCorrectResponse);
             lastHappyMove = body.doRandomMove(happyMoves, lastHappyMove);

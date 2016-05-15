@@ -140,6 +140,8 @@ public class TranslatePrompt extends Prompt implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
+        robot.speech.shutup();
+
         response = s.toString();
         robot.setPromptResponse(response);
 

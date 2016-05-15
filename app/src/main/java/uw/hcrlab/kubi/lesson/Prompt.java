@@ -33,6 +33,7 @@ public abstract class Prompt extends Fragment {
     protected Runnable confirm = new Runnable() {
         @Override
         public void run() {
+            robot.speech.shutup();
             robot.speech.say("Is that your final answer?", "en");
         }
     };
