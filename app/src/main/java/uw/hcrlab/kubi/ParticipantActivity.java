@@ -77,6 +77,14 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
         Button btn = (Button) findViewById(R.id.participant_submit_btn);
         btn.setOnClickListener(this);
 
+        Button refresh = (Button) findViewById(R.id.participant_refresh);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getParticipants();
+            }
+        });
+
         progress = new ProgressDialog(this);
         progress.setTitle("KubiLingo Study");
         progress.setMessage("Getting participants...");
@@ -114,6 +122,10 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
     protected void onResume() {
         super.onResume();
 
+        getParticipants();
+    }
+
+    private void getParticipants() {
         progress.show();
         App.getParticipants(new ValueEventListener() {
             @Override
@@ -123,6 +135,8 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
                 if(!snap.exists()) {
                     return;
                 }
+
+                participants.clear();
 
                 for(DataSnapshot p : snap.getChildren()) {
                     String key = p.getKey();
