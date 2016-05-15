@@ -40,6 +40,7 @@ public class App extends Application implements Firebase.AuthResultHandler, IKub
     private static String deviceID;
     private static String deviceName;
     private static String participant;
+    private static boolean isConnected = false;
 
     private HttpProxyCacheServer proxy;
 
@@ -120,6 +121,12 @@ public class App extends Application implements Firebase.AuthResultHandler, IKub
     }
 
     public static void FbConnect() {
+        if(isConnected) {
+            return;
+        }
+
+        isConnected = true;
+
         fb.child("devices").child(deviceID).child("connected").setValue(true);
 
         // Check for the device name and set it if need be
@@ -140,6 +147,12 @@ public class App extends Application implements Firebase.AuthResultHandler, IKub
     }
 
     public static void FbDisconnect() {
+        if(!isConnected) {
+            return;
+        }
+
+        isConnected = false;
+
         fb.child("devices").child(deviceID).child("connected").setValue(false);
     }
 

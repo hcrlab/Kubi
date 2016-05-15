@@ -18,6 +18,8 @@ public class MainActivity extends FragmentActivity {
     public static final String TEACHING_LANGUAGE = "TEACHING_LANGUAGE";
     public static final String PARTICIPANT_ID = "PARTICIPANT_ID";
 
+    private boolean shouldDisconnect = true;
+
     /* Activity's Properties */
     private Robot robot;
 
@@ -64,6 +66,7 @@ public class MainActivity extends FragmentActivity {
         super.onResume();
 
         robot.startup();
+
         App.FbConnect();
     }
 
@@ -71,8 +74,20 @@ public class MainActivity extends FragmentActivity {
     protected void onPause() {
         super.onPause();
 
-        App.FbDisconnect();
+        if(shouldDisconnect) {
+            App.FbDisconnect();
+        }
+
+        shouldDisconnect = true;
+
         robot.shutdown();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        shouldDisconnect = false;
     }
 
     @Override

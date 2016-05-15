@@ -36,6 +36,8 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
     /** The current participant's ID */
     private String participant = "";
 
+    private boolean shouldDisconnect = true;
+
     private ProgressDialog progress;
 
     private ArrayList<Participant> participants;
@@ -117,6 +119,19 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
 
         App app = (App) getApplication();
         app.connectToKubi();
+
+        App.FbConnect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(shouldDisconnect) {
+            App.FbDisconnect();
+        }
+
+        shouldDisconnect = true;
     }
 
     @Override
@@ -172,6 +187,8 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
     public void onClick(View view) {
         App app = (App) getApplication();
         app.loadAudio(language);
+
+        shouldDisconnect = false;
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(MainActivity.TEACHING_LANGUAGE, language);
