@@ -20,6 +20,10 @@ public abstract class Prompt extends Fragment {
 
     protected String uid;
 
+    protected long startTime;
+    protected long finishTime;
+    protected long milliseconds;
+
     protected int confirmationDelayLong = 2500;
     protected int confirmationDelay = 2000;
 
@@ -57,6 +61,13 @@ public abstract class Prompt extends Fragment {
         if (robot != null && this.data != null && this.data.PromptText != null) {
             robot.speech.say(this.data.PromptText, "en");
         }
+
+        startTime = System.nanoTime();
+    }
+
+    public long getTotalTime() {
+        finishTime = System.nanoTime();
+        return (finishTime - startTime) / 1000000;
     }
 
     public void setData(PromptData data) {

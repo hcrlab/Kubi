@@ -592,6 +592,10 @@ public class Robot {
      */
     public void setPromptResponse(Object response) {
         if (prompt != null && prompt.getUid() != null) {
+            long time = prompt.getTotalTime();
+            Firebase fbElapsed = App.getFirebase().child("questions").child(prompt.getUid()).child("elapsed");
+            fbElapsed.setValue(time);
+
             Firebase fb = App.getFirebase().child("questions").child(prompt.getUid()).child("response");
             fb.setValue(response);
         } else {
