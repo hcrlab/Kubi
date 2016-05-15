@@ -19,6 +19,7 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import uw.hcrlab.kubi.wizard.Participant;
 import uw.hcrlab.kubi.wizard.ParticipantArrayAdapter;
@@ -137,6 +138,7 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
                 }
 
                 participants.clear();
+                participantArrayAdapter.notifyDataSetChanged();
 
                 for(DataSnapshot p : snap.getChildren()) {
                     String key = p.getKey();
@@ -147,7 +149,11 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
                     participants.add(new Participant(key, id));
                 }
 
+                Collections.reverse(participants);
+                participant = participants.get(0).getKey();
                 participantArrayAdapter.notifyDataSetChanged();
+
+                App.setParticipant(participant);
             }
 
             @Override

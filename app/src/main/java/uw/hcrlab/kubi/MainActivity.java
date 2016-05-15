@@ -63,7 +63,6 @@ public class MainActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
 
-        App.setParticipant(participant);
         robot.startup();
         App.FbConnect();
     }
