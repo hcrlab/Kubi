@@ -16,12 +16,13 @@ public class MainActivity extends FragmentActivity {
     private static String TAG = MainActivity.class.getSimpleName();
 
     public static final String TEACHING_LANGUAGE = "TEACHING_LANGUAGE";
-    public static final String PARTICIPANT_NAME = "PARTICIPANT_NAME";
+    public static final String PARTICIPANT_ID = "PARTICIPANT_ID";
 
     /* Activity's Properties */
     private Robot robot;
 
     private String language;
+    private String participant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +37,12 @@ public class MainActivity extends FragmentActivity {
         // Indicate what the current language is!
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
+            participant = extras.getString(PARTICIPANT_ID);
             language = extras.getString(TEACHING_LANGUAGE);
+
+            if(participant == null) {
+                throw new NullPointerException("You must pass a participant ID to this activity!");
+            }
 
             if(language != null) {
                 View flag = findViewById(R.id.main_flag);
@@ -57,6 +63,7 @@ public class MainActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
 
+        App.setParticipant(participant);
         robot.startup();
         App.FbConnect();
     }

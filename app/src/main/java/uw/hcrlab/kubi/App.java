@@ -39,6 +39,7 @@ public class App extends Application implements Firebase.AuthResultHandler, IKub
     private static Firebase fb;
     private static String deviceID;
     private static String deviceName;
+    private static String participant;
 
     private HttpProxyCacheServer proxy;
 
@@ -142,6 +143,10 @@ public class App extends Application implements Firebase.AuthResultHandler, IKub
         fb.child("devices").child(deviceID).child("connected").setValue(false);
     }
 
+    public static void setParticipant(String p) {
+        participant = p;
+    }
+
     public static Context getContext(){
         return mContext;
     }
@@ -151,7 +156,11 @@ public class App extends Application implements Firebase.AuthResultHandler, IKub
     }
 
     public static Firebase getFirebase() {
-        return fb.child("devices").child(deviceID);
+        return fb.child("devices").child(deviceID).child("participants").child(participant);
+    }
+
+    public static void getParticipants(ValueEventListener listener) {
+        fb.child("participants").addListenerForSingleValueEvent(listener);
     }
 
     @Override

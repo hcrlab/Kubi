@@ -1,6 +1,7 @@
 package uw.hcrlab.kubi;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,17 +14,31 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
+import java.util.ArrayList;
+
+import uw.hcrlab.kubi.wizard.Participant;
+import uw.hcrlab.kubi.wizard.ParticipantArrayAdapter;
+
 /**
  * Activity for collecting basic information at the beginning of a run of the study with a new participant.
  */
-public class ParticipantActivity extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener, TextWatcher {
+public class ParticipantActivity extends Activity implements View.OnClickListener {
     private static String TAG = ParticipantActivity.class.getSimpleName();
 
     /** Language to teach the current participant */
     private String language = "dutch";
 
-    /** The current participant's name */
+    /** The current participant's ID */
     private String participant = "";
+
+    private ProgressDialog progress;
+
+    private ArrayList<Participant> participants;
+    private ParticipantArrayAdapter participantArrayAdapter;
 
     /**
      * Creates the Participant activity by adding options to the Study Phase spinner (dropdown) and
@@ -38,17 +53,53 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
         setContentView(R.layout.activity_participant);
 
         Spinner spinner = (Spinner) findViewById(R.id.participant_phase);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.study_phases, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.study_phases, R.layout.participant_id_item);
+        adapter.setDropDownViewResource(R.layout.participant_id_item);
         spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selected = (String) adapterView.getSelectedItem();
+
+                if(selected.contains("Swedish")) {
+                    language = "swedish";
+                } else {
+                    language = "dutch";
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         Button btn = (Button) findViewById(R.id.participant_submit_btn);
         btn.setOnClickListener(this);
 
-        EditText editor = (EditText) findViewById(R.id.participant_name);
-        editor.addTextChangedListener(this);
-        editor.setShowSoftInputOnFocus(false);
+        progress = new ProgressDialog(this);
+        progress.setTitle("KubiLingo Study");
+        progress.setMessage("Getting participants...");
+
+        participants = new ArrayList<>();
+        participantArrayAdapter = new ParticipantArrayAdapter(this, R.layout.participant_id_item, participants);
+
+        Spinner partID = (Spinner) findViewById(R.id.participant_id);
+        partID.setAdapter(participantArrayAdapter);
+        partID.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                participant = participants.get(i).getKey();
+
+                Log.d(TAG, "Selected participant: " + participant);
+                App.setParticipant(participant);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     @Override
@@ -59,23 +110,37 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
         app.connectToKubi();
     }
 
-    /**
-     * Callback for when a study phase has been selected
-     *
-     * @param adapterView The list adapter for study phases
-     * @param view The spinner view
-     * @param position Position of the view in the adapter
-     * @param id Row id of the item that was selected
-     */
     @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-        String selected = (String) adapterView.getSelectedItem();
+    protected void onResume() {
+        super.onResume();
 
-        if(selected.contains("Swedish")) {
-            language = "swedish";
-        } else {
-            language = "dutch";
-        }
+        progress.show();
+        App.getParticipants(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                progress.dismiss();
+
+                if(!snap.exists()) {
+                    return;
+                }
+
+                for(DataSnapshot p : snap.getChildren()) {
+                    String key = p.getKey();
+                    String id = p.getValue(String.class);
+
+                    Log.d(TAG, "Got participant: " + id);
+
+                    participants.add(new Participant(key, id));
+                }
+
+                participantArrayAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                progress.dismiss();
+            }
+        });
     }
 
     /**
@@ -90,42 +155,7 @@ public class ParticipantActivity extends Activity implements View.OnClickListene
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(MainActivity.TEACHING_LANGUAGE, language);
-        intent.putExtra(MainActivity.PARTICIPANT_NAME, participant);
+        intent.putExtra(MainActivity.PARTICIPANT_ID, participant);
         startActivity(intent);
-    }
-
-    /**
-     * Callback for when the participant's name changes
-     * @param s The participant's name
-     * @param start The starting position of the change
-     * @param before The old length of the text
-     * @param count The number of characters in the change
-     */
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        boolean enable = s.length() > 0;
-
-        Button btn = (Button) findViewById(R.id.participant_submit_btn);
-
-        if(btn != null) {
-            btn.setEnabled(enable);
-        }
-
-        participant = s.toString();
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        // Intentionally doesn't do anything...
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-        // Intentionally doesn't do anything...
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-        // Intentionally doesn't do anything...
     }
 }
