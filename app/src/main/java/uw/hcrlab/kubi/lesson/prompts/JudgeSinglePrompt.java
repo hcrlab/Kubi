@@ -27,6 +27,8 @@ public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelec
 
     private String response;
     private ArrayList<String> optionStrings;
+    private String promptString = "Select a Word";
+    private ArrayAdapter<String> adapter;
 
     protected static boolean firstRun = true;
 
@@ -47,14 +49,14 @@ public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelec
 
         // make an ArrayList of the options as strings
         optionStrings = new ArrayList<>();
+        optionStrings.add(promptString);
         for (PromptData.Option option: data.options) {
             optionStrings.add(option.title);
         }
 
         // dropdown menu with options from prompt
-        Spinner spinner = (Spinner) view.findViewById(R.id.dropdown);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(App.getContext(),
-                R.layout.spinner_item, optionStrings);
+        final Spinner spinner = (Spinner) view.findViewById(R.id.dropdown);
+        adapter = new ArrayAdapter<>(App.getContext(), R.layout.spinner_item, optionStrings);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
@@ -100,7 +102,7 @@ public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelec
             TextView correctText = (TextView) view.findViewById(R.id.judge_correct_text);
             TextView incorrectText = (TextView) view.findViewById(R.id.judge_incorrect_text);
 
-            ResultsDisplayHelper.showIncorrectResult(correctText, optionStrings.get(result.getSolution()), incorrectText, response, usersText);
+            ResultsDisplayHelper.showIncorrectResult(correctText, optionStrings.get(result.getSolution() + 1), incorrectText, response, usersText);
         }
     }
 
@@ -108,7 +110,12 @@ public class JudgeSinglePrompt extends Prompt implements AdapterView.OnItemSelec
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         response = (String) parent.getSelectedItem();
-        robot.setPromptResponse(pos);
+
+        if(response.equals(promptString)) {
+            return;
+        }
+
+        robot.setPromptResponse(pos - 1);
 
         handler.removeCallbacks(confirm);
         handler.postDelayed(confirm, confirmationDelay);

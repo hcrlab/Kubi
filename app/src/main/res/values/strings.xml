@@ -30,6 +30,9 @@
     <!-- DuoLingo Prompts -->
     <string name="prompt_text_input_hint">Type the Translation</string>
 
+    <!-- JudgeSingle Prompt Strings -->
+    <string name="judge_single_prompt">Select a Word</string>
+
     <!-- Start Up Activity Strings -->
     <string name="startup_username">Username</string>
     <string name="startup_password">Password</string>
